@@ -1,8 +1,7 @@
-# Optimizer.py
 import optuna
 import time
 from src.Classification.Models import get_classification_models
-from src.Classification.Results import Metrics
+from src.Results.Metrics import Metrics
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
@@ -19,14 +18,10 @@ class ClassificationOptunaOptimizer:
     def _optuna_callback(self, study, trial):
         f1, prec, rec = trial.user_attrs['metrics']
         params = trial.params
-        
-        print(f"Trial {trial.number + 1}/{self.n_trials} | "
-              f"F1: {f1:.2f} | Prec: {prec:.2f} | Rec: {rec:.2f} | "
-              f"Params: {params}")
+        print(f"Trial {trial.number + 1}/{self.n_trials} | F1: {f1:.2f} | Prec: {prec:.2f} | Rec: {rec:.2f} | Params: {params}")
 
     def _evaluate_model(self, model):
         self.stream.restart()
-        
         y_true_list = []
         y_pred_list = []
         
@@ -43,15 +38,9 @@ class ClassificationOptunaOptimizer:
             
             y_true_list.append(binary_true_label)
             y_pred_list.append(binary_prediction)
-
             model.train(instance)
 
-        f1_val, prec_val, recall_val = self.metrics.calc_sklearn_metrics(
-            y_true=y_true_list, 
-            y_pred=y_pred_list, 
-            target_class=self.target_class
-        )
-
+        f1_val, prec_val, recall_val, *_ = self.metrics.calc_sklearn_metrics(y_true_list, y_pred_list, target_class=self.target_class)
         return f1_val, prec_val, recall_val
 
     def _run_and_print_best_model(self, model_name, best_trial, warmup_instances=0, recovery_window=1000):
@@ -92,7 +81,6 @@ class ClassificationOptunaOptimizer:
             y_true_list.append(binary_true_label)
             y_pred_list.append(binary_prediction)
             true_labels_multi.append(true_label_multiclass)
-
             model.train(instance)
 
         exec_time = time.time() - start_time
@@ -133,13 +121,11 @@ class ClassificationOptunaOptimizer:
                 raise ValueError("Modelo não suportado.")
             
             trial.set_user_attr('metrics', (f1, prec, rec))
-            
             return f1 
 
         study.optimize(objective_wrapper, n_trials=self.n_trials, callbacks=[self._optuna_callback])
         
         print(f"\n[{model_name}] OTIMIZAÇÃO FINALIZADA")
-        
         best_trial = study.best_trial
         best_f1, best_prec, best_rec = best_trial.user_attrs['metrics']
         
@@ -148,15 +134,11 @@ class ClassificationOptunaOptimizer:
         print(f"Melhores Parâmetros: {study.best_params}")
         
         self.best_params[model_name] = study.best_params
-        
         self._run_and_print_best_model(model_name, best_trial, warmup_instances, recovery_window)
-        
         return study.best_params
     
     def _objective_lb(self, trial):
-        lb_params = {
-            'ensemble_size': trial.suggest_int('ensemble_size', 10, 150, step=10)
-        }
+        lb_params = {'ensemble_size': trial.suggest_int('ensemble_size', 10, 150, step=10)}
         models = get_classification_models(self.schema, selected_models=['LB'], lb_params=lb_params)
         return self._evaluate_model(models['LeveragingBagging'])
 
