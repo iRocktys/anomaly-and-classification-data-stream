@@ -5,7 +5,7 @@
 [![CapyMOA](https://img.shields.io/badge/Framework-CapyMOA-orange)](https://capymoa.org/)
 [![Optuna](https://img.shields.io/badge/Optimization-Optuna-green)](https://optuna.org/)
 
-Este repositório contém o código-fonte, os experimentos e as implementações desenvolvidas para o artigo submetido/aceito no **SBCSeg (Simpósio Brasileiro de Segurança da Informação e de Sistemas Computacionais)**. 
+Este repositório contém o código-fonte, os experimentos e as implementações desenvolvidas para o artigo submetido no **SBCSeg (Simpósio Brasileiro de Segurança da Informação e de Sistemas Computacionais)**. 
 
 O projeto propõe um framework robusto para a avaliação de modelos de Machine Learning aplicados à detecção de intrusão em cenários de **fluxo contínuo de dados (Data Streams)**, enfrentando os desafios de *Concept Drift* gerados por ondas de ataques cibernéticos.
 
@@ -16,7 +16,7 @@ O projeto propõe um framework robusto para a avaliação de modelos de Machine 
 3. **Métricas Comportamentais (Inovação)**: Além das métricas tradicionais (F1-Score, Precision, Recall, MCC, FPR, TPR), o framework implementa avaliação vetorial de comportamento sob ataques:
    - **Métrica de Passagem:** Mede a queda ou ganho de performance (F1-Score) do modelo durante a ocorrência da onda de ataque.
    - **Métrica de Recuperação:** Mede a resiliência e a capacidade de adaptação (aprendizado contínuo) do algoritmo $X$ amostras após o término do ataque.
-4. **Visualização Avançada**: Geração automática de relatórios cumulativos e plotagem de métricas evolutivas correlacionadas graficamente com as regiões de ataque do dataset.
+4. **Visualização**: Geração automática de relatórios cumulativos e plotagem de métricas evolutivas correlacionadas graficamente com as regiões de ataque do dataset.
 
 ## Estrutura do Repositório
 
@@ -111,9 +111,8 @@ Exemplo de Instanciação do Otimizador (Anomalias):
 
 ## Relatórios e Saídas
 Ao final da execução, o framework gera de forma automática:
-
 - Tabela de Otimização Optuna: Melhores hiperparâmetros encontrados.
-- Relatório Cumulativo: Contendo F1-Score, Precision, Recall, MCC, FPR e TPR gerais.
+- Relatório Cumulativo: Contendo F1-Score, Precision, Recall, MCC, FPR e TPR.
 - Relatório Comportamental por Ataque
 - Gráficos de Linha Prequenciais: Evolução temporal das métricas do modelo e limiares dinâmicos cruzados com regiões sombreadas indicando as ondas de ataque.
 
