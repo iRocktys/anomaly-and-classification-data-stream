@@ -47,15 +47,15 @@ A arquitetura do projeto foi desenvolvida com foco em modularidade e reutilizaç
 
 ## Modelos Avaliados
 1. Detecção de Anomalias:
-- Autoencoder (AE) - Treinamento restrito ao fluxo de tráfego normal.
-- Adaptive Isolation Forest (AIF)
-- Half-Space Trees (HST)
-- 
+   - Autoencoder (AE) - Treinamento restrito ao fluxo de tráfego normal.
+   - Adaptive Isolation Forest (AIF)
+   - Half-Space Trees (HST)
+
 2. Classificação:
-- Leveraging Bagging (LB)
-- Hoeffding Adaptive Tree (HAT)
-- Adaptive Random Forest (ARF)
-- Hoeffding Tree (HT)
+   - Leveraging Bagging (LB)
+   - Hoeffding Adaptive Tree (HAT)
+   - Adaptive Random Forest (ARF)
+   - Hoeffding Tree (HT)
 
 
 ## Instalação e Configuração
