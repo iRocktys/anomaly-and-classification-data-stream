@@ -1,94 +1,162 @@
 import numpy as np
 import time
-# IMPORTANTE: Garanta que este importe está apontando para o arquivo NOVO e UNIFICADO
 from src.Results.Metrics import Metrics
 from src.Results.Plots import Plots
 
 class ClassificationExperimentRunner:
-    def __init__(self, target_names=None):
+    def __init__(self, target_names=None, n_runs=1):
         self.target_names = target_names if target_names is not None else ['Normal', 'Ataque']
+        self.n_runs = n_runs
+        self.normal_class_idx = 0
+        for i, name in enumerate(self.target_names):
+            if str(name).strip().upper() in ['BENIGN', 'NORMAL', '0']:
+                self.normal_class_idx = i
+                break
+                
         self.metrics = Metrics()
         self.plots = Plots(self.target_names)
 
-    def run_classification_evaluation(self, stream, algorithms, window_size=1000, title="Avaliação Prequencial", warmup_instances=0, target_class=1, target_class_pass=None, recovery_window=1000):
-        results = {}
-        
-        for name in algorithms:
-            results[name] = {
-                'instances': [],
-                'f1': [], 'precision': [], 'recall': [], 
-                'mcc': [], 'fpr': [], 'tpr': [],
-                'y_true': [], 'y_pred': [], 'true_labels_multi': [],
-                'exec_time': 0.0
-            }
-
+    def prequential_test(self, stream, learner, window_size, warmup_instances, target_class):
         stream.restart()
-        instance_idx = 0 
-
+        y_true_list, y_pred_list, true_labels_multi = [], [], []
+        instances_list, f1_list, prec_list, rec_list = [], [], [], []
+        
+        count = 0
         while stream.has_more_instances():
             instance = stream.next_instance()
             true_label_multiclass = instance.y_index 
             binary_true_label = 1 if true_label_multiclass > 0 else 0
-
-            for name, model in algorithms.items():
-                res = results[name]
-
-                start_exec = time.time()
-                prediction = model.predict(instance)
-                if prediction is None:
-                    prediction = 0
+            
+            prediction = learner.predict(instance)
+            if prediction is None:
+                prediction = 0
                 
-                binary_prediction = 1 if prediction > 0 else 0
-                res['y_true'].append(binary_true_label)
-                res['y_pred'].append(binary_prediction)
-                res['true_labels_multi'].append(true_label_multiclass)
-
-                model.train(instance)
-                res['exec_time'] += (time.time() - start_exec)
-
-                if instance_idx >= warmup_instances and instance_idx > 0 and instance_idx % window_size == 0:
-                    res['instances'].append(instance_idx)
+            binary_prediction = 1 if prediction > 0 else 0
+            
+            y_true_list.append(binary_true_label)
+            y_pred_list.append(binary_prediction)
+            true_labels_multi.append(true_label_multiclass)
+            
+            learner.train(instance)
+            
+            if count >= warmup_instances and count > 0 and count % window_size == 0:
+                y_t_win = y_true_list[warmup_instances:]
+                y_p_win = y_pred_list[warmup_instances:]
+                f1_v, prec_v, rec_v, *_ = self.metrics.calc_sklearn_metrics(y_t_win, y_p_win, target_class)
+                
+                instances_list.append(count)
+                f1_list.append(f1_v)
+                prec_list.append(prec_v)
+                rec_list.append(rec_v)
                     
-                    y_t_win = res['y_true'][warmup_instances:]
-                    y_p_win = res['y_pred'][warmup_instances:]
-                    
-                    # Usa a função do Metrics.py unificado que retorna os 6 valores
-                    f1_v, prec_v, rec_v, mcc_v, fpr_v, tpr_v = self.metrics.calc_sklearn_metrics(y_t_win, y_p_win, target_class)
-                    
-                    res['f1'].append(f1_v)
-                    res['precision'].append(prec_v)
-                    res['recall'].append(rec_v)
-                    res['mcc'].append(mcc_v)
-                    res['fpr'].append(fpr_v)
-                    res['tpr'].append(tpr_v)
+            count += 1
+            
+        return {
+            'y_true': y_true_list,
+            'y_pred': y_pred_list,
+            'true_labels_multi': true_labels_multi,
+            'instances': instances_list,
+            'f1': f1_list,
+            'precision': prec_list,
+            'recall': rec_list
+        }
 
-            instance_idx += 1
+    def _aggregate_behavioral(self, beh_metrics_list):
+        if not beh_metrics_list or not beh_metrics_list[0]:
+            return []
+            
+        n_attacks = len(beh_metrics_list[0])
+        aggregated = []
         
+        for i in range(n_attacks):
+            passagens = [run[i]['passagem'] for run in beh_metrics_list]
+            recuperacoes = [run[i]['recuperacao'] for run in beh_metrics_list]
+            
+            aggregated.append({
+                'ataque_idx': beh_metrics_list[0][i]['ataque_idx'],
+                'passagem': (np.mean(passagens), np.std(passagens) if self.n_runs > 1 else 0.0),
+                'recuperacao': (np.mean(recuperacoes), np.std(recuperacoes) if self.n_runs > 1 else 0.0)
+            })
+        return aggregated
+
+    def run_classification_evaluation(self, stream, algorithms, window_size=1000, title="Avaliação Prequencial", warmup_instances=0, target_class=1, target_class_pass=None, recovery_window=1000):
+        predictions_history = {}
+        
+        for alg_name, learner_or_factory in algorithms.items():
+            runs_data = []
+            exec_times = []
+            
+            print(f"\n[{alg_name}] Executando {self.n_runs} rodada(s) prequencial(is)...")
+            for run in range(self.n_runs):
+                start_time = time.time()
+                current_seed = 42 + run
+                
+                if callable(learner_or_factory):
+                    learner = learner_or_factory(run_seed=current_seed)
+                else:
+                    learner = learner_or_factory
+                    if run > 0 and hasattr(learner, 'reset'):
+                        learner.reset()
+                    
+                result = self.prequential_test(stream, learner, window_size, warmup_instances, target_class)
+                exec_times.append(time.time() - start_time)
+                runs_data.append(result)
+            
+            f1_matrix = np.array([r['f1'] for r in runs_data])
+            prec_matrix = np.array([r['precision'] for r in runs_data])
+            rec_matrix = np.array([r['recall'] for r in runs_data])
+            
+            cum_metrics_list = []
+            beh_metrics_list = []
+            
+            true_labels_multi = runs_data[0]['true_labels_multi']
+            attack_regions = self.metrics.extract_attack_regions(true_labels_multi, normal_class_idx=self.normal_class_idx)
+            
+            for r in runs_data:
+                y_t = np.array(r['y_true'])[warmup_instances:]
+                y_p = np.array(r['y_pred'])[warmup_instances:]
+                cum_metrics_list.append(self.metrics.calc_sklearn_metrics(y_t, y_p, target_class))
+                
+                beh = self.metrics.calc_behavioral_metrics(r['y_true'], r['y_pred'], attack_regions, recovery_window, warmup_instances, target_class_pass)
+                beh_metrics_list.append(beh)
+                
+            cum_matrix = np.array(cum_metrics_list) 
+            
+            predictions_history[alg_name] = {
+                'instances': runs_data[0]['instances'],
+                'f1_mean': np.mean(f1_matrix, axis=0), 'f1_std': np.std(f1_matrix, axis=0) if self.n_runs > 1 else np.zeros_like(f1_matrix[0]),
+                'precision_mean': np.mean(prec_matrix, axis=0), 'precision_std': np.std(prec_matrix, axis=0) if self.n_runs > 1 else np.zeros_like(prec_matrix[0]),
+                'recall_mean': np.mean(rec_matrix, axis=0), 'recall_std': np.std(rec_matrix, axis=0) if self.n_runs > 1 else np.zeros_like(rec_matrix[0]),
+                'exec_time_mean': np.mean(exec_times), 'exec_time_std': np.std(exec_times) if self.n_runs > 1 else 0.0,
+                
+                'cumulative': {
+                    'f1': (np.mean(cum_matrix[:, 0]), np.std(cum_matrix[:, 0]) if self.n_runs > 1 else 0.0),
+                    'prec': (np.mean(cum_matrix[:, 1]), np.std(cum_matrix[:, 1]) if self.n_runs > 1 else 0.0),
+                    'rec': (np.mean(cum_matrix[:, 2]), np.std(cum_matrix[:, 2]) if self.n_runs > 1 else 0.0),
+                    'mcc': (np.mean(cum_matrix[:, 3]), np.std(cum_matrix[:, 3]) if self.n_runs > 1 else 0.0),
+                    'fpr': (np.mean(cum_matrix[:, 4]), np.std(cum_matrix[:, 4]) if self.n_runs > 1 else 0.0),
+                    'tpr': (np.mean(cum_matrix[:, 5]), np.std(cum_matrix[:, 5]) if self.n_runs > 1 else 0.0)
+                },
+                'behavioral': self._aggregate_behavioral(beh_metrics_list),
+                'true_labels_multi': true_labels_multi
+            }
+
         first_algo = list(algorithms.keys())[0]
-        y_true_multi = results[first_algo]['true_labels_multi']
-        
-        # Pega o índice da classe normal dinamicamente a partir dos nomes alvo
-        normal_idx = 0
-        for i, name in enumerate(self.target_names):
-            if str(name).strip().upper() in ['BENIGN', 'NORMAL', '0']:
-                normal_idx = i
-                break
-
-        attack_regions = self.metrics.extract_attack_regions(y_true_multi, normal_class_idx=normal_idx)
+        attack_regions = self.metrics.extract_attack_regions(predictions_history[first_algo]['true_labels_multi'], normal_class_idx=self.normal_class_idx)
             
         self.metrics.display_cumulative_metrics(
-            predictions_history=results,
+            predictions_history=predictions_history,
             warmup_instances=warmup_instances,
             target_class=target_class,
             target_class_pass=target_class_pass,
             attack_regions=attack_regions,
             recovery_window=recovery_window,
-            normal_class_idx=normal_idx
+            normal_class_idx=self.normal_class_idx,
+            n_runs=self.n_runs
         )
         
-        # Usa a função plot_metrics unificada, que plota na ordem: F1, Precision, Recall
         self.plots.plot_metrics(
-            results=results, 
+            results=predictions_history, 
             attack_regions=attack_regions, 
             title=title, 
             window_size=window_size, 
