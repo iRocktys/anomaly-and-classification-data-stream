@@ -93,7 +93,7 @@ class AnomalyExperimentRunner:
 
         predictions_history = {}
         
-        for alg_name, learner in algorithms.items():
+        for alg_name, learner_or_factory in algorithms.items():
             is_ae = any(kw.upper() in alg_name.upper() for kw in ae_keywords)
             runs_data = []
             exec_times = []
@@ -101,9 +101,14 @@ class AnomalyExperimentRunner:
             print(f"\n[{alg_name}] Executando {self.n_runs} rodada(s) prequencial(is)...")
             for run in range(self.n_runs):
                 start_time = time.time()
+                current_seed = 42 + run
                 
-                if run > 0 and hasattr(learner, 'reset'):
-                    learner.reset()
+                if callable(learner_or_factory):
+                    learner = learner_or_factory(run_seed=current_seed)
+                else:
+                    learner = learner_or_factory
+                    if run > 0 and hasattr(learner, 'reset'):
+                        learner.reset()
                     
                 result = self.prequential_test(stream, learner, threshold, is_ae, window_size, warmup_instances, target_class)
                 exec_times.append(time.time() - start_time)
@@ -155,7 +160,7 @@ class AnomalyExperimentRunner:
         
         self.metrics.display_cumulative_metrics(
             predictions_history=predictions_history, target_class=target_class, target_class_pass=target_class_pass,
-            attack_regions=attack_regions, recovery_window=recovery_window, normal_class_idx=self.normal_class_idx
+            attack_regions=attack_regions, recovery_window=recovery_window, normal_class_idx=self.normal_class_idx, n_runs=self.n_runs
         )
         self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=f"Métricas Evolutivas - {title}", window_size=window_size, target_class=target_class)
         self.plots.plot_score(results=predictions_history, attack_regions=attack_regions, title=f"Scores - {title}", threshold=threshold if threshold != 'params' else 0.5)

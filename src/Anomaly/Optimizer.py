@@ -80,15 +80,16 @@ class AnomalyOptunaOptimizer:
         
         for run in range(self.n_runs):
             self.stream.restart()
+            current_seed = 42 + run
             
             if model_name == 'HST':
-                models = get_anomaly_models(self.schema, selected_models=['HST'], hst_params=final_params)
+                models = get_anomaly_models(self.schema, selected_models=['HST'], hst_params=final_params, run_seed=current_seed)
                 model = models['HalfSpaceTrees']
             elif model_name == 'AIF':
-                models = get_anomaly_models(self.schema, selected_models=['AIF'], aif_params=final_params)
+                models = get_anomaly_models(self.schema, selected_models=['AIF'], aif_params=final_params, run_seed=current_seed)
                 model = models['AdaptiveIsolationForest']
             elif model_name == 'AE':
-                models = get_anomaly_models(self.schema, selected_models=['AE'], ae_params=final_params)
+                models = get_anomaly_models(self.schema, selected_models=['AE'], ae_params=final_params, run_seed=current_seed)
                 model = models['Autoencoder']
             else:
                 raise ValueError("Modelo não suportado.")
@@ -189,7 +190,8 @@ class AnomalyOptunaOptimizer:
             target_class=self.target_class,
             target_class_pass=self.target_class_pass,
             recovery_window=recovery_window,
-            normal_class_idx=normal_class_idx
+            normal_class_idx=normal_class_idx,
+            n_runs=self.n_runs
         )
 
     def optimize(self, model_name, warmup_instances=0, recovery_window=1000):

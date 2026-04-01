@@ -113,7 +113,7 @@ class Metrics:
             
         return behavioral_data
 
-    def display_cumulative_metrics(self, predictions_history, warmup_instances=0, target_class=None, target_class_pass=None, attack_regions=None, recovery_window=1000, normal_class_idx=0):
+    def display_cumulative_metrics(self, predictions_history, warmup_instances=0, target_class=None, target_class_pass=None, attack_regions=None, recovery_window=1000, normal_class_idx=0, n_runs=1):
         first_name = list(predictions_history.keys())[0]
         if attack_regions is None or len(attack_regions) == 0:
             y_true_multi = predictions_history[first_name].get('true_labels_multi')
@@ -124,7 +124,11 @@ class Metrics:
         beh_str = "MACRO" if tc_pass is None or str(tc_pass).lower() == 'macro' else f"CLASSE {tc_pass}"
 
         titulo_relatorio = f"RELATÓRIO COMPORTAMENTAL | Métricas: {gen_str} | Passagens: {beh_str}"
-        header_base = f"{'Modelo/Algoritmo':<22} | {'F1 (%)':<13} | {'Prec (%)':<13} | {'Rec (%)':<13} | {'MCC':<11} | {'FPR (%)':<13} | {'TPR (%)':<13} | {'Tempo (s)':<12}"
+        if n_runs > 1:
+            header_base = f"{'Modelo/Algoritmo':<22} | {'F1 (%)':<13} | {'Prec (%)':<13} | {'Rec (%)':<13} | {'MCC':<11} | {'FPR (%)':<13} | {'TPR (%)':<13} | {'Tempo (s)':<12}"
+        else:
+            header_base = f"{'Modelo/Algoritmo':<22} | {'F1 (%)':<8} | {'Prec (%)':<8} | {'Rec (%)':<8} | {'MCC':<8} | {'FPR (%)':<8} | {'TPR (%)':<8} | {'Tempo (s)':<10}"
+            
         line_len = max(len(header_base), len(titulo_relatorio) + 4)
 
         print(f"\n{'='*line_len}")
@@ -144,7 +148,10 @@ class Metrics:
                 tm_m, tm_s = data['exec_time_mean'], data['exec_time_std']
                 
                 print(f"{'-'*line_len}")
-                row_base = f"{name:<22} | {f1_m:>5.2f} ± {f1_s:<5.2f} | {prec_m:>5.2f} ± {prec_s:<5.2f} | {rec_m:>5.2f} ± {rec_s:<5.2f} | {mcc_m:>4.2f} ± {mcc_s:<4.2f} | {fpr_m:>5.2f} ± {fpr_s:<5.2f} | {tpr_m:>5.2f} ± {tpr_s:<5.2f} | {tm_m:>5.2f} ± {tm_s:<4.2f}"
+                if n_runs > 1:
+                    row_base = f"{name:<22} | {f1_m:>5.2f} ± {f1_s:<5.2f} | {prec_m:>5.2f} ± {prec_s:<5.2f} | {rec_m:>5.2f} ± {rec_s:<5.2f} | {mcc_m:>4.2f} ± {mcc_s:<4.2f} | {fpr_m:>5.2f} ± {fpr_s:<5.2f} | {tpr_m:>5.2f} ± {tpr_s:<5.2f} | {tm_m:>5.2f} ± {tm_s:<4.2f}"
+                else:
+                    row_base = f"{name:<22} | {f1_m:<8.2f} | {prec_m:<8.2f} | {rec_m:<8.2f} | {mcc_m:<8.3f} | {fpr_m:<8.2f} | {tpr_m:<8.2f} | {tm_m:<10.2f}"
                 print(row_base)
                 
                 behavioral_data = data.get('behavioral', [])
@@ -155,11 +162,16 @@ class Metrics:
                     p_m, p_s = b['passagem']
                     r_m, r_s = b['recuperacao']
                     
-                    # Formatação
-                    p_str = f"+{p_m:.2f} ± {p_s:.2f}%" if p_m > 0 else f"{p_m:.2f} ± {p_s:.2f}%"
-                    r_str = f"+{r_m:.2f} ± {r_s:.2f}%" if r_m > 0 else f"{r_m:.2f} ± {r_s:.2f}%"
+                    if n_runs > 1:
+                        p_str = f"+{p_m:.2f} ± {p_s:.2f}%" if p_m > 0 else f"{p_m:.2f} ± {p_s:.2f}%"
+                        r_str = f"+{r_m:.2f} ± {r_s:.2f}%" if r_m > 0 else f"{r_m:.2f} ± {r_s:.2f}%"
+                    else:
+                        p_str = f"+{p_m:.2f}%" if p_m > 0 else f"{p_m:.2f}%"
+                        r_str = f"+{r_m:.2f}%" if r_m > 0 else f"{r_m:.2f}%"
+                        
                     print(f"  -> Ataque {idx} ({beh_str}): Passagem: {p_str:<12} | Recuperação ({recovery_window} amostras): {r_str}")
-            else:
+            
+            else: # Fluxo de Retrocompatibilidade
                 y_true_full = np.array(data.get('true_labels', data.get('y_true', [])))
                 y_pred_full = np.array(data.get('predicted_classes', data.get('y_pred', [])))
                 
@@ -170,7 +182,7 @@ class Metrics:
                 exec_time = data.get('exec_time', 0.0)
 
                 print(f"{'-'*line_len}")
-                row_base = f"{name:<22} | {f1:<13.2f} | {prec:<13.2f} | {recall:<13.2f} | {mcc:<11.3f} | {fpr:<13.2f} | {tpr:<13.2f} | {exec_time:<12.2f}"
+                row_base = f"{name:<22} | {f1:<8.2f} | {prec:<8.2f} | {recall:<8.2f} | {mcc:<8.3f} | {fpr:<8.2f} | {tpr:<8.2f} | {exec_time:<10.2f}"
                 print(row_base)
                 
                 behavioral_data = self.calc_behavioral_metrics(y_true_full, y_pred_full, attack_regions, recovery_window, warmup_instances, tc_pass)
@@ -180,6 +192,6 @@ class Metrics:
                     idx = b['ataque_idx']
                     p_str = f"+{b['passagem']:.2f}%" if b['passagem'] > 0 else f"{b['passagem']:.2f}%"
                     r_str = f"+{b['recuperacao']:.2f}%" if b['recuperacao'] > 0 else f"{b['recuperacao']:.2f}%"
-                    print(f"  -> Ataque {idx} ({beh_str}): Passagem: {p_str:<12} | Recuperação ({recovery_window} amostras): {r_str}")
-            
+                    print(f"  -> Ataque {idx} ({beh_str}): Passagem: {p_str:<8} | Recuperação ({recovery_window} amostras): {r_str}")
+        
         print(f"{'='*line_len}\n")

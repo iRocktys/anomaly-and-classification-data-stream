@@ -82,16 +82,21 @@ class ClassificationExperimentRunner:
     def run_classification_evaluation(self, stream, algorithms, window_size=1000, title="Avaliação Prequencial", warmup_instances=0, target_class=1, target_class_pass=None, recovery_window=1000):
         predictions_history = {}
         
-        for alg_name, learner in algorithms.items():
+        for alg_name, learner_or_factory in algorithms.items():
             runs_data = []
             exec_times = []
             
             print(f"\n[{alg_name}] Executando {self.n_runs} rodada(s) prequencial(is)...")
             for run in range(self.n_runs):
                 start_time = time.time()
+                current_seed = 42 + run
                 
-                if run > 0 and hasattr(learner, 'reset'):
-                    learner.reset()
+                if callable(learner_or_factory):
+                    learner = learner_or_factory(run_seed=current_seed)
+                else:
+                    learner = learner_or_factory
+                    if run > 0 and hasattr(learner, 'reset'):
+                        learner.reset()
                     
                 result = self.prequential_test(stream, learner, window_size, warmup_instances, target_class)
                 exec_times.append(time.time() - start_time)
@@ -146,7 +151,8 @@ class ClassificationExperimentRunner:
             target_class_pass=target_class_pass,
             attack_regions=attack_regions,
             recovery_window=recovery_window,
-            normal_class_idx=self.normal_class_idx
+            normal_class_idx=self.normal_class_idx,
+            n_runs=self.n_runs
         )
         
         self.plots.plot_metrics(
