@@ -124,7 +124,7 @@ class Metrics:
         beh_str = "MACRO" if tc_pass is None or str(tc_pass).lower() == 'macro' else f"CLASSE {tc_pass}"
 
         titulo_relatorio = f"RELATÓRIO COMPORTAMENTAL | Métricas: {gen_str} | Passagens: {beh_str}"
-        header_base = f"{'Modelo/Algoritmo':<22} | {'F1 (%)':<8} | {'Prec (%)':<8} | {'Rec (%)':<8} | {'MCC':<8} | {'FPR (%)':<8} | {'TPR (%)':<8} | {'Tempo (s)':<10}"
+        header_base = f"{'Modelo/Algoritmo':<22} | {'F1 (%)':<13} | {'Prec (%)':<13} | {'Rec (%)':<13} | {'MCC':<11} | {'FPR (%)':<13} | {'TPR (%)':<13} | {'Tempo (s)':<12}"
         line_len = max(len(header_base), len(titulo_relatorio) + 4)
 
         print(f"\n{'='*line_len}")
@@ -134,26 +134,52 @@ class Metrics:
         print(f"{'-'*line_len}")
 
         for name, data in predictions_history.items():
-            y_true_full = np.array(data.get('true_labels', data.get('y_true', [])))
-            y_pred_full = np.array(data.get('predicted_classes', data.get('y_pred', [])))
-            
-            y_true_list = y_true_full[warmup_instances:] if len(y_true_full) > warmup_instances else y_true_full
-            y_pred_list = y_pred_full[warmup_instances:] if len(y_pred_full) > warmup_instances else y_pred_full
-            
-            f1, prec, recall, mcc, fpr, tpr = self.calc_sklearn_metrics(y_true_list, y_pred_list, target_class)
-            exec_time = data.get('exec_time', 0.0)
-
-            print(f"{'-'*line_len}")
-            row_base = f"{name:<22} | {f1:<8.2f} | {prec:<8.2f} | {recall:<8.2f} | {mcc:<8.3f} | {fpr:<8.2f} | {tpr:<8.2f} | {exec_time:<10.2f}"
-            print(row_base)
-            
-            behavioral_data = self.calc_behavioral_metrics(y_true_full, y_pred_full, attack_regions, recovery_window, warmup_instances, tc_pass)
-            if behavioral_data:
+            if 'cumulative' in data:
+                f1_m, f1_s = data['cumulative']['f1']
+                prec_m, prec_s = data['cumulative']['prec']
+                rec_m, rec_s = data['cumulative']['rec']
+                mcc_m, mcc_s = data['cumulative']['mcc']
+                fpr_m, fpr_s = data['cumulative']['fpr']
+                tpr_m, tpr_s = data['cumulative']['tpr']
+                tm_m, tm_s = data['exec_time_mean'], data['exec_time_std']
+                
                 print(f"{'-'*line_len}")
-            for b in behavioral_data:
-                idx = b['ataque_idx']
-                p_str = f"+{b['passagem']:.2f}%" if b['passagem'] > 0 else f"{b['passagem']:.2f}%"
-                r_str = f"+{b['recuperacao']:.2f}%" if b['recuperacao'] > 0 else f"{b['recuperacao']:.2f}%"
-                print(f"  -> Ataque {idx} ({beh_str}): Passagem: {p_str:<8} | Recuperação ({recovery_window} amostras): {r_str}")
-        
+                row_base = f"{name:<22} | {f1_m:>5.2f} ± {f1_s:<5.2f} | {prec_m:>5.2f} ± {prec_s:<5.2f} | {rec_m:>5.2f} ± {rec_s:<5.2f} | {mcc_m:>4.2f} ± {mcc_s:<4.2f} | {fpr_m:>5.2f} ± {fpr_s:<5.2f} | {tpr_m:>5.2f} ± {tpr_s:<5.2f} | {tm_m:>5.2f} ± {tm_s:<4.2f}"
+                print(row_base)
+                
+                behavioral_data = data.get('behavioral', [])
+                if behavioral_data:
+                    print(f"{'-'*line_len}")
+                for b in behavioral_data:
+                    idx = b['ataque_idx']
+                    p_m, p_s = b['passagem']
+                    r_m, r_s = b['recuperacao']
+                    
+                    # Formatação
+                    p_str = f"+{p_m:.2f} ± {p_s:.2f}%" if p_m > 0 else f"{p_m:.2f} ± {p_s:.2f}%"
+                    r_str = f"+{r_m:.2f} ± {r_s:.2f}%" if r_m > 0 else f"{r_m:.2f} ± {r_s:.2f}%"
+                    print(f"  -> Ataque {idx} ({beh_str}): Passagem: {p_str:<12} | Recuperação ({recovery_window} amostras): {r_str}")
+            else:
+                y_true_full = np.array(data.get('true_labels', data.get('y_true', [])))
+                y_pred_full = np.array(data.get('predicted_classes', data.get('y_pred', [])))
+                
+                y_true_list = y_true_full[warmup_instances:] if len(y_true_full) > warmup_instances else y_true_full
+                y_pred_list = y_pred_full[warmup_instances:] if len(y_pred_full) > warmup_instances else y_pred_full
+                
+                f1, prec, recall, mcc, fpr, tpr = self.calc_sklearn_metrics(y_true_list, y_pred_list, target_class)
+                exec_time = data.get('exec_time', 0.0)
+
+                print(f"{'-'*line_len}")
+                row_base = f"{name:<22} | {f1:<13.2f} | {prec:<13.2f} | {recall:<13.2f} | {mcc:<11.3f} | {fpr:<13.2f} | {tpr:<13.2f} | {exec_time:<12.2f}"
+                print(row_base)
+                
+                behavioral_data = self.calc_behavioral_metrics(y_true_full, y_pred_full, attack_regions, recovery_window, warmup_instances, tc_pass)
+                if behavioral_data:
+                    print(f"{'-'*line_len}")
+                for b in behavioral_data:
+                    idx = b['ataque_idx']
+                    p_str = f"+{b['passagem']:.2f}%" if b['passagem'] > 0 else f"{b['passagem']:.2f}%"
+                    r_str = f"+{b['recuperacao']:.2f}%" if b['recuperacao'] > 0 else f"{b['recuperacao']:.2f}%"
+                    print(f"  -> Ataque {idx} ({beh_str}): Passagem: {p_str:<12} | Recuperação ({recovery_window} amostras): {r_str}")
+            
         print(f"{'='*line_len}\n")
