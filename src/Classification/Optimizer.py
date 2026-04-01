@@ -1,4 +1,5 @@
 import optuna
+import numpy as np
 import time
 from src.Classification.Models import get_classification_models
 from src.Results.Metrics import Metrics
@@ -6,14 +7,16 @@ from src.Results.Metrics import Metrics
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 class ClassificationOptunaOptimizer:
-    def __init__(self, stream, n_trials=30, target_class=1, target_class_pass=None):
+    def __init__(self, stream, n_trials=30, target_class=1, target_class_pass=None, target_names=None, n_runs=1):
         self.stream = stream
         self.schema = stream.get_schema()
         self.n_trials = n_trials
         self.target_class = target_class
         self.target_class_pass = target_class_pass
         self.best_params = {}
+        self.target_names = target_names if target_names is not None else ['Normal', 'Ataque']
         self.metrics = Metrics()
+        self.n_runs = n_runs
 
     def _optuna_callback(self, study, trial):
         f1, prec, rec = trial.user_attrs['metrics']
@@ -44,53 +47,108 @@ class ClassificationOptunaOptimizer:
         return f1_val, prec_val, recall_val
 
     def _run_and_print_best_model(self, model_name, best_trial, warmup_instances=0, recovery_window=1000):
-        self.stream.restart()
+        final_params = best_trial.params.copy()
         
-        if model_name == 'LB':
-            models = get_classification_models(self.schema, selected_models=['LB'], lb_params=best_trial.params)
-            model = models['LeveragingBagging']
-        elif model_name == 'HAT':
-            models = get_classification_models(self.schema, selected_models=['HAT'], hat_params=best_trial.params)
-            model = models['HoeffdingAdaptiveTree']
-        elif model_name == 'ARF':
-            models = get_classification_models(self.schema, selected_models=['ARF'], arf_params=best_trial.params)
-            model = models['AdaptiveRandomForest']
-        elif model_name == 'HT':
-            models = get_classification_models(self.schema, selected_models=['HT'], ht_params=best_trial.params)
-            model = models['HoeffdingTree']
-        else:
-            raise ValueError("Modelo não suportado.")
-
-        y_true_list = []
-        y_pred_list = []
-        true_labels_multi = []
+        runs_cum_metrics = []
+        runs_beh_metrics = []
+        exec_times = []
+        true_labels_multi = None
         
-        start_time = time.time()
+        print(f"\n[{model_name}] Validando melhores parâmetros com {self.n_runs} rodada(s) prequencial(is)...")
         
-        while self.stream.has_more_instances():
-            instance = self.stream.next_instance()
-            true_label_multiclass = instance.y_index 
-            binary_true_label = 1 if true_label_multiclass > 0 else 0
+        for run in range(self.n_runs):
+            self.stream.restart()
             
-            prediction = model.predict(instance)
-            if prediction is None:
-                prediction = 0
+            if model_name == 'LB':
+                models = get_classification_models(self.schema, selected_models=['LB'], lb_params=final_params)
+                model = models['LeveragingBagging']
+            elif model_name == 'HAT':
+                models = get_classification_models(self.schema, selected_models=['HAT'], hat_params=final_params)
+                model = models['HoeffdingAdaptiveTree']
+            elif model_name == 'ARF':
+                models = get_classification_models(self.schema, selected_models=['ARF'], arf_params=final_params)
+                model = models['AdaptiveRandomForest']
+            elif model_name == 'HT':
+                models = get_classification_models(self.schema, selected_models=['HT'], ht_params=final_params)
+                model = models['HoeffdingTree']
+            else:
+                raise ValueError("Modelo não suportado.")
+
+            y_true_list = []
+            y_pred_list = []
+            current_true_multi = []
+            
+            start_time = time.time()
+            
+            while self.stream.has_more_instances():
+                instance = self.stream.next_instance()
+                true_label_multiclass = instance.y_index 
+                binary_true_label = 1 if true_label_multiclass > 0 else 0
                 
-            binary_prediction = 1 if prediction > 0 else 0
-            
-            y_true_list.append(binary_true_label)
-            y_pred_list.append(binary_prediction)
-            true_labels_multi.append(true_label_multiclass)
-            model.train(instance)
+                prediction = model.predict(instance)
+                if prediction is None:
+                    prediction = 0
+                    
+                binary_prediction = 1 if prediction > 0 else 0
+                
+                y_true_list.append(binary_true_label)
+                y_pred_list.append(binary_prediction)
+                current_true_multi.append(true_label_multiclass)
+                
+                model.train(instance)
 
-        exec_time = time.time() - start_time
+            exec_time = time.time() - start_time
+            exec_times.append(exec_time)
+            
+            if run == 0:
+                true_labels_multi = current_true_multi
+                
+            y_t = np.array(y_true_list)[warmup_instances:] if len(y_true_list) > warmup_instances else np.array(y_true_list)
+            y_p = np.array(y_pred_list)[warmup_instances:] if len(y_pred_list) > warmup_instances else np.array(y_pred_list)
+            
+            cum_metrics = self.metrics.calc_sklearn_metrics(y_t, y_p, target_class=self.target_class)
+            runs_cum_metrics.append(cum_metrics)
+            
+            normal_class_idx = 0
+            for i, name in enumerate(self.target_names):
+                if str(name).strip().upper() in ['BENIGN', 'NORMAL', '0']:
+                    normal_class_idx = i
+                    break
+                    
+            attack_regions = self.metrics.extract_attack_regions(current_true_multi, normal_class_idx=normal_class_idx)
+            beh_metrics = self.metrics.calc_behavioral_metrics(y_true_list, y_pred_list, attack_regions, recovery_window, warmup_instances, self.target_class_pass)
+            runs_beh_metrics.append(beh_metrics)
+
+        cum_matrix = np.array(runs_cum_metrics)
         
+        def aggregate_behavioral(beh_list, n):
+            if not beh_list or not beh_list[0]: return []
+            n_atk = len(beh_list[0])
+            agg = []
+            for i in range(n_atk):
+                passagens = [r[i]['passagem'] for r in beh_list]
+                recuperacoes = [r[i]['recuperacao'] for r in beh_list]
+                agg.append({
+                    'ataque_idx': beh_list[0][i]['ataque_idx'],
+                    'passagem': (np.mean(passagens), np.std(passagens) if n > 1 else 0.0),
+                    'recuperacao': (np.mean(recuperacoes), np.std(recuperacoes) if n > 1 else 0.0)
+                })
+            return agg
+
         predictions_history = {
             f"Melhor {model_name}": {
-                'y_true': y_true_list,
-                'y_pred': y_pred_list,
-                'true_labels_multi': true_labels_multi,
-                'exec_time': exec_time
+                'exec_time_mean': np.mean(exec_times),
+                'exec_time_std': np.std(exec_times) if self.n_runs > 1 else 0.0,
+                'cumulative': {
+                    'f1': (np.mean(cum_matrix[:, 0]), np.std(cum_matrix[:, 0]) if self.n_runs > 1 else 0.0),
+                    'prec': (np.mean(cum_matrix[:, 1]), np.std(cum_matrix[:, 1]) if self.n_runs > 1 else 0.0),
+                    'rec': (np.mean(cum_matrix[:, 2]), np.std(cum_matrix[:, 2]) if self.n_runs > 1 else 0.0),
+                    'mcc': (np.mean(cum_matrix[:, 3]), np.std(cum_matrix[:, 3]) if self.n_runs > 1 else 0.0),
+                    'fpr': (np.mean(cum_matrix[:, 4]), np.std(cum_matrix[:, 4]) if self.n_runs > 1 else 0.0),
+                    'tpr': (np.mean(cum_matrix[:, 5]), np.std(cum_matrix[:, 5]) if self.n_runs > 1 else 0.0)
+                },
+                'behavioral': aggregate_behavioral(runs_beh_metrics, self.n_runs),
+                'true_labels_multi': true_labels_multi
             }
         }
         
@@ -99,7 +157,8 @@ class ClassificationOptunaOptimizer:
             warmup_instances=warmup_instances,
             target_class=self.target_class,
             target_class_pass=self.target_class_pass,
-            recovery_window=recovery_window
+            recovery_window=recovery_window,
+            normal_class_idx=normal_class_idx
         )
 
     def optimize(self, model_name, warmup_instances=0, recovery_window=1000):
