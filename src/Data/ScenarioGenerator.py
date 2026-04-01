@@ -9,12 +9,6 @@ import matplotlib.patches as mpatches
 warnings.filterwarnings("ignore", category=pd.errors.DtypeWarning)
 
 class ScenarioGenerator:
-    """
-    classe responsável por orquestrar a geração de cenários de rede,
-    mesclando um baseline benigno com fatias de arquivos de ataque,
-    e fornecendo ferramentas de visualização para fluxos de dados.
-    """
-    
     def __init__(self, input_folder, output_path, baseline_file, target_files=None, n_benign_samples=None, logging=True, sort_by_timestamp=True, remove_duplicates=True):
         self.input_folder = input_folder
         self.output_path = output_path
@@ -61,8 +55,6 @@ class ScenarioGenerator:
                     for chunk in pd.read_csv(filename, chunksize=100000, low_memory=False, encoding_errors='ignore', on_bad_lines='skip'):
                         chunk.columns = chunk.columns.str.strip()
                         if 'Label' not in chunk.columns: continue
-                        
-                        # Adicionado .str.strip() para limpar espaços em branco invisíveis do CIC-IDS-2017
                         benign_chunk = chunk[chunk['Label'].astype(str).str.strip().str.upper() == 'BENIGN']
                         
                         if not benign_chunk.empty:
@@ -87,8 +79,8 @@ class ScenarioGenerator:
             self.total_benign = len(self.benign_df)
             self._log(f"    Salvando {self.total_benign} amostras no arquivo base...")
             self.benign_df.to_csv(self.baseline_file, index=False)
+
     def _reduce_benign_stratified(self):
-        # se não passou parâmetro ou pediu mais do que tem, mantém o dataframe original
         if self.n_benign_samples is None or self.n_benign_samples >= len(self.benign_df):
             self._log(f"\n[*] Redução ignorada. Mantendo todas as {len(self.benign_df)} amostras benignas originais.")
             return
@@ -104,7 +96,7 @@ class ScenarioGenerator:
                 stratify_col = col
                 break
                 
-        # fallback: tenta usar o protocolo se não achar porta
+        # tenta usar o protocolo se não achar porta
         if not stratify_col:
             for col in df.columns:
                 if 'protocol' in col.lower():
@@ -254,7 +246,7 @@ class ScenarioGenerator:
         final_stream.append(self.benign_df.iloc[current_idx:])
         final_df = pd.concat(final_stream, ignore_index=True)
         
-        # --- remoção de duplicatas ---
+        # remoção de duplicatas
         if self.remove_duplicates:
             size_before = len(final_df)
             final_df = final_df.drop_duplicates(keep='first').reset_index(drop=True)
@@ -262,7 +254,7 @@ class ScenarioGenerator:
             if removed_count > 0:
                 self._log(f"    -> Removidas {removed_count} linhas duplicadas.")
                 
-        # --- ordenação por timestamp ---
+        # ordenação por timestamp
         if self.sort_by_timestamp and 'Timestamp' in final_df.columns:
             self._log("    -> Ordenando cenário por Timestamp...")
             try:
@@ -341,8 +333,6 @@ class ScenarioGenerator:
         plt.xlabel('Índice da Amostra', fontsize=12)
         plt.ylabel('Valor da Feature', fontsize=12)
         plt.grid(True, which="major", ls="--", alpha=0.4, zorder=2)
-        
-        # posiciona a legenda fora do gráfico para não cobrir as linhas
         plt.legend(handles=handles)
         plt.tight_layout()
         plt.show()

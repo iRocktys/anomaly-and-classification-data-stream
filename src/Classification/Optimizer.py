@@ -1,18 +1,18 @@
 import optuna
 import numpy as np
 import time
+import gc
 from src.Classification.Models import get_classification_models
 from src.Results.Metrics import Metrics
 
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 class ClassificationOptunaOptimizer:
-    def __init__(self, stream, n_trials=30, target_class=1, target_class_pass=None, target_names=None, n_runs=1):
+    def __init__(self, stream, n_trials=30, target_class=1, target_names=None, n_runs=1):
         self.stream = stream
         self.schema = stream.get_schema()
         self.n_trials = n_trials
         self.target_class = target_class
-        self.target_class_pass = target_class_pass
         self.best_params = {}
         self.target_names = target_names if target_names is not None else ['Normal', 'Ataque']
         self.metrics = Metrics()
@@ -34,9 +34,7 @@ class ClassificationOptunaOptimizer:
             binary_true_label = 1 if true_label_multiclass > 0 else 0
             
             prediction = model.predict(instance)
-            if prediction is None:
-                prediction = 0
-                
+            prediction = 0 if prediction is None else prediction
             binary_prediction = 1 if prediction > 0 else 0
             
             y_true_list.append(binary_true_label)
@@ -46,11 +44,9 @@ class ClassificationOptunaOptimizer:
         f1_val, prec_val, recall_val, *_ = self.metrics.calc_sklearn_metrics(y_true_list, y_pred_list, target_class=self.target_class)
         return f1_val, prec_val, recall_val
 
-    def _run_and_print_best_model(self, model_name, best_trial, warmup_instances=0, recovery_window=1000):
+    def _run_and_print_best_model(self, model_name, best_trial, warmup_instances=0):
         final_params = best_trial.params.copy()
-        
         runs_cum_metrics = []
-        runs_beh_metrics = []
         exec_times = []
         true_labels_multi = None
         
@@ -78,7 +74,6 @@ class ClassificationOptunaOptimizer:
             y_true_list = []
             y_pred_list = []
             current_true_multi = []
-            
             start_time = time.time()
             
             while self.stream.has_more_instances():
@@ -87,9 +82,7 @@ class ClassificationOptunaOptimizer:
                 binary_true_label = 1 if true_label_multiclass > 0 else 0
                 
                 prediction = model.predict(instance)
-                if prediction is None:
-                    prediction = 0
-                    
+                prediction = 0 if prediction is None else prediction
                 binary_prediction = 1 if prediction > 0 else 0
                 
                 y_true_list.append(binary_true_label)
@@ -110,32 +103,11 @@ class ClassificationOptunaOptimizer:
             cum_metrics = self.metrics.calc_sklearn_metrics(y_t, y_p, target_class=self.target_class)
             runs_cum_metrics.append(cum_metrics)
             
-            normal_class_idx = 0
-            for i, name in enumerate(self.target_names):
-                if str(name).strip().upper() in ['BENIGN', 'NORMAL', '0']:
-                    normal_class_idx = i
-                    break
-                    
-            attack_regions = self.metrics.extract_attack_regions(current_true_multi, normal_class_idx=normal_class_idx)
-            beh_metrics = self.metrics.calc_behavioral_metrics(y_true_list, y_pred_list, attack_regions, recovery_window, warmup_instances, self.target_class_pass)
-            runs_beh_metrics.append(beh_metrics)
+            del model
+            del models
+            gc.collect()
 
         cum_matrix = np.array(runs_cum_metrics)
-        
-        def aggregate_behavioral(beh_list, n):
-            if not beh_list or not beh_list[0]: return []
-            n_atk = len(beh_list[0])
-            agg = []
-            for i in range(n_atk):
-                passagens = [r[i]['passagem'] for r in beh_list]
-                recuperacoes = [r[i]['recuperacao'] for r in beh_list]
-                agg.append({
-                    'ataque_idx': beh_list[0][i]['ataque_idx'],
-                    'passagem': (np.mean(passagens), np.std(passagens) if n > 1 else 0.0),
-                    'recuperacao': (np.mean(recuperacoes), np.std(recuperacoes) if n > 1 else 0.0)
-                })
-            return agg
-
         predictions_history = {
             f"Melhor {model_name}": {
                 'exec_time_mean': np.mean(exec_times),
@@ -148,7 +120,6 @@ class ClassificationOptunaOptimizer:
                     'fpr': (np.mean(cum_matrix[:, 4]), np.std(cum_matrix[:, 4]) if self.n_runs > 1 else 0.0),
                     'tpr': (np.mean(cum_matrix[:, 5]), np.std(cum_matrix[:, 5]) if self.n_runs > 1 else 0.0)
                 },
-                'behavioral': aggregate_behavioral(runs_beh_metrics, self.n_runs),
                 'true_labels_multi': true_labels_multi
             }
         }
@@ -157,13 +128,10 @@ class ClassificationOptunaOptimizer:
             predictions_history=predictions_history,
             warmup_instances=warmup_instances,
             target_class=self.target_class,
-            target_class_pass=self.target_class_pass,
-            recovery_window=recovery_window,
-            normal_class_idx=normal_class_idx,
             n_runs=self.n_runs
         )
 
-    def optimize(self, model_name, warmup_instances=0, recovery_window=1000):
+    def optimize(self, model_name, warmup_instances=0):
         tgt_str = f"Classe {self.target_class}" if self.target_class is not None else "Macro"
         print(f"\n[{model_name}] Iniciando otimização focada no F1-Score ({tgt_str}) com {self.n_trials} trials...")
         
@@ -182,6 +150,7 @@ class ClassificationOptunaOptimizer:
                 raise ValueError("Modelo não suportado.")
             
             trial.set_user_attr('metrics', (f1, prec, rec))
+            gc.collect()
             return f1 
 
         study.optimize(objective_wrapper, n_trials=self.n_trials, callbacks=[self._optuna_callback])
@@ -195,52 +164,36 @@ class ClassificationOptunaOptimizer:
         print(f"Melhores Parâmetros: {study.best_params}")
         
         self.best_params[model_name] = study.best_params
-        self._run_and_print_best_model(model_name, best_trial, warmup_instances, recovery_window)
+        self._run_and_print_best_model(model_name, best_trial, warmup_instances)
         return study.best_params
     
     def _objective_lb(self, trial):
-        lb_params = {'ensemble_size': trial.suggest_int('ensemble_size', 10, 150, step=10)}
-        models = get_classification_models(self.schema, selected_models=['LB'], lb_params=lb_params)
+        params = {'ensemble_size': trial.suggest_int('ensemble_size', 10, 100, step=10)}
+        models = get_classification_models(self.schema, selected_models=['LB'], lb_params=params, run_seed=42)
         return self._evaluate_model(models['LeveragingBagging'])
 
     def _objective_hat(self, trial):
-        hat_params = {
-            'grace_period': trial.suggest_int('grace_period', 10, 500, step=10),
-            'split_criterion': trial.suggest_categorical('split_criterion', ['InfoGainSplitCriterion', 'GiniSplitCriterion']),
-            'confidence': trial.suggest_float('confidence', 1e-5, 1e-1, log=True),
-            'tie_threshold': trial.suggest_float('tie_threshold', 0.01, 0.2),
-            'leaf_prediction': trial.suggest_categorical('leaf_prediction', ['MajorityClass', 'NaiveBayes', 'NaiveBayesAdaptive']),
-            'nb_threshold': trial.suggest_int('nb_threshold', 0, 50),
-            'binary_split': trial.suggest_categorical('binary_split', [True, False]),
-            'remove_poor_attrs': False,
-            'disable_prepruning': True
+        params = {
+            'grace_period': trial.suggest_int('grace_period', 10, 200, step=10),
+            'tie_threshold': trial.suggest_float('tie_threshold', 0.01, 0.1),
+            'leaf_prediction': trial.suggest_categorical('leaf_prediction', ['MajorityClass', 'NaiveBayes', 'NaiveBayesAdaptive'])
         }
-        models = get_classification_models(self.schema, selected_models=['HAT'], hat_params=hat_params)
+        models = get_classification_models(self.schema, selected_models=['HAT'], hat_params=params, run_seed=42)
         return self._evaluate_model(models['HoeffdingAdaptiveTree']) 
 
     def _objective_arf(self, trial):
-        arf_params = {
-            'ensemble_size': trial.suggest_int('ensemble_size', 10, 150, step=10),
-            'max_features': trial.suggest_float('max_features', 0.1, 1.0, step=0.1),
-            'lambda_param': trial.suggest_float('lambda_param', 1.0, 10.0, step=1.0),
-            'disable_weighted_vote': trial.suggest_categorical('disable_weighted_vote', [True, False]),
-            'disable_drift_detection': trial.suggest_categorical('disable_drift_detection', [True, False]),
-            'disable_background_learner': trial.suggest_categorical('disable_background_learner', [True, False])
+        params = {
+            'ensemble_size': trial.suggest_int('ensemble_size', 10, 100, step=10),
+            'lambda_param': trial.suggest_float('lambda_param', 1.0, 6.0, step=1.0)
         }
-        models = get_classification_models(self.schema, selected_models=['ARF'], arf_params=arf_params)
+        models = get_classification_models(self.schema, selected_models=['ARF'], arf_params=params, run_seed=42)
         return self._evaluate_model(models['AdaptiveRandomForest']) 
 
     def _objective_ht(self, trial):
-        ht_params = {
-            'grace_period': trial.suggest_int('grace_period', 10, 500, step=10),
-            'split_criterion': trial.suggest_categorical('split_criterion', ['InfoGainSplitCriterion', 'GiniSplitCriterion', 'HellingerDistanceCriterion']),
-            'confidence': trial.suggest_float('confidence', 1e-5, 1e-1, log=True),
-            'tie_threshold': trial.suggest_float('tie_threshold', 0.01, 0.2),
-            'leaf_prediction': trial.suggest_categorical('leaf_prediction', ['MajorityClass', 'NaiveBayes', 'NaiveBayesAdaptive']),
-            'nb_threshold': trial.suggest_int('nb_threshold', 0, 50),
-            'binary_split': trial.suggest_categorical('binary_split', [True, False]),
-            'remove_poor_attrs': trial.suggest_categorical('remove_poor_attrs', [True, False]),
-            'disable_prepruning': trial.suggest_categorical('disable_prepruning', [True, False])
+        params = {
+            'grace_period': trial.suggest_int('grace_period', 10, 200, step=10),
+            'tie_threshold': trial.suggest_float('tie_threshold', 0.01, 0.1),
+            'leaf_prediction': trial.suggest_categorical('leaf_prediction', ['MajorityClass', 'NaiveBayes', 'NaiveBayesAdaptive'])
         }
-        models = get_classification_models(self.schema, selected_models=['HT'], ht_params=ht_params)
+        models = get_classification_models(self.schema, selected_models=['HT'], ht_params=params, run_seed=42)
         return self._evaluate_model(models['HoeffdingTree'])

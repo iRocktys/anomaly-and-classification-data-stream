@@ -26,9 +26,10 @@ class Metrics:
             return 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
             
         if target_class is None or str(target_class).lower() == 'macro':
-            f1 = f1_score(y_true, y_pred, average='macro', zero_division=0)
-            prec = precision_score(y_true, y_pred, average='macro', zero_division=0)
-            rec = recall_score(y_true, y_pred, average='macro', zero_division=0)
+            f1 = f1_score(y_true, y_pred, labels=[0, 1], average='macro', zero_division=1)
+            prec = precision_score(y_true, y_pred, labels=[0, 1], average='macro', zero_division=1)
+            rec = recall_score(y_true, y_pred, labels=[0, 1], average='macro', zero_division=1)
+            
             mcc = matthews_corrcoef(y_true, y_pred)
             cm = confusion_matrix(y_true, y_pred, labels=[0, 1])
             if cm.shape == (2, 2):
@@ -40,9 +41,9 @@ class Metrics:
                 tpr = 0.0
         else:
             tc = int(target_class)
-            f1 = f1_score(y_true, y_pred, pos_label=tc, average='binary', zero_division=0)
-            prec = precision_score(y_true, y_pred, pos_label=tc, average='binary', zero_division=0)
-            rec = recall_score(y_true, y_pred, pos_label=tc, average='binary', zero_division=0)
+            f1 = f1_score(y_true, y_pred, pos_label=tc, average='binary', zero_division=1)
+            prec = precision_score(y_true, y_pred, pos_label=tc, average='binary', zero_division=1)
+            rec = recall_score(y_true, y_pred, pos_label=tc, average='binary', zero_division=1)
             mcc = matthews_corrcoef(y_true, y_pred)
             cm = confusion_matrix(y_true, y_pred, labels=[0, 1])
             if cm.shape == (2, 2):
@@ -58,7 +59,7 @@ class Metrics:
                 tpr = 0.0
             
         return f1 * 100.0, prec * 100.0, rec * 100.0, mcc, fpr * 100.0, tpr * 100.0
-
+    
     def extract_attack_regions(self, y_true_multi, normal_class_idx=0):
         y_true_array = np.array(y_true_multi)
         attack_indices = np.where(y_true_array != normal_class_idx)[0]
@@ -83,47 +84,10 @@ class Metrics:
             
         return attack_regions
 
-    def calc_behavioral_metrics(self, y_true, y_pred, attack_regions, recovery_window=1000, warmup_instances=0, target_class_pass=None):
-        behavioral_data = []
-        for i, (start, end, label) in enumerate(attack_regions):
-            if end < warmup_instances:
-                behavioral_data.append({'ataque_idx': i + 1, 'passagem': 0.0, 'recuperacao': 0.0})
-                continue
-                
-            start_eff = max(start, warmup_instances)
-            
-            y_t_start = y_true[warmup_instances:start_eff]
-            y_p_start = y_pred[warmup_instances:start_eff]
-            f1_start = self.calc_sklearn_metrics(y_t_start, y_p_start, target_class_pass)[0] if len(y_t_start) > 0 else 0.0
-            
-            y_t_end = y_true[warmup_instances:end+1]
-            y_p_end = y_pred[warmup_instances:end+1]
-            f1_end = self.calc_sklearn_metrics(y_t_end, y_p_end, target_class_pass)[0] if len(y_t_end) > 0 else 0.0
-            
-            rec_idx = min(end + 1 + recovery_window, len(y_true))
-            y_t_rec = y_true[warmup_instances:rec_idx]
-            y_p_rec = y_pred[warmup_instances:rec_idx]
-            f1_rec = self.calc_sklearn_metrics(y_t_rec, y_p_rec, target_class_pass)[0] if len(y_t_rec) > 0 else 0.0
-            
-            behavioral_data.append({
-                'ataque_idx': i + 1,
-                'passagem': f1_end - f1_start,
-                'recuperacao': f1_rec - f1_end
-            })
-            
-        return behavioral_data
-
-    def display_cumulative_metrics(self, predictions_history, warmup_instances=0, target_class=None, target_class_pass=None, attack_regions=None, recovery_window=1000, normal_class_idx=0, n_runs=1):
-        first_name = list(predictions_history.keys())[0]
-        if attack_regions is None or len(attack_regions) == 0:
-            y_true_multi = predictions_history[first_name].get('true_labels_multi')
-            attack_regions = self.extract_attack_regions(y_true_multi, normal_class_idx) if y_true_multi is not None else []
-
-        tc_pass = target_class_pass if target_class_pass is not None else target_class
+    def display_cumulative_metrics(self, predictions_history, warmup_instances=0, target_class=None, n_runs=1):
         gen_str = "MACRO GLOBAL" if target_class is None or str(target_class).lower() == 'macro' else f"CLASSE {target_class}"
-        beh_str = "MACRO" if tc_pass is None or str(tc_pass).lower() == 'macro' else f"CLASSE {tc_pass}"
 
-        titulo_relatorio = f"RELATÓRIO COMPORTAMENTAL | Métricas: {gen_str} | Passagens: {beh_str}"
+        titulo_relatorio = f"RELATÓRIO DE MÉTRICAS | {gen_str}"
         if n_runs > 1:
             header_base = f"{'Modelo/Algoritmo':<22} | {'F1 (%)':<13} | {'Prec (%)':<13} | {'Rec (%)':<13} | {'MCC':<11} | {'FPR (%)':<13} | {'TPR (%)':<13} | {'Tempo (s)':<12}"
         else:
@@ -136,6 +100,9 @@ class Metrics:
         print(f"{'='*line_len}")
         print(header_base)
         print(f"{'-'*line_len}")
+
+        # Armazena linhas formatadas com TAB para o Google Sheets/Excel
+        tsv_lines = ["Modelo/Algoritmo\tF1 (%)\tPrec (%)\tRec (%)\tMCC\tFPR (%)\tTPR (%)\tTempo (s)"]
 
         for name, data in predictions_history.items():
             if 'cumulative' in data:
@@ -150,28 +117,16 @@ class Metrics:
                 print(f"{'-'*line_len}")
                 if n_runs > 1:
                     row_base = f"{name:<22} | {f1_m:>5.2f} ± {f1_s:<5.2f} | {prec_m:>5.2f} ± {prec_s:<5.2f} | {rec_m:>5.2f} ± {rec_s:<5.2f} | {mcc_m:>4.2f} ± {mcc_s:<4.2f} | {fpr_m:>5.2f} ± {fpr_s:<5.2f} | {tpr_m:>5.2f} ± {tpr_s:<5.2f} | {tm_m:>5.2f} ± {tm_s:<4.2f}"
+                    tsv_row = f"{name}\t{f1_m:.2f} ± {f1_s:.2f}\t{prec_m:.2f} ± {prec_s:.2f}\t{rec_m:.2f} ± {rec_s:.2f}\t{mcc_m:.2f} ± {mcc_s:.2f}\t{fpr_m:.2f} ± {fpr_s:.2f}\t{tpr_m:.2f} ± {tpr_s:.2f}\t{tm_m:.2f} ± {tm_s:.2f}"
                 else:
                     row_base = f"{name:<22} | {f1_m:<8.2f} | {prec_m:<8.2f} | {rec_m:<8.2f} | {mcc_m:<8.3f} | {fpr_m:<8.2f} | {tpr_m:<8.2f} | {tm_m:<10.2f}"
-                print(row_base)
-                
-                behavioral_data = data.get('behavioral', [])
-                if behavioral_data:
-                    print(f"{'-'*line_len}")
-                for b in behavioral_data:
-                    idx = b['ataque_idx']
-                    p_m, p_s = b['passagem']
-                    r_m, r_s = b['recuperacao']
+                    tsv_row = f"{name}\t{f1_m:.2f}\t{prec_m:.2f}\t{rec_m:.2f}\t{mcc_m:.3f}\t{fpr_m:.2f}\t{tpr_m:.2f}\t{tm_m:.2f}"
                     
-                    if n_runs > 1:
-                        p_str = f"+{p_m:.2f} ± {p_s:.2f}%" if p_m > 0 else f"{p_m:.2f} ± {p_s:.2f}%"
-                        r_str = f"+{r_m:.2f} ± {r_s:.2f}%" if r_m > 0 else f"{r_m:.2f} ± {r_s:.2f}%"
-                    else:
-                        p_str = f"+{p_m:.2f}%" if p_m > 0 else f"{p_m:.2f}%"
-                        r_str = f"+{r_m:.2f}%" if r_m > 0 else f"{r_m:.2f}%"
-                        
-                    print(f"  -> Ataque {idx} ({beh_str}): Passagem: {p_str:<12} | Recuperação ({recovery_window} amostras): {r_str}")
+                print(row_base)
+                # Troca ponto por vírgula para planilhas em PT-BR
+                tsv_lines.append(tsv_row.replace('.', ','))
             
-            else: # Fluxo de Retrocompatibilidade
+            else: # Fluxo Retrocompatibilidade
                 y_true_full = np.array(data.get('true_labels', data.get('y_true', [])))
                 y_pred_full = np.array(data.get('predicted_classes', data.get('y_pred', [])))
                 
@@ -185,13 +140,13 @@ class Metrics:
                 row_base = f"{name:<22} | {f1:<8.2f} | {prec:<8.2f} | {recall:<8.2f} | {mcc:<8.3f} | {fpr:<8.2f} | {tpr:<8.2f} | {exec_time:<10.2f}"
                 print(row_base)
                 
-                behavioral_data = self.calc_behavioral_metrics(y_true_full, y_pred_full, attack_regions, recovery_window, warmup_instances, tc_pass)
-                if behavioral_data:
-                    print(f"{'-'*line_len}")
-                for b in behavioral_data:
-                    idx = b['ataque_idx']
-                    p_str = f"+{b['passagem']:.2f}%" if b['passagem'] > 0 else f"{b['passagem']:.2f}%"
-                    r_str = f"+{b['recuperacao']:.2f}%" if b['recuperacao'] > 0 else f"{b['recuperacao']:.2f}%"
-                    print(f"  -> Ataque {idx} ({beh_str}): Passagem: {p_str:<8} | Recuperação ({recovery_window} amostras): {r_str}")
+                tsv_row = f"{name}\t{f1:.2f}\t{prec:.2f}\t{recall:.2f}\t{mcc:.3f}\t{fpr:.2f}\t{tpr:.2f}\t{exec_time:.2f}"
+                tsv_lines.append(tsv_row.replace('.', ','))
         
         print(f"{'='*line_len}\n")
+        
+        # --- BLOCO ADICIONAL PARA CÓPIA RÁPIDA ---
+        print("📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):")
+        for line in tsv_lines:
+            print(line)
+        print("\n")
