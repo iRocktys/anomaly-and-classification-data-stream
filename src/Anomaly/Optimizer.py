@@ -58,15 +58,15 @@ class AnomalyOptunaOptimizer:
         is_ae = any(kw.upper() in model_name.upper() for kw in ['AE', 'AUTOENCODER'])
         
         if self.discretization_threshold == 'dinamic':
-            threshold = best_trial.params.get('threshold', 0.5)
+            threshold = best_trial.params.get('dynamic_threshold', 0.5)
         elif self.discretization_threshold == 'params':
             threshold = 'params'
         else:
-            threshold = self.discretization_threshold
+            threshold = float(self.discretization_threshold)
 
         final_params = best_trial.params.copy()
-        if 'threshold' in final_params and model_name != 'AE':
-            del final_params['threshold']
+        if 'dynamic_threshold' in final_params:
+            del final_params['dynamic_threshold']
         
         runs_cum_metrics = []
         exec_times = []
@@ -167,11 +167,11 @@ class AnomalyOptunaOptimizer:
         
         def objective_wrapper(trial):
             if self.discretization_threshold == 'dinamic':
-                trial_threshold = trial.suggest_float('threshold', 0.05, 0.95)
+                trial_threshold = trial.suggest_float('dynamic_threshold', 0.05, 0.95)
             elif self.discretization_threshold == 'params':
                 trial_threshold = 'params'
             else:
-                trial_threshold = self.discretization_threshold
+                trial_threshold = float(self.discretization_threshold)
 
             if model_name == 'HST':
                 f1, prec, rec = self._objective_hst(trial, trial_threshold, warmup_instances)
@@ -184,6 +184,12 @@ class AnomalyOptunaOptimizer:
             
             trial.set_user_attr('metrics', (f1, prec, rec))
             gc.collect()
+            try:
+                import jpype
+                if jpype.isJVMStarted():
+                    jpype.java.lang.System.gc()
+            except:
+                pass
             return f1 
 
         study.optimize(objective_wrapper, n_trials=self.n_trials, callbacks=[self._optuna_callback])
@@ -204,8 +210,12 @@ class AnomalyOptunaOptimizer:
         params = {
             'window_size': trial.suggest_categorical('window_size', [256, 512, 1024, 2048]),
             'number_of_trees': trial.suggest_int('number_of_trees', 25, 100, step=25),
-            'max_depth': trial.suggest_int('max_depth', 10, 15)
+            'max_depth': trial.suggest_int('max_depth', 5, 15),
+            'size_limit': trial.suggest_float('size_limit', 0.01, 1.0)
         }
+        if trial_threshold == 'params':
+            params['anomaly_threshold'] = trial.suggest_float('anomaly_threshold', 0.05, 0.95)
+            
         models = get_anomaly_models(self.schema, selected_models=['HST'], hst_params=params, run_seed=42)
         return self._evaluate_model(models['HalfSpaceTrees'], trial_threshold, warmup_instances)
 
@@ -213,15 +223,20 @@ class AnomalyOptunaOptimizer:
         params = {
             'window_size': trial.suggest_categorical('window_size', [256, 512, 1024, 2048]),
             'n_trees': trial.suggest_int('n_trees', 25, 100, step=25),
-            'height': trial.suggest_int('height', 10, 15)
+            'height': trial.suggest_int('height', 5, 15),
+            'm_trees': trial.suggest_int('m_trees', 5, 50, step=5),
+            'weights': trial.suggest_float('weights', 0.0, 1.0)
         }
         models = get_anomaly_models(self.schema, selected_models=['AIF'], aif_params=params, run_seed=42)
         return self._evaluate_model(models['AdaptiveIsolationForest'], trial_threshold, warmup_instances)
 
     def _objective_ae(self, trial, trial_threshold, warmup_instances, is_ae):
         params = {
-            'hidden_layer': trial.suggest_categorical('hidden_layer', [8, 16, 32]),
-            'learning_rate': trial.suggest_float('learning_rate', 1e-4, 1e-2, log=True)
+            'hidden_layer': trial.suggest_categorical('hidden_layer', [8, 16, 32, 64]),
+            'learning_rate': trial.suggest_float('learning_rate', 1e-4, 1e-1, log=True)
         }
+        if trial_threshold == 'params':
+            params['threshold'] = trial.suggest_float('threshold', 0.05, 0.95)
+            
         models = get_anomaly_models(self.schema, selected_models=['AE'], ae_params=params, run_seed=42)
         return self._evaluate_model(models['Autoencoder'], trial_threshold, warmup_instances, is_ae=is_ae)

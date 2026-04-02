@@ -151,6 +151,12 @@ class ClassificationOptunaOptimizer:
             
             trial.set_user_attr('metrics', (f1, prec, rec))
             gc.collect()
+            try:
+                import jpype
+                if jpype.isJVMStarted():
+                    jpype.java.lang.System.gc()
+            except:
+                pass
             return f1 
 
         study.optimize(objective_wrapper, n_trials=self.n_trials, callbacks=[self._optuna_callback])
@@ -168,15 +174,18 @@ class ClassificationOptunaOptimizer:
         return study.best_params
     
     def _objective_lb(self, trial):
-        params = {'ensemble_size': trial.suggest_int('ensemble_size', 10, 100, step=10)}
+        params = {
+            'ensemble_size': trial.suggest_int('ensemble_size', 10, 100, step=10)
+        }
         models = get_classification_models(self.schema, selected_models=['LB'], lb_params=params, run_seed=42)
         return self._evaluate_model(models['LeveragingBagging'])
 
     def _objective_hat(self, trial):
         params = {
             'grace_period': trial.suggest_int('grace_period', 10, 200, step=10),
-            'tie_threshold': trial.suggest_float('tie_threshold', 0.01, 0.1),
-            'leaf_prediction': trial.suggest_categorical('leaf_prediction', ['MajorityClass', 'NaiveBayes', 'NaiveBayesAdaptive'])
+            'split_criterion': trial.suggest_categorical('split_criterion', ['InfoGainSplitCriterion', 'GiniSplitCriterion']),
+            'confidence': trial.suggest_float('confidence', 1e-5, 1e-1, log=True),
+            'tie_threshold': trial.suggest_float('tie_threshold', 0.01, 0.1)
         }
         models = get_classification_models(self.schema, selected_models=['HAT'], hat_params=params, run_seed=42)
         return self._evaluate_model(models['HoeffdingAdaptiveTree']) 
@@ -184,6 +193,7 @@ class ClassificationOptunaOptimizer:
     def _objective_arf(self, trial):
         params = {
             'ensemble_size': trial.suggest_int('ensemble_size', 10, 100, step=10),
+            'max_features': trial.suggest_float('max_features', 0.1, 1.0, step=0.1),
             'lambda_param': trial.suggest_float('lambda_param', 1.0, 6.0, step=1.0)
         }
         models = get_classification_models(self.schema, selected_models=['ARF'], arf_params=params, run_seed=42)
@@ -192,8 +202,9 @@ class ClassificationOptunaOptimizer:
     def _objective_ht(self, trial):
         params = {
             'grace_period': trial.suggest_int('grace_period', 10, 200, step=10),
-            'tie_threshold': trial.suggest_float('tie_threshold', 0.01, 0.1),
-            'leaf_prediction': trial.suggest_categorical('leaf_prediction', ['MajorityClass', 'NaiveBayes', 'NaiveBayesAdaptive'])
+            'split_criterion': trial.suggest_categorical('split_criterion', ['InfoGainSplitCriterion', 'GiniSplitCriterion', 'HellingerDistanceCriterion']),
+            'confidence': trial.suggest_float('confidence', 1e-5, 1e-1, log=True),
+            'tie_threshold': trial.suggest_float('tie_threshold', 0.01, 0.1)
         }
         models = get_classification_models(self.schema, selected_models=['HT'], ht_params=params, run_seed=42)
         return self._evaluate_model(models['HoeffdingTree'])
