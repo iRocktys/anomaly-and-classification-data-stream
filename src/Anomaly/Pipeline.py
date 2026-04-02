@@ -12,7 +12,6 @@ class AnomalyExperimentRunner:
             if str(name).strip().upper() in ['BENIGN', 'NORMAL', '0']:
                 self.normal_class_idx = i
                 break
-                
         self.metrics = Metrics()
         self.plots = Plots(target_names)
 
@@ -47,8 +46,9 @@ class AnomalyExperimentRunner:
                 pass
             
             if count >= warmup_instances and count > 0 and count % window_size == 0:
-                y_t_win = y_true_list[warmup_instances:]
-                y_p_win = y_pred_list[warmup_instances:]
+                start_idx = max(warmup_instances, len(y_true_list) - window_size)
+                y_t_win = y_true_list[start_idx:]
+                y_p_win = y_pred_list[start_idx:]
                 f1_v, prec_v, rec_v, *_ = self.metrics.calc_sklearn_metrics(y_t_win, y_p_win, target_class)
                 
                 instances_list.append(count)
@@ -69,25 +69,7 @@ class AnomalyExperimentRunner:
             'recall': rec_list
         }
 
-    def _aggregate_behavioral(self, beh_metrics_list):
-        if not beh_metrics_list or not beh_metrics_list[0]:
-            return []
-            
-        n_attacks = len(beh_metrics_list[0])
-        aggregated = []
-        
-        for i in range(n_attacks):
-            passagens = [run[i]['passagem'] for run in beh_metrics_list]
-            recuperacoes = [run[i]['recuperacao'] for run in beh_metrics_list]
-            
-            aggregated.append({
-                'ataque_idx': beh_metrics_list[0][i]['ataque_idx'],
-                'passagem': (np.mean(passagens), np.std(passagens) if self.n_runs > 1 else 0.0),
-                'recuperacao': (np.mean(recuperacoes), np.std(recuperacoes) if self.n_runs > 1 else 0.0)
-            })
-        return aggregated
-
-    def run_anomaly_evaluation(self, stream, algorithms, window_size, title, warmup_instances=0, target_class=None, target_class_pass=None, threshold=0.5, ae_keywords=None, dataset_name="Cenario", recovery_window=1000):
+    def run_anomaly_evaluation(self, stream, algorithms, window_size=1000, title="Avaliação Prequencial", warmup_instances=0, target_class=None, threshold=0.5, ae_keywords=None):
         if ae_keywords is None:
             ae_keywords = ['AE', 'AUTOENCODER']
 
@@ -120,18 +102,12 @@ class AnomalyExperimentRunner:
             scores_matrix = np.array([r['scores'] for r in runs_data])
             
             cum_metrics_list = []
-            beh_metrics_list = []
-            
             true_labels_multi = runs_data[0]['true_labels_multi']
-            attack_regions = self.metrics.extract_attack_regions(true_labels_multi, normal_class_idx=self.normal_class_idx)
             
             for r in runs_data:
                 y_t = np.array(r['y_true'])[warmup_instances:]
                 y_p = np.array(r['y_pred'])[warmup_instances:]
                 cum_metrics_list.append(self.metrics.calc_sklearn_metrics(y_t, y_p, target_class))
-                
-                beh = self.metrics.calc_behavioral_metrics(r['y_true'], r['y_pred'], attack_regions, recovery_window, warmup_instances, target_class_pass)
-                beh_metrics_list.append(beh)
                 
             cum_matrix = np.array(cum_metrics_list) 
             
@@ -151,7 +127,6 @@ class AnomalyExperimentRunner:
                     'fpr': (np.mean(cum_matrix[:, 4]), np.std(cum_matrix[:, 4]) if self.n_runs > 1 else 0.0),
                     'tpr': (np.mean(cum_matrix[:, 5]), np.std(cum_matrix[:, 5]) if self.n_runs > 1 else 0.0)
                 },
-                'behavioral': self._aggregate_behavioral(beh_metrics_list),
                 'true_labels_multi': true_labels_multi
             }
 
@@ -159,8 +134,10 @@ class AnomalyExperimentRunner:
         attack_regions = self.metrics.extract_attack_regions(predictions_history[first_algo]['true_labels_multi'], normal_class_idx=self.normal_class_idx)
         
         self.metrics.display_cumulative_metrics(
-            predictions_history=predictions_history, target_class=target_class, target_class_pass=target_class_pass,
-            attack_regions=attack_regions, recovery_window=recovery_window, normal_class_idx=self.normal_class_idx, n_runs=self.n_runs
+            predictions_history=predictions_history,
+            warmup_instances=warmup_instances,
+            target_class=target_class,
+            n_runs=self.n_runs
         )
-        self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=f"Métricas Evolutivas - {title}", window_size=window_size, target_class=target_class)
-        self.plots.plot_score(results=predictions_history, attack_regions=attack_regions, title=f"Scores - {title}", threshold=threshold if threshold != 'params' else 0.5)
+        self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_size, target_class=target_class)
+        self.plots.plot_score(results=predictions_history, attack_regions=attack_regions, title=title, threshold=threshold if threshold != 'params' else 0.5)

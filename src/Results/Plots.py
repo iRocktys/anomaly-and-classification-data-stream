@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 class Plots:
     def __init__(self, target_names):
@@ -8,7 +9,6 @@ class Plots:
         self.bg_colors = ['#F7C5CD', '#C5D9F7', '#C5F7C5', '#F7E6C5', '#E3C5F7', '#F7D9C5', '#C5F7E6']
 
     def plot_score(self, results, attack_regions, title="Análise de Scores", threshold=0.5):
-        import matplotlib.patches as mpatches
         fig, ax = plt.subplots(figsize=(15, 6)) 
         
         has_std = False
@@ -67,7 +67,6 @@ class Plots:
         plt.show()
 
     def plot_metrics(self, results, attack_regions=None, title="Métricas", window_size=1000, target_class=None):
-        import matplotlib.patches as mpatches
         fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(15, 12), sharex=True)
         
         has_std = False
@@ -122,7 +121,6 @@ class Plots:
 
         handles, labels = ax1.get_legend_handles_labels()
         
-        # Adicionar item na legenda indicando a sombra do desvio padrão
         if has_std and 'Desvio Padrão' not in labels:
             handles.append(mpatches.Patch(color='gray', alpha=0.3, label='Desvio Padrão'))
             labels.append('Desvio Padrão')
