@@ -232,7 +232,7 @@ class AnomalyOptunaOptimizer:
 
     def _objective_ae(self, trial, trial_threshold, warmup_instances, is_ae):
         params = {
-            'hidden_layer': trial.suggest_categorical('hidden_layer', [8, 16, 32, 64]),
+            'hidden_layer': trial.suggest_categorical('hidden_layer', [4, 8, 16]),
             'learning_rate': trial.suggest_float('learning_rate', 1e-4, 1e-1, log=True)
         }
         if trial_threshold == 'params':
