@@ -119,10 +119,10 @@ class DataStreamProcessor:
         return y, target_names
 
     def create_stream(self, df, target_label_col='Label', binary_label=True, 
-                      normalize_method=None, threshold_var=None,
-                      threshold_corr=None, top_n_features=None,
-                      return_stream=True, extra_ignore_cols=None,
-                      imputation_method='0'):
+                    normalize_method=None, threshold_var=None,
+                    threshold_corr=None, top_n_features=None,
+                    return_stream=True, extra_ignore_cols=None,
+                    imputation_method='0'):
 
         # limpeza básica
         self._log("Limpeza: Removendo espaços, identificadores e colunas vazias...")
@@ -171,7 +171,7 @@ class DataStreamProcessor:
         if threshold_var is not None or threshold_corr is not None or top_n_features is not None:
             self._log("Seleção de Features: Iniciando pipeline de redução de dimensionalidade...")
             X = self._remove_features(X, y, threshold_var=threshold_var,
-                                      threshold_corr=threshold_corr, top_n_features=top_n_features)
+                                    threshold_corr=threshold_corr, top_n_features=top_n_features)
         else:
             self._log("Seleção de Features: Nenhuma técnica dinâmica selecionada. Mantendo colunas atuais.")
 

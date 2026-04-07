@@ -168,6 +168,13 @@ class ClassificationOptunaOptimizer:
         print(f"Melhor Trial: {best_trial.number + 1}")
         print(f"Melhor Resultado -> F1: {best_f1:.2f} | Prec: {best_prec:.2f} | Rec: {best_rec:.2f}")
         print(f"Melhores Parâmetros: {study.best_params}")
+        # Separa as chaves por tabulação
+        chaves = "\t".join(study.best_params.keys())
+
+        # Separa os valores por tabulação e substitui ponto por vírgula
+        valores = "\t".join([str(v).replace('.', ',') for v in study.best_params.values()])
+
+        print(f"Melhores Parâmetros:\n{chaves}\n{valores}")
         
         self.best_params[model_name] = study.best_params
         self._run_and_print_best_model(model_name, best_trial, warmup_instances)
@@ -202,7 +209,7 @@ class ClassificationOptunaOptimizer:
     def _objective_ht(self, trial):
         params = {
             'grace_period': trial.suggest_int('grace_period', 10, 200, step=10),
-            'split_criterion': trial.suggest_categorical('split_criterion', ['InfoGainSplitCriterion', 'GiniSplitCriterion', 'HellingerDistanceCriterion']),
+            'split_criterion': trial.suggest_categorical('split_criterion', ['InfoGainSplitCriterion', 'GiniSplitCriterion']),
             'confidence': trial.suggest_float('confidence', 1e-5, 1e-1, log=True),
             'tie_threshold': trial.suggest_float('tie_threshold', 0.01, 0.1)
         }
