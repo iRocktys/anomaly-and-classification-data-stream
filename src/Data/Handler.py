@@ -480,8 +480,8 @@ class DatasetHandler:
         # DENDROGRAMA PRINCIPAL
         plt.figure(figsize=(14, 6))
         dendrogram(Z_rows, labels=df_sig_norm.index.tolist(), leaf_rotation=45, leaf_font_size=11)
-        plt.title(f"Similaridade Comportamental dos Ataques\n(Métrica: {metric.capitalize()} | Ligação: {linkage_method.capitalize()})", fontweight='bold', fontsize=14)
-        plt.ylabel(f"Distância ({metric})")
+        # plt.title(f"Similaridade Comportamental dos Ataques\n(Métrica: {metric.capitalize()} | Ligação: {linkage_method.capitalize()})", fontweight='bold', fontsize=14)
+        plt.ylabel(f"Distance {metric}", fontsize=12)
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
         plt.show()

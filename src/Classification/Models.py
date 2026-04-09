@@ -68,7 +68,20 @@ def get_classification_models(schema, selected_models=None, lb_params=None, hat_
     if 'HT' in selected_models:
         default_ht = {
             'schema': schema, 
-            'random_seed': 1 if run_seed is None else run_seed
+            'random_seed': 1 if run_seed is None else run_seed,
+            'grace_period': 200,
+            'split_criterion': 'InfoGainSplitCriterion', 
+            'confidence': 0.01,
+            'tie_threshold': 0.05, 
+            'leaf_prediction': 'NaiveBayesAdaptive',
+            'nb_threshold': 0, 
+            'numeric_attribute_observer': 'GaussianNumericAttributeClassObserver',
+            'binary_split': False, 
+            'max_byte_size': 33554432, 
+            'memory_estimate_period': 1000000,
+            'stop_mem_management': True, 
+            'remove_poor_attrs': False, 
+            'disable_prepruning': True
         }
         if ht_params: default_ht.update(ht_params)
         models["HoeffdingTree"] = HoeffdingTree(**default_ht)

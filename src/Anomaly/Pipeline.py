@@ -15,10 +15,11 @@ class AnomalyExperimentRunner:
         self.metrics = Metrics()
         self.plots = Plots(target_names)
 
-    def prequential_test(self, stream, learner, threshold, is_ae, window_size, warmup_instances, target_class):
+    def prequential_test(self, stream, learner, threshold, is_ae, window_size, warmup_instances):
         stream.restart()
         y_true_list, y_pred_list, true_labels_multi, scores = [], [], [], []
         instances_list, f1_list, prec_list, rec_list = [], [], [], []
+        fp_list, fn_list = [], []
         
         count = 0
         while stream.has_more_instances():
@@ -49,12 +50,15 @@ class AnomalyExperimentRunner:
                 start_idx = max(warmup_instances, len(y_true_list) - window_size)
                 y_t_win = y_true_list[start_idx:]
                 y_p_win = y_pred_list[start_idx:]
-                f1_v, prec_v, rec_v, *_ = self.metrics.calc_sklearn_metrics(y_t_win, y_p_win, target_class)
+                
+                f1_v, prec_v, rec_v, mcc_v, fp, fn = self.metrics.calc_sklearn_metrics(y_t_win, y_p_win)
                 
                 instances_list.append(count)
                 f1_list.append(f1_v)
                 prec_list.append(prec_v)
                 rec_list.append(rec_v)
+                fp_list.append(fp)
+                fn_list.append(fn)
                     
             count += 1
             
@@ -66,10 +70,12 @@ class AnomalyExperimentRunner:
             'instances': instances_list,
             'f1': f1_list,
             'precision': prec_list,
-            'recall': rec_list
+            'recall': rec_list,
+            'fp': fp_list,
+            'fn': fn_list
         }
 
-    def run_anomaly_evaluation(self, stream, algorithms, window_size=1000, title="Avaliação Prequencial", warmup_instances=0, target_class=None, threshold=0.5, ae_keywords=None):
+    def run_anomaly_evaluation(self, stream, algorithms, window_size=1000, title="Avaliação Prequencial", warmup_instances=0, threshold=0.5, ae_keywords=None):
         if ae_keywords is None:
             ae_keywords = ['AE', 'AUTOENCODER']
 
@@ -92,13 +98,15 @@ class AnomalyExperimentRunner:
                     if run > 0 and hasattr(learner, 'reset'):
                         learner.reset()
                     
-                result = self.prequential_test(stream, learner, threshold, is_ae, window_size, warmup_instances, target_class)
+                result = self.prequential_test(stream, learner, threshold, is_ae, window_size, warmup_instances)
                 exec_times.append(time.time() - start_time)
                 runs_data.append(result)
             
             f1_matrix = np.array([r['f1'] for r in runs_data])
             prec_matrix = np.array([r['precision'] for r in runs_data])
             rec_matrix = np.array([r['recall'] for r in runs_data])
+            fp_matrix = np.array([r['fp'] for r in runs_data])
+            fn_matrix = np.array([r['fn'] for r in runs_data])
             scores_matrix = np.array([r['scores'] for r in runs_data])
             
             cum_metrics_list = []
@@ -107,7 +115,7 @@ class AnomalyExperimentRunner:
             for r in runs_data:
                 y_t = np.array(r['y_true'])[warmup_instances:]
                 y_p = np.array(r['y_pred'])[warmup_instances:]
-                cum_metrics_list.append(self.metrics.calc_sklearn_metrics(y_t, y_p, target_class))
+                cum_metrics_list.append(self.metrics.calc_sklearn_metrics(y_t, y_p))
                 
             cum_matrix = np.array(cum_metrics_list) 
             
@@ -116,6 +124,8 @@ class AnomalyExperimentRunner:
                 'f1_mean': np.mean(f1_matrix, axis=0), 'f1_std': np.std(f1_matrix, axis=0) if self.n_runs > 1 else np.zeros_like(f1_matrix[0]),
                 'precision_mean': np.mean(prec_matrix, axis=0), 'precision_std': np.std(prec_matrix, axis=0) if self.n_runs > 1 else np.zeros_like(prec_matrix[0]),
                 'recall_mean': np.mean(rec_matrix, axis=0), 'recall_std': np.std(rec_matrix, axis=0) if self.n_runs > 1 else np.zeros_like(rec_matrix[0]),
+                'fp_mean': np.mean(fp_matrix, axis=0), 'fp_std': np.std(fp_matrix, axis=0) if self.n_runs > 1 else np.zeros_like(fp_matrix[0]),
+                'fn_mean': np.mean(fn_matrix, axis=0), 'fn_std': np.std(fn_matrix, axis=0) if self.n_runs > 1 else np.zeros_like(fn_matrix[0]),
                 'scores_mean': np.mean(scores_matrix, axis=0), 'scores_std': np.std(scores_matrix, axis=0) if self.n_runs > 1 else np.zeros_like(scores_matrix[0]),
                 'exec_time_mean': np.mean(exec_times), 'exec_time_std': np.std(exec_times) if self.n_runs > 1 else 0.0,
                 
@@ -124,8 +134,8 @@ class AnomalyExperimentRunner:
                     'prec': (np.mean(cum_matrix[:, 1]), np.std(cum_matrix[:, 1]) if self.n_runs > 1 else 0.0),
                     'rec': (np.mean(cum_matrix[:, 2]), np.std(cum_matrix[:, 2]) if self.n_runs > 1 else 0.0),
                     'mcc': (np.mean(cum_matrix[:, 3]), np.std(cum_matrix[:, 3]) if self.n_runs > 1 else 0.0),
-                    'fpr': (np.mean(cum_matrix[:, 4]), np.std(cum_matrix[:, 4]) if self.n_runs > 1 else 0.0),
-                    'tpr': (np.mean(cum_matrix[:, 5]), np.std(cum_matrix[:, 5]) if self.n_runs > 1 else 0.0)
+                    'fp': (np.mean(cum_matrix[:, 4]), np.std(cum_matrix[:, 4]) if self.n_runs > 1 else 0.0),
+                    'fn': (np.mean(cum_matrix[:, 5]), np.std(cum_matrix[:, 5]) if self.n_runs > 1 else 0.0)
                 },
                 'true_labels_multi': true_labels_multi
             }
@@ -136,8 +146,9 @@ class AnomalyExperimentRunner:
         self.metrics.display_cumulative_metrics(
             predictions_history=predictions_history,
             warmup_instances=warmup_instances,
-            target_class=target_class,
-            n_runs=self.n_runs
+            n_runs=self.n_runs,
+            params_dict=None
         )
-        self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_size, target_class=target_class)
+        self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_size)
+        self.plots.plot_fp_fn(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_size)
         self.plots.plot_score(results=predictions_history, attack_regions=attack_regions, title=title, threshold=threshold if threshold != 'params' else 0.5)
