@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
+from matplotlib.ticker import MaxNLocator
 
 class Plots:
     def __init__(self, target_names):
@@ -66,7 +67,7 @@ class Plots:
         plt.tight_layout()
         plt.show()
 
-    def plot_metrics(self, results, attack_regions=None, title="Métricas", window_size=1000):
+    def plot_metrics(self, results, attack_regions=None, title="Métricas", window_size=1000, target_class=None):
         fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(15, 12), sharex=True)
         
         has_std = False
@@ -111,7 +112,9 @@ class Plots:
             ax.grid(True, alpha=0.3, linestyle=':', zorder=0)
             ax.tick_params(axis='both', which='major', labelsize=12)
             
-        ax1.set_title(f"{title} - Evolução Binária (Resolução de {window_size} instâncias)", fontsize=14, fontweight='bold')
+        tgt_str = "Macro Global" if target_class is None or str(target_class).lower() == 'macro' else f"Classe {target_class}"
+        
+        ax1.set_title(f"{title} - Evolução {tgt_str} (Resolução de {window_size} instâncias)", fontsize=14, fontweight='bold')
         ax1.set_ylabel("F1-Score (%)", fontsize=14)
         ax2.set_ylabel("Precision (%)", fontsize=14)
         ax3.set_ylabel("Recall (%)", fontsize=14)
@@ -143,8 +146,11 @@ class Plots:
             x_axis = data['instances']
             
             if 'fp_mean' in data:
-                fp_m, fp_s = clean(data['fp_mean']), clean(data['fp_std'])
-                fn_m, fn_s = clean(data['fn_mean']), clean(data['fn_std'])
+                # Aplicando np.ceil aos arrays para forçar números inteiros
+                fp_m = np.ceil(clean(data['fp_mean']))
+                fp_s = np.ceil(clean(data['fp_std']))
+                fn_m = np.ceil(clean(data['fn_mean']))
+                fn_s = np.ceil(clean(data['fn_std']))
                 
                 ax1.plot(x_axis, fp_m, label=f'{name}', color=color, linewidth=2.5, zorder=3, marker='o', markersize=5)
                 ax2.plot(x_axis, fn_m, label=f'{name}', color=color, linewidth=2.5, zorder=3, marker='o', markersize=5)
@@ -155,8 +161,10 @@ class Plots:
                     has_std = True
             
             else:
-                fp_data = clean(data.get('fp', []))
-                fn_data = clean(data.get('fn', []))
+                # O mesmo tratamento para execuções únicas
+                fp_data = np.ceil(clean(data.get('fp', [])))
+                fn_data = np.ceil(clean(data.get('fn', [])))
+                
                 ax1.plot(x_axis, fp_data, label=f'{name}', color=color, linewidth=2.5, zorder=3, marker='o', markersize=5)
                 ax2.plot(x_axis, fn_data, label=f'{name}', color=color, linewidth=2.5, zorder=3, marker='o', markersize=5)
 
@@ -173,6 +181,9 @@ class Plots:
                     
             ax.grid(True, alpha=0.3, linestyle=':', zorder=0)
             ax.tick_params(axis='both', which='major', labelsize=12)
+            
+            # Força o eixo Y a usar apenas números inteiros
+            ax.yaxis.set_major_locator(MaxNLocator(integer=True))
             
         ax1.set_title(f"{title} (Resolução de {window_size} instâncias)", fontsize=14, fontweight='bold')
         ax1.set_ylabel("Falsos Positivos (FP)", fontsize=14)
