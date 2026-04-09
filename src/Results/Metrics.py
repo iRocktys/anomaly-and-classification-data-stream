@@ -11,7 +11,7 @@ class Metrics:
         val = norm_metrics.get(f'{metric_name}_1')
         return float(val) if val is not None and not np.isnan(val) else 0.0
 
-    def calc_sklearn_metrics(self, y_true, y_pred):
+    def calc_sklearn_metrics(self, y_true, y_pred, target_class=None):
         if len(y_true) == 0:
             return 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
             
@@ -51,7 +51,7 @@ class Metrics:
             
         return attack_regions
 
-    def display_cumulative_metrics(self, predictions_history, warmup_instances=0, n_runs=1, params_dict=None):
+    def display_cumulative_metrics(self, predictions_history, warmup_instances=0, target_class=None, n_runs=1, params_dict=None):
         titulo_relatorio = "RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)"
         
         param_headers_print = []
@@ -78,7 +78,7 @@ class Metrics:
         param_val_tsv_str = "\t" + "\t".join([f"{v:.4f}" if isinstance(v, float) else str(v) for v in params_dict.values()]) if params_dict else ""
 
         if n_runs > 1:
-            header_base = f"{'Modelo/Algoritmo':<22} | {'F1 (%)':<17} | {'Prec (%)':<17} | {'Rec (%)':<17} | {'MCC':<17} | {'FP':<15} | {'FN':<15} | {'Tempo (s)':<15}{param_header_print_str}"
+            header_base = f"{'Modelo/Algoritmo':<22} | {'F1 (%)':<17} | {'Prec (%)':<17} | {'Rec (%)':<17} | {'MCC':<17} | {'FP':<11} | {'FN':<11} | {'Tempo (s)':<15}{param_header_print_str}"
         else:
             header_base = f"{'Modelo/Algoritmo':<22} | {'F1 (%)':<10} | {'Prec (%)':<10} | {'Rec (%)':<10} | {'MCC':<10} | {'FP':<10} | {'FN':<10} | {'Tempo (s)':<12}{param_header_print_str}"
             
@@ -103,13 +103,19 @@ class Metrics:
                 fn_m, fn_s = data['cumulative']['fn']
                 tm_m, tm_s = data['exec_time_mean'], data['exec_time_std']
                 
+                # Arredonda sempre para cima (ceil) e transforma em Inteiro (int)
+                fp_m_int = int(np.ceil(fp_m))
+                fp_s_int = int(np.ceil(fp_s))
+                fn_m_int = int(np.ceil(fn_m))
+                fn_s_int = int(np.ceil(fn_s))
+                
                 print(f"{'-'*line_len}")
                 if n_runs > 1:
-                    row_base = f"{name:<22} | {f1_m:>7.4f} ± {f1_s:<6.4f} | {prec_m:>7.4f} ± {prec_s:<6.4f} | {rec_m:>7.4f} ± {rec_s:<6.4f} | {mcc_m:>7.4f} ± {mcc_s:<6.4f} | {fp_m:>6.1f} ± {fp_s:<5.1f} | {fn_m:>6.1f} ± {fn_s:<5.1f} | {tm_m:>6.4f} ± {tm_s:<5.4f}"
-                    tsv_row = f"{name}\t{f1_m:.4f} ± {f1_s:.4f}\t{prec_m:.4f} ± {prec_s:.4f}\t{rec_m:.4f} ± {rec_s:.4f}\t{mcc_m:.4f} ± {mcc_s:.4f}\t{fp_m:.1f} ± {fp_s:.1f}\t{fn_m:.1f} ± {fn_s:.1f}\t{tm_m:.4f} ± {tm_s:.4f}"
+                    row_base = f"{name:<22} | {f1_m:>7.4f} ± {f1_s:<6.4f} | {prec_m:>7.4f} ± {prec_s:<6.4f} | {rec_m:>7.4f} ± {rec_s:<6.4f} | {mcc_m:>7.4f} ± {mcc_s:<6.4f} | {fp_m_int:>4} ± {fp_s_int:<4} | {fn_m_int:>4} ± {fn_s_int:<4} | {tm_m:>6.4f} ± {tm_s:<5.4f}"
+                    tsv_row = f"{name}\t{f1_m:.4f} ± {f1_s:.4f}\t{prec_m:.4f} ± {prec_s:.4f}\t{rec_m:.4f} ± {rec_s:.4f}\t{mcc_m:.4f} ± {mcc_s:.4f}\t{fp_m_int} ± {fp_s_int}\t{fn_m_int} ± {fn_s_int}\t{tm_m:.4f} ± {tm_s:.4f}"
                 else:
-                    row_base = f"{name:<22} | {f1_m:<10.4f} | {prec_m:<10.4f} | {rec_m:<10.4f} | {mcc_m:<10.4f} | {fp_m:<10.1f} | {fn_m:<10.1f} | {tm_m:<12.4f}"
-                    tsv_row = f"{name}\t{f1_m:.4f}\t{prec_m:.4f}\t{rec_m:.4f}\t{mcc_m:.4f}\t{fp_m:.1f}\t{fn_m:.1f}\t{tm_m:.4f}"
+                    row_base = f"{name:<22} | {f1_m:<10.4f} | {prec_m:<10.4f} | {rec_m:<10.4f} | {mcc_m:<10.4f} | {fp_m_int:<10} | {fn_m_int:<10} | {tm_m:<12.4f}"
+                    tsv_row = f"{name}\t{f1_m:.4f}\t{prec_m:.4f}\t{rec_m:.4f}\t{mcc_m:.4f}\t{fp_m_int}\t{fn_m_int}\t{tm_m:.4f}"
                 
                 row_base += param_val_print_str
                 tsv_row += param_val_tsv_str
@@ -126,10 +132,13 @@ class Metrics:
                 
                 f1, prec, recall, mcc, fp, fn = self.calc_sklearn_metrics(y_true_list, y_pred_list)
                 exec_time = data.get('exec_time', 0.0)
+                
+                fp_int = int(np.ceil(fp))
+                fn_int = int(np.ceil(fn))
 
                 print(f"{'-'*line_len}")
-                row_base = f"{name:<22} | {f1:<10.4f} | {prec:<10.4f} | {recall:<10.4f} | {mcc:<10.4f} | {fp:<10.1f} | {fn:<10.1f} | {exec_time:<12.4f}"
-                tsv_row = f"{name}\t{f1:.4f}\t{prec:.4f}\t{recall:.4f}\t{mcc:.4f}\t{fp:.1f}\t{fn:.1f}\t{exec_time:.4f}"
+                row_base = f"{name:<22} | {f1:<10.4f} | {prec:<10.4f} | {recall:<10.4f} | {mcc:<10.4f} | {fp_int:<10} | {fn_int:<10} | {exec_time:<12.4f}"
+                tsv_row = f"{name}\t{f1:.4f}\t{prec:.4f}\t{recall:.4f}\t{mcc:.4f}\t{fp_int}\t{fn_int}\t{exec_time:.4f}"
                 
                 row_base += param_val_print_str
                 tsv_row += param_val_tsv_str
