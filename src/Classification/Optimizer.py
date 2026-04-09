@@ -8,11 +8,10 @@ from src.Results.Metrics import Metrics
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 class ClassificationOptunaOptimizer:
-    def __init__(self, stream, n_trials=30, target_class=1, target_names=None, n_runs=1):
+    def __init__(self, stream, n_trials=30, target_names=None, n_runs=1):
         self.stream = stream
         self.schema = stream.get_schema()
         self.n_trials = n_trials
-        self.target_class = target_class
         self.best_params = {}
         self.target_names = target_names if target_names is not None else ['Normal', 'Ataque']
         self.metrics = Metrics()
@@ -21,7 +20,7 @@ class ClassificationOptunaOptimizer:
     def _optuna_callback(self, study, trial):
         f1, prec, rec = trial.user_attrs['metrics']
         params = trial.params
-        print(f"Trial {trial.number + 1}/{self.n_trials} | F1: {f1:.2f} | Prec: {prec:.2f} | Rec: {rec:.2f} | Params: {params}")
+        print(f"Trial {trial.number + 1}/{self.n_trials} | F1: {f1:.4f} | Prec: {prec:.4f} | Rec: {rec:.4f} | Params: {params}")
 
     def _evaluate_model(self, model):
         self.stream.restart()
@@ -41,7 +40,7 @@ class ClassificationOptunaOptimizer:
             y_pred_list.append(binary_prediction)
             model.train(instance)
 
-        f1_val, prec_val, recall_val, *_ = self.metrics.calc_sklearn_metrics(y_true_list, y_pred_list, target_class=self.target_class)
+        f1_val, prec_val, recall_val, mcc_val, fp_val, fn_val = self.metrics.calc_sklearn_metrics(y_true_list, y_pred_list)
         return f1_val, prec_val, recall_val
 
     def _run_and_print_best_model(self, model_name, best_trial, warmup_instances=0):
@@ -100,7 +99,7 @@ class ClassificationOptunaOptimizer:
             y_t = np.array(y_true_list)[warmup_instances:] if len(y_true_list) > warmup_instances else np.array(y_true_list)
             y_p = np.array(y_pred_list)[warmup_instances:] if len(y_pred_list) > warmup_instances else np.array(y_pred_list)
             
-            cum_metrics = self.metrics.calc_sklearn_metrics(y_t, y_p, target_class=self.target_class)
+            cum_metrics = self.metrics.calc_sklearn_metrics(y_t, y_p)
             runs_cum_metrics.append(cum_metrics)
             
             del model
@@ -117,8 +116,8 @@ class ClassificationOptunaOptimizer:
                     'prec': (np.mean(cum_matrix[:, 1]), np.std(cum_matrix[:, 1]) if self.n_runs > 1 else 0.0),
                     'rec': (np.mean(cum_matrix[:, 2]), np.std(cum_matrix[:, 2]) if self.n_runs > 1 else 0.0),
                     'mcc': (np.mean(cum_matrix[:, 3]), np.std(cum_matrix[:, 3]) if self.n_runs > 1 else 0.0),
-                    'fpr': (np.mean(cum_matrix[:, 4]), np.std(cum_matrix[:, 4]) if self.n_runs > 1 else 0.0),
-                    'tpr': (np.mean(cum_matrix[:, 5]), np.std(cum_matrix[:, 5]) if self.n_runs > 1 else 0.0)
+                    'fp': (np.mean(cum_matrix[:, 4]), np.std(cum_matrix[:, 4]) if self.n_runs > 1 else 0.0),
+                    'fn': (np.mean(cum_matrix[:, 5]), np.std(cum_matrix[:, 5]) if self.n_runs > 1 else 0.0)
                 },
                 'true_labels_multi': true_labels_multi
             }
@@ -127,13 +126,12 @@ class ClassificationOptunaOptimizer:
         self.metrics.display_cumulative_metrics(
             predictions_history=predictions_history,
             warmup_instances=warmup_instances,
-            target_class=self.target_class,
-            n_runs=self.n_runs
+            n_runs=self.n_runs,
+            params_dict=best_trial.params
         )
 
     def optimize(self, model_name, warmup_instances=0):
-        tgt_str = f"Classe {self.target_class}" if self.target_class is not None else "Macro"
-        print(f"\n[{model_name}] Iniciando otimização focada no F1-Score ({tgt_str}) com {self.n_trials} trials...")
+        print(f"\n[{model_name}] Iniciando otimização focada no F1-Score (Binário) com {self.n_trials} trials...")
         
         study = optuna.create_study(direction='maximize')
         
@@ -166,7 +164,7 @@ class ClassificationOptunaOptimizer:
         best_f1, best_prec, best_rec = best_trial.user_attrs['metrics']
         
         print(f"Melhor Trial: {best_trial.number + 1}")
-        print(f"Melhor Resultado -> F1: {best_f1:.2f} | Prec: {best_prec:.2f} | Rec: {best_rec:.2f}")
+        print(f"Melhor Resultado -> F1: {best_f1:.4f} | Prec: {best_prec:.4f} | Rec: {best_rec:.4f}")
         print(f"Melhores Parâmetros: {study.best_params}")
         
         self.best_params[model_name] = study.best_params

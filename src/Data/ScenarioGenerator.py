@@ -85,47 +85,10 @@ class ScenarioGenerator:
             self._log(f"\n[*] Redução ignorada. Mantendo todas as {len(self.benign_df)} amostras benignas originais.")
             return
         
-        self._log(f"\n[*] Reduzindo amostras benignas para {self.n_benign_samples} de forma estratificada...")
-        df = self.benign_df
-        n_samples = self.n_benign_samples
+        self._log(f"\n[*] Reduzindo amostras benignas para {self.n_benign_samples} de forma aleatória simples...")
         
-        # procura a coluna de porta de destino para basear a estratificação
-        stratify_col = None
-        for col in df.columns:
-            if 'destination port' in col.lower():
-                stratify_col = col
-                break
-                
-        # tenta usar o protocolo se não achar porta
-        if not stratify_col:
-            for col in df.columns:
-                if 'protocol' in col.lower():
-                    stratify_col = col
-                    break
-                    
-        if not stratify_col:
-            self._log("    [AVISO] Coluna de porta ou protocolo não encontrada. Reduzindo de forma aleatória simples.")
-            reduced_df = df.sample(n=n_samples, random_state=42)
-        else:
-            self._log(f"    -> Estratificando com base na coluna: '{stratify_col}'")
-            
-            # agrupa pelas portas e extrai amostras mantendo a proporção
-            reduced_df = df.groupby(stratify_col, group_keys=False).apply(
-                lambda x: x.sample(
-                    n=int(np.round(len(x) / len(df) * n_samples)), 
-                    random_state=42, 
-                    replace=True if len(x) < int(np.round(len(x) / len(df) * n_samples)) else False
-                )
-            )
-            
-            # ajusta sobras ou faltas matemáticas
-            current_len = len(reduced_df)
-            if current_len < n_samples:
-                diff = n_samples - current_len
-                extra_samples = df.drop(reduced_df.index).sample(n=diff, random_state=42)
-                reduced_df = pd.concat([reduced_df, extra_samples])
-            elif current_len > n_samples:
-                reduced_df = reduced_df.sample(n=n_samples, random_state=42)
+        # Seleção aleatória simples
+        reduced_df = self.benign_df.sample(n=self.n_benign_samples, random_state=42)
                 
         # reordena a linha do tempo
         if 'Timestamp' in reduced_df.columns:
@@ -136,7 +99,7 @@ class ScenarioGenerator:
                 pass
                 
         self.benign_df = reduced_df
-        self.total_benign = len(self.benign_df) # atualiza a contagem oficial da classe
+        self.total_benign = len(self.benign_df)
         self._log(f"    -> Redução concluída com sucesso! Total final: {self.total_benign} amostras benignas.")
 
     def _collect_attacks(self, attack_config):

@@ -66,7 +66,7 @@ class Plots:
         plt.tight_layout()
         plt.show()
 
-    def plot_metrics(self, results, attack_regions=None, title="Métricas", window_size=1000, target_class=None):
+    def plot_metrics(self, results, attack_regions=None, title="Métricas", window_size=1000):
         fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(15, 12), sharex=True)
         
         has_std = False
@@ -111,13 +111,73 @@ class Plots:
             ax.grid(True, alpha=0.3, linestyle=':', zorder=0)
             ax.tick_params(axis='both', which='major', labelsize=12)
             
-        tgt_str = "Macro Global" if target_class is None or str(target_class).lower() == 'macro' else f"Classe {target_class}"
-        
-        ax1.set_title(f"{title} - Evolução {tgt_str} (Resolução de {window_size} instâncias)", fontsize=14, fontweight='bold')
+        ax1.set_title(f"{title} - Evolução Binária (Resolução de {window_size} instâncias)", fontsize=14, fontweight='bold')
         ax1.set_ylabel("F1-Score (%)", fontsize=14)
         ax2.set_ylabel("Precision (%)", fontsize=14)
         ax3.set_ylabel("Recall (%)", fontsize=14)
         ax3.set_xlabel("Instâncias", fontsize=14)
+
+        handles, labels = ax1.get_legend_handles_labels()
+        
+        if has_std and 'Desvio Padrão' not in labels:
+            handles.append(mpatches.Patch(color='gray', alpha=0.3, label='Desvio Padrão'))
+            labels.append('Desvio Padrão')
+            
+        leg = fig.legend(handles, labels, loc='lower center', bbox_to_anchor=(0.5, 0.02), ncol=len(results) + 2, fontsize=12, frameon=False)
+        for patch in leg.get_patches(): 
+            patch.set_edgecolor('gray')
+            patch.set_linewidth(1.0)
+            patch.set_alpha(0.8)
+        
+        fig.subplots_adjust(bottom=0.15, hspace=0.3) 
+        plt.show()
+
+    def plot_fp_fn(self, results, attack_regions=None, title="Contagem de FP e FN", window_size=1000):
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 9), sharex=True)
+        
+        has_std = False
+        def clean(d_list): return np.array([0.0 if (v is None or np.isnan(v)) else v for v in d_list])
+
+        for i, (name, data) in enumerate(results.items()):
+            color = self.colors[i % len(self.colors)]
+            x_axis = data['instances']
+            
+            if 'fp_mean' in data:
+                fp_m, fp_s = clean(data['fp_mean']), clean(data['fp_std'])
+                fn_m, fn_s = clean(data['fn_mean']), clean(data['fn_std'])
+                
+                ax1.plot(x_axis, fp_m, label=f'{name}', color=color, linewidth=2.5, zorder=3, marker='o', markersize=5)
+                ax2.plot(x_axis, fn_m, label=f'{name}', color=color, linewidth=2.5, zorder=3, marker='o', markersize=5)
+                
+                if np.sum(fp_s) > 0 or np.sum(fn_s) > 0:
+                    ax1.fill_between(x_axis, fp_m - fp_s, fp_m + fp_s, color='gray', alpha=0.3, zorder=2)
+                    ax2.fill_between(x_axis, fn_m - fn_s, fn_m + fn_s, color='gray', alpha=0.3, zorder=2)
+                    has_std = True
+            
+            else:
+                fp_data = clean(data.get('fp', []))
+                fn_data = clean(data.get('fn', []))
+                ax1.plot(x_axis, fp_data, label=f'{name}', color=color, linewidth=2.5, zorder=3, marker='o', markersize=5)
+                ax2.plot(x_axis, fn_data, label=f'{name}', color=color, linewidth=2.5, zorder=3, marker='o', markersize=5)
+
+        for ax in [ax1, ax2]:
+            added_attack_labels = set()
+            if attack_regions:
+                for start, end, attack_idx in attack_regions:
+                    attack_name = self.target_names[attack_idx] if attack_idx < len(self.target_names) else f'Ataque {attack_idx}'
+                    bg_color = self.bg_colors[attack_idx % len(self.bg_colors)]
+                    
+                    label_to_show = f'{attack_name}' if attack_name not in added_attack_labels else ""
+                    ax.axvspan(start, end, facecolor=bg_color, alpha=0.4, zorder=1, label=label_to_show)
+                    if label_to_show: added_attack_labels.add(attack_name)
+                    
+            ax.grid(True, alpha=0.3, linestyle=':', zorder=0)
+            ax.tick_params(axis='both', which='major', labelsize=12)
+            
+        ax1.set_title(f"{title} (Resolução de {window_size} instâncias)", fontsize=14, fontweight='bold')
+        ax1.set_ylabel("Falsos Positivos (FP)", fontsize=14)
+        ax2.set_ylabel("Falsos Negativos (FN)", fontsize=14)
+        ax2.set_xlabel("Instâncias", fontsize=14)
 
         handles, labels = ax1.get_legend_handles_labels()
         
