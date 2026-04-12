@@ -200,7 +200,7 @@ class ClassificationOptunaOptimizer:
     def _objective_ht(self, trial):
         params = {
             'grace_period': trial.suggest_int('grace_period', 10, 200, step=10),
-            'split_criterion': trial.suggest_categorical('split_criterion', ['InfoGainSplitCriterion', 'GiniSplitCriterion', 'HellingerDistanceCriterion']),
+            'split_criterion': trial.suggest_categorical('split_criterion', ['InfoGainSplitCriterion', 'GiniSplitCriterion']),
             'confidence': trial.suggest_float('confidence', 1e-5, 1e-1, log=True),
             'tie_threshold': trial.suggest_float('tie_threshold', 0.01, 0.1)
         }
