@@ -256,148 +256,9 @@ class DatasetHandler:
         except Exception as e:
             self._log(f" [!] Ocorreu um erro durante a ordenação: {e}")
 
-    def plot_feature_radar(self, df, y_labels, class_names):
-        features = df.columns.tolist()
-        num_features = len(features)
-        
-        if num_features == 0:
-            return
-
-        mean_df = df.groupby(y_labels).mean()
-
-        feature_numbers = [str(i) for i in range(num_features)]
-        
-        angles = [n / float(num_features) * 2 * np.pi for n in range(num_features)]
-        angles += angles[:1] 
-        
-        fig, ax = plt.subplots(figsize=(14, 8), subplot_kw=dict(polar=True))
-        
-        for encoded_label in mean_df.index:
-            try:
-                class_name = class_names[int(encoded_label)]
-            except:
-                class_name = f"Classe {encoded_label}"
-                
-            values = mean_df.loc[encoded_label].tolist()
-            values += values[:1] 
-            
-            ax.plot(angles, values, linewidth=2, linestyle='solid', label=str(class_name))
-            ax.fill(angles, values, alpha=0.15)
-            
-        ax.set_xticks(angles[:-1])
-        ax.set_xticklabels(feature_numbers, fontsize=13, fontweight='bold', color='#333333')
-        ax.set_ylim(0, 1)
-        
-        # legenda principal das classes
-        leg_classes = ax.legend(loc='upper left', bbox_to_anchor=(1.15, 1.05), 
-                                title=r"$\bf{CLASSES}$", fontsize=11, title_fontsize=12, 
-                                frameon=False) 
-        ax.add_artist(leg_classes)
-        
-        # legenda de mapeamento
-        proxy_handles = [
-            Line2D([0], [0], color='none', marker=f'${i}$', 
-                   markersize=12, markerfacecolor='#333333', 
-                   markeredgecolor='#333333') 
-            for i in range(num_features)
-        ]
-        
-        ax.legend(proxy_handles, features, loc='upper left', bbox_to_anchor=(1.15, 0.5), 
-                  title=r"$\bf{MAPEAMENTO\ DE\ FEATURES}$", fontsize=11, title_fontsize=12, 
-                  frameon=False)
-                   
-        plt.title("Perfil de Anomalias", y=1.08, fontweight='bold', fontsize=15)
-        plt.subplots_adjust(left=0.05, right=0.65) 
-        plt.show()
-
-    def plot_mini_radars(self, df, y_labels, class_names):
-        features = df.columns.tolist()
-        num_features = len(features)
-        mean_df = df.groupby(y_labels).mean()
-        num_classes = len(mean_df)
-        
-        feature_numbers = [str(i) for i in range(num_features)]
-        angles = [n / float(num_features) * 2 * np.pi for n in range(num_features)]
-        angles += angles[:1] 
-        
-        cols = 3 if num_classes >= 3 else num_classes
-        rows = math.ceil(num_classes / cols)
-        fig, axes = plt.subplots(rows, cols, figsize=(16, 5.5 * rows), subplot_kw=dict(polar=True))
-        
-        if num_classes == 1: axes = [axes]
-        else: axes = axes.flatten()
-            
-        cmap = plt.get_cmap('tab20')
-        lines_for_legend = []
-        labels_for_legend = []
-        
-        # escala
-        r_ticks = [0.2, 0.4, 0.6, 0.8, 1.0]
-        r_labels = ['0.2', '0.4', '0.6', '0.8', '1.0']
-        
-        for idx, encoded_label in enumerate(mean_df.index):
-            ax = axes[idx]
-            color = cmap(idx % 20)
-            
-            try:
-                class_name = class_names[int(encoded_label)]
-            except:
-                class_name = f"Classe {encoded_label}"
-                
-            values = mean_df.loc[encoded_label].tolist()
-            values += values[:1] 
-            
-            # plotagem principal
-            line, = ax.plot(angles, values, linewidth=2.5, linestyle='solid', color=color)
-            ax.fill(angles, values, alpha=0.2, color=color)
-            
-            # ajustes de eixos e grid
-            ax.grid(False) 
-            ax.set_yticklabels([]) 
-            ax.set_xticks(angles[:-1])
-            ax.set_xticklabels(feature_numbers, fontsize=11, fontweight='bold', color='#333333')
-            
-            # ângulo de respiro
-            ax.set_ylim(0, 1.1) 
-            ax.spines['polar'].set_visible(True)
-            ax.spines['polar'].set_color('#cccccc')
-            
-            # rgrids com ângulo ajustado para não sobrepor
-            ax.set_rgrids(r_ticks, labels=r_labels, angle=22.5, fontsize=8, color='black')
-            ax.set_title(str(class_name).upper(), y=1.1, fontweight='bold', color=color, fontsize=13)
-            
-            lines_for_legend.append(line)
-            labels_for_legend.append(str(class_name))
-            
-        # limpeza de subplots excedentes
-        for i in range(num_classes, len(axes)):
-            fig.delaxes(axes[i])
-            
-        # legendas com títulos
-        fig.legend(lines_for_legend, labels_for_legend, loc='upper left', bbox_to_anchor=(0.82, 0.92), 
-                   title=r"$\bf{CLASSES}$", title_fontsize=14, fontsize=12, frameon=False)
-        
-        proxy_handles = [
-            Line2D([0], [0], color='none', marker=f'${i}$', 
-                   markersize=12, markerfacecolor='#333333', 
-                   markeredgecolor='#333333') 
-            for i in range(num_features)
-        ]
-        
-        fig.legend(proxy_handles, features, loc='upper left', bbox_to_anchor=(0.82, 0.75), 
-                   title=r"$\bf{MAPEAMENTO\ DE\ FEATURES}$", title_fontsize=14, fontsize=12, frameon=False)
-                   
-        plt.suptitle("Perfil de Anomalias", y=0.95, fontweight='bold', fontsize=18)
-        plt.subplots_adjust(left=0.05, right=0.8, wspace=0.45, hspace=0.7) 
-        plt.show()
-
     def extract_ovr_feature_importance(self, X, y, target_names, top_per_class=10):
-        """
-        Calcula a importância das features usando a estratégia One-vs-Rest (OvR).
-        Recebe X (DataFrame de features) e y (array de labels numéricos) já pré-processados.
-        """
         self._log("\n" + "="*80)
-        self._log(" INICIANDO EXTRAÇÃO DE FEATURES OVR (ONE-VS-REST)")
+        self._log(" INICIANDO EXTRAÇÃO DE FEATURES OVR (ONE-VS-All)")
         self._log("="*80)
 
         features = X.columns.tolist()
@@ -415,7 +276,7 @@ class DatasetHandler:
             y_binary = (y == cls_idx).astype(int)
 
             # Random Forest focado apenas nesta separação
-            rf = RandomForestClassifier(n_estimators=50, random_state=42, n_jobs=-1)
+            rf = RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1)
             rf.fit(X, y_binary)
 
             # Extração e ordenação das importâncias
@@ -439,15 +300,10 @@ class DatasetHandler:
         return class_top_features, consolidated_features
 
     def plot_similarity_and_feature_groups(self, X, y, target_names, selected_features, metric='euclidean', linkage_method='ward'):
-        self._log("\n" + "="*80)
-        self._log(" INICIANDO ANÁLISE DE SIMILARIDADE E MAPEAMENTO DE FEATURES")
-        self._log("="*80)
-
         # Filtra as features e calcula assinaturas
         X_filtered = X[selected_features].copy()
         X_filtered['Label_Idx'] = y
         
-        self._log(" [*] Agrupando classes e calculando as médias (Assinaturas)...")
         df_signature = X_filtered.groupby('Label_Idx').mean()
         df_signature.index = [target_names[idx] for idx in df_signature.index]
 
@@ -463,7 +319,7 @@ class DatasetHandler:
             self._log(f" [AVISO] O método 'ward' exige distância 'euclidean'. Mudando automaticamente.")
             metric = 'euclidean'
 
-        # Clusterização para descobrir a ORDEM IDEAL (Linhas e Colunas)
+        # Clusterização
         # Ataques (Linhas)
         dist_matrix_rows = pdist(df_sig_norm, metric=metric)
         Z_rows = linkage(dist_matrix_rows, method=linkage_method)
@@ -479,15 +335,13 @@ class DatasetHandler:
 
         # DENDROGRAMA PRINCIPAL
         plt.figure(figsize=(14, 6))
-        dendrogram(Z_rows, labels=df_sig_norm.index.tolist(), leaf_rotation=45, leaf_font_size=11)
-        # plt.title(f"Similaridade Comportamental dos Ataques\n(Métrica: {metric.capitalize()} | Ligação: {linkage_method.capitalize()})", fontweight='bold', fontsize=14)
-        plt.ylabel(f"Distance {metric}", fontsize=12)
+        dendrogram(Z_rows, labels=df_sig_norm.index.tolist(), leaf_rotation=45, leaf_font_size=14)
+        plt.ylabel(f"Distance {metric}", fontsize=18)
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
         plt.show()
 
         # MAPA DE CALOR 
-        self._log("\n [*] Gerando Mapa de Calor de Features (Ordenado)...")
         plt.figure(figsize=(16, 8))
         
         ax = sns.heatmap(
@@ -495,14 +349,22 @@ class DatasetHandler:
             cmap='viridis', 
             annot=False, 
             linewidths=0.5,
-            cbar_kws={"shrink": 0.8, "label": "Intensidade Normalizada"}
+            cbar_kws={"shrink": 0.5},
         )
+
+        # Personalização da barra de cores
+        cbar = ax.collections[0].colorbar
+        cbar.set_label("Normalized Intensity", fontsize=16, labelpad=15)
         
-        plt.title("Mapa de Calor: Quais Grupos de Features Definem Cada Ataque?", pad=20, fontweight='bold', fontsize=16)
-        plt.xticks(rotation=45, ha='right', fontsize=10)
-        plt.yticks(rotation=0, fontsize=11)
-        plt.xlabel("Features Selecionadas (Agrupadas por Similaridade)", fontweight='bold', labelpad=10)
-        plt.ylabel("Classes de Tráfego / Ataques (Agrupados)", fontweight='bold', labelpad=10)
+        plt.xticks(rotation=45, ha='right', fontsize=12)
+        plt.yticks(rotation=0, fontsize=14)
+        plt.xlabel("Selected Features", fontsize=16, labelpad=10)
+        plt.ylabel("Attacks", fontsize=16, labelpad=10)
         
         plt.tight_layout()
         plt.show()
+
+        print("features = [")
+        for col in df_sorted.columns:
+            print(f"    '{col}',")
+        print("]")

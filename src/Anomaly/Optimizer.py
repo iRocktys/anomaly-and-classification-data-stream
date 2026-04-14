@@ -53,6 +53,36 @@ class AnomalyOptunaOptimizer:
         f1, prec, rec, mcc, fp, fn = self.metrics.calc_sklearn_metrics(y_true_list, y_pred_list)
         return f1, prec, rec
 
+    def _run_trial_with_seeds(self, model_name, params, trial_threshold, warmup_instances, is_ae=False, n_seeds=3, early_stop_threshold=40.0):
+        f1_list, prec_list, rec_list = [], [], []
+        
+        for i, seed in enumerate(range(42, 42 + n_seeds)):
+            if model_name == 'HST':
+                models = get_anomaly_models(self.schema, selected_models=['HST'], hst_params=params, run_seed=seed)
+                model = models['HalfSpaceTrees']
+            elif model_name == 'AIF':
+                models = get_anomaly_models(self.schema, selected_models=['AIF'], aif_params=params, run_seed=seed)
+                model = models['AdaptiveIsolationForest']
+            elif model_name == 'AE':
+                models = get_anomaly_models(self.schema, selected_models=['AE'], ae_params=params, run_seed=seed)
+                model = models['Autoencoder']
+            else:
+                raise ValueError("Modelo não suportado na otimização com sementes.")
+                
+            f1, prec, rec = self._evaluate_model(model, trial_threshold, warmup_instances, is_ae=is_ae)
+            f1_list.append(f1)
+            prec_list.append(prec)
+            rec_list.append(rec)
+            
+            del model
+            del models
+            gc.collect()
+            
+            if i == 0 and f1 < early_stop_threshold:
+                return f1, prec, rec
+            
+        return float(np.mean(f1_list)), float(np.mean(prec_list)), float(np.mean(rec_list))
+
     def _run_and_print_best_model(self, model_name, best_trial, warmup_instances):
         is_ae = any(kw.upper() in model_name.upper() for kw in ['AE', 'AUTOENCODER'])
         
@@ -158,7 +188,7 @@ class AnomalyOptunaOptimizer:
         )
 
     def optimize(self, model_name, warmup_instances=0):
-        print(f"\n[{model_name}] Iniciando otimização focada no F1-Score (Binário) com {self.n_trials} trials...")
+        print(f"\n[{model_name}] Iniciando otimização focada no F1-Score (Binário | Média de Sementes com Early Stopping) com {self.n_trials} trials...")
         
         study = optuna.create_study(direction='maximize')
         is_ae = any(kw.upper() in model_name.upper() for kw in ['AE', 'AUTOENCODER'])
@@ -214,19 +244,17 @@ class AnomalyOptunaOptimizer:
         if trial_threshold == 'params':
             params['anomaly_threshold'] = trial.suggest_float('anomaly_threshold', 0.05, 0.95)
             
-        models = get_anomaly_models(self.schema, selected_models=['HST'], hst_params=params, run_seed=42)
-        return self._evaluate_model(models['HalfSpaceTrees'], trial_threshold, warmup_instances)
+        return self._run_trial_with_seeds('HST', params, trial_threshold, warmup_instances)
 
     def _objective_aif(self, trial, trial_threshold, warmup_instances):
         params = {
-            'window_size': trial.suggest_categorical('window_size', [256, 512, 1024, 2048]),
-            'n_trees': trial.suggest_int('n_trees', 25, 100, step=25),
+            'window_size': trial.suggest_categorical('window_size', [128, 256, 512, 1024, 2048]),
+            # 'n_trees': trial.suggest_int('n_trees', 25, 100, step=25),
             'height': trial.suggest_int('height', 5, 15),
-            'm_trees': trial.suggest_int('m_trees', 5, 50, step=5),
+            # 'm_trees': trial.suggest_int('m_trees', 5, 30, step=5),
             'weights': trial.suggest_float('weights', 0.0, 1.0)
         }
-        models = get_anomaly_models(self.schema, selected_models=['AIF'], aif_params=params, run_seed=42)
-        return self._evaluate_model(models['AdaptiveIsolationForest'], trial_threshold, warmup_instances)
+        return self._run_trial_with_seeds('AIF', params, trial_threshold, warmup_instances)
 
     def _objective_ae(self, trial, trial_threshold, warmup_instances, is_ae):
         params = {
@@ -236,5 +264,4 @@ class AnomalyOptunaOptimizer:
         if trial_threshold == 'params':
             params['threshold'] = trial.suggest_float('threshold', 0.05, 0.95)
             
-        models = get_anomaly_models(self.schema, selected_models=['AE'], ae_params=params, run_seed=42)
-        return self._evaluate_model(models['Autoencoder'], trial_threshold, warmup_instances, is_ae=is_ae)
+        return self._run_trial_with_seeds('AE', params, trial_threshold, warmup_instances, is_ae=is_ae)
