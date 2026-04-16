@@ -15,7 +15,7 @@ class ClassificationExperimentRunner:
         self.metrics = Metrics()
         self.plots = Plots(self.target_names)
 
-    def prequential_test(self, stream, learner, window_size, warmup_instances):
+    def prequential_test(self, stream, learner, window_evaluation, warmup_instances):
         stream.restart()
         y_true_list, y_pred_list, true_labels_multi = [], [], []
         instances_list, f1_list, prec_list, rec_list = [], [], [], []
@@ -37,8 +37,8 @@ class ClassificationExperimentRunner:
             
             learner.train(instance)
             
-            if count >= warmup_instances and count > 0 and count % window_size == 0:
-                start_idx = max(warmup_instances, len(y_true_list) - window_size)
+            if count >= warmup_instances and count > 0 and count % window_evaluation == 0:
+                start_idx = max(warmup_instances, len(y_true_list) - window_evaluation)
                 y_t_win = y_true_list[start_idx:]
                 y_p_win = y_pred_list[start_idx:]
                 
@@ -65,8 +65,12 @@ class ClassificationExperimentRunner:
             'fn': fn_list
         }
 
-    def run_classification_evaluation(self, stream, algorithms, window_size=1000, title="Avaliação Prequencial", warmup_instances=0):
+    def run_classification_evaluation(self, stream, algorithms, window_evaluation=1000, title="Avaliação Prequencial", warmup_instances=0, algorithm_params=None, is_optimized=True, num_features=None, exec_id="N/A"):
         predictions_history = {}
+        
+        param_type = "Otimizado" if is_optimized else "Default"
+        feat_type = "FullFeatures" if (num_features is None or num_features > 50) else "33Features"
+        final_scenario_name = f"{param_type}_{feat_type}"
         
         for alg_name, learner_or_factory in algorithms.items():
             runs_data = []
@@ -84,7 +88,7 @@ class ClassificationExperimentRunner:
                     if run > 0 and hasattr(learner, 'reset'):
                         learner.reset()
                     
-                result = self.prequential_test(stream, learner, window_size, warmup_instances)
+                result = self.prequential_test(stream, learner, window_evaluation, warmup_instances)
                 exec_times.append(time.time() - start_time)
                 runs_data.append(result)
             
@@ -130,19 +134,27 @@ class ClassificationExperimentRunner:
         self.metrics.display_cumulative_metrics(
             predictions_history=predictions_history,
             warmup_instances=warmup_instances,
-            n_runs=self.n_runs
+            n_runs=self.n_runs,
+            params_dict=algorithm_params,
+            experiment_name=title,
+            scenario_name=final_scenario_name,
+            discretization="N/A",
+            window_evaluation=window_evaluation,
+            exec_id=exec_id
         )
         
         self.plots.plot_metrics(
             results=predictions_history, 
             attack_regions=attack_regions, 
             title=title, 
-            window_size=window_size
+            window_size=window_evaluation,
+            scenario_name=final_scenario_name
         )
         
         self.plots.plot_fp_fn(
             results=predictions_history, 
             attack_regions=attack_regions, 
             title=title, 
-            window_size=window_size
+            window_size=window_evaluation,
+            scenario_name=final_scenario_name
         )
