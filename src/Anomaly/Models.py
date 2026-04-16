@@ -55,9 +55,9 @@ def get_anomaly_models(
     if 'AE' in selected_models:
         default_ae = {
             'schema': schema,
-            'hidden_layer': 12,
-            'learning_rate': 0.0024146,
-            'threshold': 0.85,
+            'hidden_layer': 2,
+            'learning_rate': 0.5,
+            'threshold': 0.6,
             'random_seed': 1 if run_seed is None else run_seed
         }
         if ae_params: default_ae.update(ae_params)

@@ -9,13 +9,13 @@ class Plots:
         self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2']
         self.bg_colors = ['#F7C5CD', '#C5D9F7', '#C5F7C5', '#F7E6C5', '#E3C5F7', '#F7D9C5', '#C5F7E6']
 
-    def plot_score(self, results, attack_regions, title="Análise de Scores", threshold=0.5):
+    def plot_score(self, results, attack_regions, title="Análise de Scores", discretization=0.5):
         fig, ax = plt.subplots(figsize=(15, 6)) 
         
         has_std = False
         for i, (name, data) in enumerate(results.items()):
             color = self.colors[i % len(self.colors)]
-            window_size = 5
+            window_size = 2
             
             if 'scores_mean' in data:
                 scores_m = np.array(data['scores_mean'])
@@ -37,7 +37,7 @@ class Plots:
                 moving_avg = np.array([np.mean(scores[max(0, j-window_size):j+1]) for j in range(len(scores))])
                 ax.plot(instances, moving_avg, color=color, alpha=0.85, linewidth=1.5, label=f'{name}', zorder=3)
 
-        ax.axhline(y=threshold, color='red', linestyle='--', linewidth=2, alpha=0.8, label=f'Threshold ({threshold})', zorder=4)
+        ax.axhline(y=discretization, color='red', linestyle='--', linewidth=2, alpha=0.8, label=f'discretization ({discretization})', zorder=4)
 
         added_attack_labels = set()
         for start, end, attack_idx in attack_regions:

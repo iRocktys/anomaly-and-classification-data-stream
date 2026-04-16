@@ -2,6 +2,8 @@ import optuna
 import numpy as np
 import time
 import gc
+
+from optuna import trial
 from src.Anomaly.Models import get_anomaly_models
 from src.Results.Metrics import Metrics
 
@@ -53,7 +55,7 @@ class AnomalyOptunaOptimizer:
         f1, prec, rec, mcc, fp, fn = self.metrics.calc_sklearn_metrics(y_true_list, y_pred_list)
         return f1, prec, rec
 
-    def _run_trial_with_seeds(self, model_name, params, trial_threshold, warmup_instances, is_ae=False, n_seeds=3, early_stop_threshold=40.0):
+    def _run_trial_with_seeds(self, model_name, params, trial_threshold, warmup_instances, is_ae=False, n_seeds=1, early_stop_threshold=40.0):
         f1_list, prec_list, rec_list = [], [], []
         
         for i, seed in enumerate(range(42, 42 + n_seeds)):
@@ -66,6 +68,10 @@ class AnomalyOptunaOptimizer:
             elif model_name == 'AE':
                 models = get_anomaly_models(self.schema, selected_models=['AE'], ae_params=params, run_seed=seed)
                 model = models['Autoencoder']
+            # ADICIONE ESTE BLOCO ABAIXO:
+            elif model_name == 'OIF':
+                models = get_anomaly_models(self.schema, selected_models=['OIF'], oif_params=params, run_seed=seed)
+                model = models['OnlineIsolationForest']
             else:
                 raise ValueError("Modelo não suportado na otimização com sementes.")
                 
@@ -116,6 +122,9 @@ class AnomalyOptunaOptimizer:
             elif model_name == 'AE':
                 models = get_anomaly_models(self.schema, selected_models=['AE'], ae_params=final_params, run_seed=current_seed)
                 model = models['Autoencoder']
+            elif model_name == 'OIF':
+                models = get_anomaly_models(self.schema, selected_models=['OIF'], oif_params=final_params, run_seed=current_seed)
+                model = models['OnlineIsolationForest']
             else:
                 raise ValueError("Modelo não suportado.")
 
@@ -207,6 +216,8 @@ class AnomalyOptunaOptimizer:
                 f1, prec, rec = self._objective_aif(trial, trial_threshold, warmup_instances)
             elif model_name == 'AE':
                 f1, prec, rec = self._objective_ae(trial, trial_threshold, warmup_instances, is_ae)
+            elif model_name == 'OIF':
+                f1, prec, rec = self._objective_oif(trial, trial_threshold, warmup_instances)
             else:
                 raise ValueError("Modelo não suportado.")
             
@@ -236,13 +247,13 @@ class AnomalyOptunaOptimizer:
 
     def _objective_hst(self, trial, trial_threshold, warmup_instances):
         params = {
-            'window_size': trial.suggest_categorical('window_size', [256, 512, 1024, 2048]),
-            'number_of_trees': trial.suggest_int('number_of_trees', 25, 100, step=25),
-            'max_depth': trial.suggest_int('max_depth', 5, 15),
-            'size_limit': trial.suggest_float('size_limit', 0.01, 1.0)
+            'window_size': trial.suggest_categorical('window_size', [500, 1000, 2048]),
+            'number_of_trees': trial.suggest_int('number_of_trees', 30, 60, step=10),
+            'max_depth': trial.suggest_int('max_depth', 12, 18),
+            'size_limit': trial.suggest_float('size_limit', 0.01, 0.2)
         }
         if trial_threshold == 'params':
-            params['anomaly_threshold'] = trial.suggest_float('anomaly_threshold', 0.05, 0.95)
+            params['anomaly_threshold'] = trial.suggest_float('anomaly_threshold', 0.1, 0.9)
             
         return self._run_trial_with_seeds('HST', params, trial_threshold, warmup_instances)
 
@@ -265,3 +276,16 @@ class AnomalyOptunaOptimizer:
             params['threshold'] = trial.suggest_float('threshold', 0.05, 0.95)
             
         return self._run_trial_with_seeds('AE', params, trial_threshold, warmup_instances, is_ae=is_ae)
+    
+    def _objective_oif(self, trial, trial_threshold, warmup_instances):
+        params = {
+            'window_size': trial.suggest_categorical('window_size', [1024, 2048]), # Reduzi as opções
+            'num_trees': trial.suggest_int('num_trees', 30, 60, step=30),          # Testar apenas 30 ou 60
+            'max_leaf_samples': trial.suggest_categorical('max_leaf_samples', [16, 32]),
+            'subsample': trial.suggest_float('subsample', 0.3, 0.6),               # Menos dados por árvore = mais rápido
+        }
+        
+        if trial_threshold == 'params':
+            params['anomaly_threshold'] = trial.suggest_float('anomaly_threshold', 0.1, 0.9)
+            
+        return self._run_trial_with_seeds('OIF', params, trial_threshold, warmup_instances)
