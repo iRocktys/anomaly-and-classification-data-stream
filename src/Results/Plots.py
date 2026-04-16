@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.ticker import MaxNLocator
+import os
 
 class Plots:
     def __init__(self, target_names):
@@ -9,10 +10,12 @@ class Plots:
         self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2']
         self.bg_colors = ['#F7C5CD', '#C5D9F7', '#C5F7C5', '#F7E6C5', '#E3C5F7', '#F7D9C5', '#C5F7E6']
 
-    def plot_score(self, results, attack_regions, title="Análise de Scores", discretization=0.5):
+    def plot_score(self, results, attack_regions, title="Análise de Scores", discretization=0.5, scenario_name="General"):
         fig, ax = plt.subplots(figsize=(15, 6)) 
         
         has_std = False
+        algo_name = list(results.keys())[0] if results else "General"
+
         for i, (name, data) in enumerate(results.items()):
             color = self.colors[i % len(self.colors)]
             window_size = 2
@@ -37,7 +40,8 @@ class Plots:
                 moving_avg = np.array([np.mean(scores[max(0, j-window_size):j+1]) for j in range(len(scores))])
                 ax.plot(instances, moving_avg, color=color, alpha=0.85, linewidth=1.5, label=f'{name}', zorder=3)
 
-        ax.axhline(y=discretization, color='red', linestyle='--', linewidth=2, alpha=0.8, label=f'discretization ({discretization})', zorder=4)
+        if str(discretization) != 'params':
+            ax.axhline(y=discretization, color='red', linestyle='--', linewidth=2, alpha=0.8, label=f'Threshold ({discretization})', zorder=4)
 
         added_attack_labels = set()
         for start, end, attack_idx in attack_regions:
@@ -64,13 +68,17 @@ class Plots:
 
         ax.grid(True, alpha=0.3, linestyle=':', zorder=0)
         fig.subplots_adjust(bottom=0.2)
-        plt.tight_layout()
-        plt.show()
+        
+        output_dir = os.path.join("output", algo_name, "Plots", f"{algo_name}_{scenario_name}")
+        os.makedirs(output_dir, exist_ok=True)
+        plt.savefig(os.path.join(output_dir, f"{algo_name}_{title}_Scores.png"), bbox_inches='tight')
+        plt.close(fig)
 
-    def plot_metrics(self, results, attack_regions=None, title="Métricas", window_size=1000, target_class=None):
+    def plot_metrics(self, results, attack_regions=None, title="Métricas", window_size=1000, target_class=None, scenario_name="General"):
         fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(15, 12), sharex=True)
         
         has_std = False
+        algo_name = list(results.keys())[0] if results else "General"
         def clean(d_list): return np.array([0.0 if (v is None or np.isnan(v)) else v for v in d_list])
 
         for i, (name, data) in enumerate(results.items()):
@@ -133,12 +141,17 @@ class Plots:
             patch.set_alpha(0.8)
         
         fig.subplots_adjust(bottom=0.15, hspace=0.3) 
-        plt.show()
+        
+        output_dir = os.path.join("output", algo_name, "Plots", f"{algo_name}_{scenario_name}")
+        os.makedirs(output_dir, exist_ok=True)
+        plt.savefig(os.path.join(output_dir, f"{algo_name}_{title}_Metricas.png"), bbox_inches='tight')
+        plt.close(fig)
 
-    def plot_fp_fn(self, results, attack_regions=None, title="Contagem de FP e FN", window_size=1000):
+    def plot_fp_fn(self, results, attack_regions=None, title="Contagem de FP e FN", window_size=1000, scenario_name="General"):
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 9), sharex=True)
         
         has_std = False
+        algo_name = list(results.keys())[0] if results else "General"
         def clean(d_list): return np.array([0.0 if (v is None or np.isnan(v)) else v for v in d_list])
 
         for i, (name, data) in enumerate(results.items()):
@@ -146,7 +159,6 @@ class Plots:
             x_axis = data['instances']
             
             if 'fp_mean' in data:
-                # Aplicando np.ceil aos arrays para forçar números inteiros
                 fp_m = np.ceil(clean(data['fp_mean']))
                 fp_s = np.ceil(clean(data['fp_std']))
                 fn_m = np.ceil(clean(data['fn_mean']))
@@ -161,7 +173,6 @@ class Plots:
                     has_std = True
             
             else:
-                # O mesmo tratamento para execuções únicas
                 fp_data = np.ceil(clean(data.get('fp', [])))
                 fn_data = np.ceil(clean(data.get('fn', [])))
                 
@@ -181,8 +192,6 @@ class Plots:
                     
             ax.grid(True, alpha=0.3, linestyle=':', zorder=0)
             ax.tick_params(axis='both', which='major', labelsize=12)
-            
-            # Força o eixo Y a usar apenas números inteiros
             ax.yaxis.set_major_locator(MaxNLocator(integer=True))
             
         ax1.set_title(f"{title} (Resolução de {window_size} instâncias)", fontsize=14, fontweight='bold')
@@ -203,4 +212,8 @@ class Plots:
             patch.set_alpha(0.8)
         
         fig.subplots_adjust(bottom=0.15, hspace=0.3) 
-        plt.show()
+        
+        output_dir = os.path.join("output", algo_name, "Plots", f"{algo_name}_{scenario_name}")
+        os.makedirs(output_dir, exist_ok=True)
+        plt.savefig(os.path.join(output_dir, f"{algo_name}_{title}_FP_FN.png"), bbox_inches='tight')
+        plt.close(fig)

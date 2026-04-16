@@ -89,7 +89,7 @@ class Metrics:
         print(f"\n{'='*line_len}\n{titulo_relatorio:^{line_len}}\n{'='*line_len}\n{header_base}\n{'-'*line_len}")
 
         for name, data in predictions_history.items():
-            algo_dir = os.path.join("output", "Metrics", name)
+            algo_dir = os.path.join("output", name)
             os.makedirs(algo_dir, exist_ok=True)
             csv_file_path = os.path.join(algo_dir, f"{name}_{scenario_name}.csv")
             
@@ -130,4 +130,4 @@ class Metrics:
                 if not file_exists: writer.writerow(headers)
                 writer.writerow([str(x).replace('.', ',') for x in metrics_row])
 
-        print(f"{'-'*line_len}\nFile: output/Metrics/{name}/{name}_{scenario_name}.csv\n")
+        print(f"{'-'*line_len}\nFile: output/{name}/{name}_{scenario_name}.csv\n")

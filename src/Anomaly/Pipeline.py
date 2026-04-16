@@ -158,6 +158,6 @@ class AnomalyExperimentRunner:
             window_evaluation=window_evaluation,
             exec_id=exec_id
         )
-        self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_evaluation)
-        self.plots.plot_fp_fn(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_evaluation)
-        self.plots.plot_score(results=predictions_history, attack_regions=attack_regions, title=title, discretization=discretization if discretization != 'params' else 0.5)
+        self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_evaluation, scenario_name=final_scenario_name)
+        self.plots.plot_fp_fn(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_evaluation, scenario_name=final_scenario_name)
+        self.plots.plot_score(results=predictions_history, attack_regions=attack_regions, title=title, discretization=discretization if discretization != 'params' else 0.5, scenario_name=final_scenario_name)
