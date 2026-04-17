@@ -4,6 +4,7 @@ import time
 import gc
 
 from optuna import trial
+from torchgen import model
 from src.Anomaly.Models import get_anomaly_models
 from src.Results.Metrics import Metrics
 from src.Results.Plots import Plots
@@ -38,6 +39,8 @@ class AnomalyOptunaOptimizer:
         self.stream.restart()
         y_true_list = []
         y_pred_list = []
+
+        count = 0
         
         while self.stream.has_more_instances():
             instance = self.stream.next_instance()
@@ -56,10 +59,12 @@ class AnomalyOptunaOptimizer:
             y_pred_list.append(predicted_class)
             
             try:
-                if not is_ae or predicted_class == 0:
+                if not is_ae or predicted_class == 0 or count < warmup_instances:
                     model.train(instance)
             except ValueError:
                 pass
+
+            count += 1
 
         f1, prec, rec, mcc, fp, fn = self.metrics.calc_sklearn_metrics(y_true_list, y_pred_list)
         return f1, prec, rec
@@ -178,7 +183,8 @@ class AnomalyOptunaOptimizer:
                 current_true_multi.append(true_label_multiclass)
                 
                 try:
-                    if not is_ae or predicted_class == 0:
+                    # Regra atualizada com o Período de Graça
+                    if not is_ae or predicted_class == 0 or count < warmup_instances:
                         model.train(instance)
                 except ValueError:
                     pass
@@ -351,7 +357,7 @@ class AnomalyOptunaOptimizer:
         if trial_threshold == 'params':
             params['threshold'] = trial.suggest_float('threshold', 0.1, 0.9)
             
-        return self._run_trial_with_seeds('HST', params, trial_threshold, warmup_instances)
+        return self._run_trial_with_seeds('HST', params, trial_threshold, warmup_instances, n_seeds=3)
 
     def _objective_aif(self, trial, trial_threshold, warmup_instances):
         params = {
@@ -362,7 +368,7 @@ class AnomalyOptunaOptimizer:
         if trial_threshold == 'params':
             params['threshold'] = trial.suggest_float('threshold', 0.1, 0.9)
             
-        return self._run_trial_with_seeds('AIF', params, trial_threshold, warmup_instances)
+        return self._run_trial_with_seeds('AIF', params, trial_threshold, warmup_instances, n_seeds=3)
 
     def _objective_ae(self, trial, trial_threshold, warmup_instances, is_ae):
         params = {
@@ -372,7 +378,7 @@ class AnomalyOptunaOptimizer:
         if trial_threshold == 'params':
             params['threshold'] = trial.suggest_float('threshold', 0.1, 0.9)
             
-        return self._run_trial_with_seeds('AE', params, trial_threshold, warmup_instances, is_ae=is_ae)
+        return self._run_trial_with_seeds('AE', params, trial_threshold, warmup_instances, is_ae=is_ae, n_seeds=3)
     
     def _objective_oif(self, trial, trial_threshold, warmup_instances):
         params = {
@@ -385,4 +391,4 @@ class AnomalyOptunaOptimizer:
         if trial_threshold == 'params':
             params['threshold'] = trial.suggest_float('threshold', 0.1, 0.9)
             
-        return self._run_trial_with_seeds('OIF', params, trial_threshold, warmup_instances)
+        return self._run_trial_with_seeds('OIF', params, trial_threshold, warmup_instances, n_seeds=3)
