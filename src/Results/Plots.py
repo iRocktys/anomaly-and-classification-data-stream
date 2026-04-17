@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.ticker import MaxNLocator
 import os
+import pandas as pd
 
 class Plots:
     def __init__(self, target_names):
@@ -217,3 +218,160 @@ class Plots:
         os.makedirs(output_dir, exist_ok=True)
         plt.savefig(os.path.join(output_dir, f"{algo_name}_{title}_FP_FN.png"), bbox_inches='tight')
         plt.close(fig)
+
+    def plot_summary_table(self, csv_dict, algo_name="Algoritmo", include_blocks=None, exclude_blocks=None):
+        all_data = []
+        
+        # Mapeamento fixo de envenenamento (valores sem o símbolo %)
+        env_map = {
+            'Consistência': {'25': '0,48', '200': '3,34', '1000': '16,08'},
+            'Consistencia': {'25': '0,48', '200': '3,34', '1000': '16,08'},
+            'Generalização': {'25': '0,49', '200': '3,81', '1000': '16,65'},
+            'Generalizacao': {'25': '0,49', '200': '3,81', '1000': '16,65'},
+            'Adaptação': {'25': '0,47', '200': '3,79', '1000': '16,63'},
+            'Adaptacao': {'25': '0,47', '200': '3,79', '1000': '16,63'},
+            'Recorrência': {'25': '0,47', '200': '3,83', '1000': '17,13'},
+            'Recorrencia': {'25': '0,47', '200': '3,83', '1000': '17,13'}
+        }
+
+        for path, exec_id in csv_dict.items():
+            if not os.path.exists(path):
+                continue
+
+            filename = os.path.basename(path).lower()
+            is_optimized = "otimizado" in filename or "optimized" in filename
+            has_33_features = "33features" in filename or "33_features" in filename
+
+            otimizacao = "Otim." if is_optimized else "Def."
+            features_qtd = "33" if has_33_features else "77"
+
+            df = pd.read_csv(path, sep=';', decimal=',')
+
+            if exec_id is not None and 'Exec_ID' in df.columns:
+                df = df[df['Exec_ID'].astype(str) == str(exec_id)]
+                
+            if 'Dataset' in df.columns:
+                if include_blocks:
+                    df = df[df['Dataset'].astype(str).apply(lambda x: any(str(b) in x for b in include_blocks))]
+                if exclude_blocks:
+                    df = df[~df['Dataset'].astype(str).apply(lambda x: any(str(b) in x for b in exclude_blocks))]
+
+            if df.empty:
+                continue
+
+            def get_col(base_name):
+                if f"{base_name}_avg" in df.columns: return f"{base_name}_avg"
+                if base_name in df.columns: return base_name
+                return None
+
+            col_f1 = get_col('F1')
+            col_prec = get_col('Prec')
+            col_rec = get_col('Rec')
+            col_fp = get_col('FP')
+            col_fn = get_col('FN')
+
+            df['Cenário'] = df['Dataset'].apply(lambda x: str(x).split('_')[0])
+            df['Bloco_Num'] = df['Dataset'].apply(lambda x: int(str(x).split('_')[1]) if '_' in str(x) and str(x).split('_')[1].isdigit() else 0)
+            df['Bloco_Str'] = df['Dataset'].apply(lambda x: str(x).split('_')[1] if '_' in str(x) else "-")
+            df['Env (%)'] = df.apply(lambda row: env_map.get(row['Cenário'], {}).get(row['Bloco_Str'], row['Bloco_Str']), axis=1)
+
+            cols_to_extract = ['Cenário', 'Env (%)', 'Bloco_Num', col_f1, col_prec, col_rec, col_fp, col_fn]
+            df_filtered = df[cols_to_extract].copy()
+            df_filtered.columns = ['Cenário', 'Env (%)', 'Bloco_Num', 'F1', 'Prec.', 'Rec.', 'FP', 'FN']
+
+            df_filtered.insert(2, 'Otim.', otimizacao)
+            df_filtered.insert(3, 'Feats', features_qtd)
+
+            all_data.append(df_filtered)
+
+        if not all_data:
+            return
+
+        df_final = pd.concat(all_data, ignore_index=True)
+        
+        cenario_order = ['Consistência', 'Consistencia', 'Generalização', 'Generalizacao', 'Adaptação', 'Adaptacao', 'Recorrência', 'Recorrencia']
+        df_final['Cenario_Cat'] = pd.Categorical(df_final['Cenário'], categories=cenario_order, ordered=True)
+        df_final = df_final.sort_values(by=['Cenario_Cat', 'Bloco_Num', 'Otim.', 'Feats']).reset_index(drop=True)
+
+        numeric_cols = ['F1', 'Prec.', 'Rec.', 'FP', 'FN']
+        for col in numeric_cols:
+            df_final[col] = pd.to_numeric(df_final[col].astype(str).str.replace(',', '.'), errors='coerce')
+
+        # Mapeamento para negrito (vencedores por cenário)
+        best_indices_map = {}
+        for scenario in df_final['Cenário'].unique():
+            idx_mask = df_final['Cenário'] == scenario
+            group_df = df_final[idx_mask]
+            if not group_df.empty:
+                for col in ['F1', 'Prec.', 'Rec.']:
+                    max_val = group_df[col].max()
+                    if pd.notnull(max_val):
+                        best_indices_map.setdefault(col, []).extend(group_df[group_df[col] == max_val].index.tolist())
+                for col in ['FP', 'FN']:
+                    min_val = group_df[col].min()
+                    if pd.notnull(min_val):
+                        best_indices_map.setdefault(col, []).extend(group_df[group_df[col] == min_val].index.tolist())
+
+        df_final_orig = df_final.copy()
+        df_final.drop(columns=['Bloco_Num', 'Cenario_Cat'], inplace=True)
+
+        # Preparação do DataFrame para LaTeX (com negritos e vírgulas)
+        df_latex = df_final.copy()
+        for col in ['F1', 'Prec.', 'Rec.']:
+            df_latex[col] = df_latex.apply(lambda row: f"\\textbf{{{row[col]:.2f}}}" if row.name in best_indices_map.get(col, []) else f"{row[col]:.2f}", axis=1).str.replace('.', ',')
+        for col in ['FP', 'FN']:
+            df_latex[col] = df_latex.apply(lambda row: f"\\textbf{{{int(row[col])}}}" if row.name in best_indices_map.get(col, []) else str(int(row[col])), axis=1)
+
+        # Formatação para PNG no Jupyter
+        for col in ['F1', 'Prec.', 'Rec.']:
+            df_final[col] = df_final[col].apply(lambda x: f"{x:.2f}".replace('.', ',') if pd.notnull(x) else "-")
+        for col in ['FP', 'FN']:
+            df_final[col] = df_final[col].apply(lambda x: str(int(x)) if pd.notnull(x) else "-")
+
+        display_values = df_final.values.copy()
+        for i in range(len(display_values) - 1, 0, -1):
+            if display_values[i, 0] == display_values[i-1, 0]:
+                display_values[i, 0] = ""
+                df_latex.iloc[i, 0] = ""
+
+        # Geração da Tabela PNG (Jupyter)
+        col_widths = [0.18, 0.10, 0.08, 0.08, 0.12, 0.12, 0.12, 0.10, 0.10]
+        fig, ax = plt.subplots(figsize=(10, 0.4 * len(df_final) + 0.5))
+        plt.subplots_adjust(top=0.98, bottom=0.02, left=0.05, right=0.95)
+        ax.axis('off')
+        
+        table = ax.table(cellText=display_values, colLabels=df_final.columns, loc='center', cellLoc='center', colWidths=col_widths)
+        table.auto_set_font_size(False); table.set_fontsize(10); table.scale(1.0, 1.8)
+
+        for (row, col_idx), cell in table.get_celld().items():
+            cell.set_facecolor('white'); cell.set_edgecolor('black'); cell.set_linewidth(0.5)
+            if row == 0:
+                cell.set_text_props(weight='bold')
+            elif row > 0:
+                col_name = df_final.columns[col_idx]
+                if (row-1) in best_indices_map.get(col_name, []):
+                    cell.set_text_props(weight='bold')
+
+        plt.title(f"Resultados - {algo_name}", fontsize=14, fontweight='bold', pad=0)
+        plt.show()
+
+        # Geração de Saída LaTeX (Overleaf)
+        print("\n" + "="*65 + "\nCÓDIGO LATEX PARA OVERLEAF:\n" + "="*65)
+        latex_header = "\\begin{table}[ht]\n\\centering\n\\begin{tabular}{|l|c|c|c|c|c|c|c|c|}\n\\hline\n"
+        
+        # Cabeçalhos em Negrito e escape do %
+        headers_tex = ["Cenário", "Env (\\%)", "Otim.", "Feats", "F1", "Prec.", "Rec.", "FP", "FN"]
+        latex_header += " & ".join([f"\\textbf{{{h}}}" for h in headers_tex]) + " \\\\ \\hline\n"
+        
+        latex_body = ""
+        last_c = None
+        for i in range(len(df_latex)):
+            # Inserção de \hline antes de cada novo cenário
+            curr_c = df_final_orig.iloc[i]['Cenário']
+            if last_c is not None and curr_c != last_c:
+                latex_body += "\\hline\n"
+            last_c = curr_c
+            latex_body += " & ".join(df_latex.iloc[i].values.astype(str)) + " \\\\\n"
+        
+        latex_footer = "\\hline\n\\end{tabular}\n\\caption{Resultados do algoritmo " + algo_name + "}\n\\end{table}"
+        print(latex_header + latex_body + latex_footer + "\n" + "="*65 + "\n")
