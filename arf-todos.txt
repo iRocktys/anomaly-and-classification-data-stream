@@ -1,0 +1,899 @@
+Iniciando otimização para: data/15k/Consistência/Consistência_25.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 89.0411 | Prec: 87.8378 | Rec: 90.2778 | Params: {'ensemble_size': 30, 'max_features': 0.8, 'lambda_param': 5.0}
+Trial 2/50 | F1: 92.1986 | Prec: 94.2029 | Rec: 90.2778 | Params: {'ensemble_size': 100, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 3/50 | F1: 93.6170 | Prec: 95.6522 | Rec: 91.6667 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 4/50 | F1: 91.7808 | Prec: 90.5405 | Rec: 93.0556 | Params: {'ensemble_size': 20, 'max_features': 0.30000000000000004, 'lambda_param': 4.0}
+Trial 5/50 | F1: 89.6552 | Prec: 89.0411 | Rec: 90.2778 | Params: {'ensemble_size': 70, 'max_features': 0.9, 'lambda_param': 4.0}
+Trial 6/50 | F1: 89.1892 | Prec: 86.8421 | Rec: 91.6667 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 5.0}
+Trial 7/50 | F1: 91.4286 | Prec: 94.1176 | Rec: 88.8889 | Params: {'ensemble_size': 40, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 8/50 | F1: 91.5493 | Prec: 92.8571 | Rec: 90.2778 | Params: {'ensemble_size': 10, 'max_features': 0.6, 'lambda_param': 4.0}
+Trial 9/50 | F1: 94.1176 | Prec: 100.0000 | Rec: 88.8889 | Params: {'ensemble_size': 20, 'max_features': 0.5, 'lambda_param': 1.0}
+Trial 10/50 | F1: 90.4110 | Prec: 89.1892 | Rec: 91.6667 | Params: {'ensemble_size': 60, 'max_features': 0.7000000000000001, 'lambda_param': 4.0}
+Trial 11/50 | F1: 92.8571 | Prec: 95.5882 | Rec: 90.2778 | Params: {'ensemble_size': 90, 'max_features': 0.30000000000000004, 'lambda_param': 2.0}
+Trial 12/50 | F1: 92.9577 | Prec: 94.2857 | Rec: 91.6667 | Params: {'ensemble_size': 50, 'max_features': 0.5, 'lambda_param': 2.0}
+Trial 13/50 | F1: 92.6471 | Prec: 98.4375 | Rec: 87.5000 | Params: {'ensemble_size': 10, 'max_features': 0.5, 'lambda_param': 2.0}
+Trial 14/50 | F1: 87.0229 | Prec: 96.6102 | Rec: 79.1667 | Params: {'ensemble_size': 30, 'max_features': 0.1, 'lambda_param': 1.0}
+Trial 15/50 | F1: 89.5105 | Prec: 90.1408 | Rec: 88.8889 | Params: {'ensemble_size': 50, 'max_features': 0.4, 'lambda_param': 3.0}
+Trial 16/50 | F1: 89.8551 | Prec: 93.9394 | Rec: 86.1111 | Params: {'ensemble_size': 20, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 17/50 | F1: 92.3077 | Prec: 92.9577 | Rec: 91.6667 | Params: {'ensemble_size': 70, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 18/50 | F1: 89.3333 | Prec: 85.8974 | Rec: 93.0556 | Params: {'ensemble_size': 40, 'max_features': 0.30000000000000004, 'lambda_param': 6.0}
+Trial 19/50 | F1: 93.6170 | Prec: 95.6522 | Rec: 91.6667 | Params: {'ensemble_size': 20, 'max_features': 0.4, 'lambda_param': 1.0}
+Trial 20/50 | F1: 92.1986 | Prec: 94.2029 | Rec: 90.2778 | Params: {'ensemble_size': 40, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 21/50 | F1: 95.6522 | Prec: 100.0000 | Rec: 91.6667 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 22/50 | F1: 94.2029 | Prec: 98.4848 | Rec: 90.2778 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 23/50 | F1: 91.5493 | Prec: 92.8571 | Rec: 90.2778 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 1.0}
+Trial 24/50 | F1: 95.6522 | Prec: 100.0000 | Rec: 91.6667 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 25/50 | F1: 92.8571 | Prec: 95.5882 | Rec: 90.2778 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 26/50 | F1: 94.2029 | Prec: 98.4848 | Rec: 90.2778 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 27/50 | F1: 91.6667 | Prec: 91.6667 | Rec: 91.6667 | Params: {'ensemble_size': 20, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 28/50 | F1: 93.4307 | Prec: 98.4615 | Rec: 88.8889 | Params: {'ensemble_size': 10, 'max_features': 1.0, 'lambda_param': 2.0}
+Trial 29/50 | F1: 92.9577 | Prec: 94.2857 | Rec: 91.6667 | Params: {'ensemble_size': 20, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 30/50 | F1: 89.6552 | Prec: 89.0411 | Rec: 90.2778 | Params: {'ensemble_size': 30, 'max_features': 0.9, 'lambda_param': 3.0}
+Trial 31/50 | F1: 89.0411 | Prec: 87.8378 | Rec: 90.2778 | Params: {'ensemble_size': 30, 'max_features': 0.8, 'lambda_param': 5.0}
+Trial 32/50 | F1: 94.2029 | Prec: 98.4848 | Rec: 90.2778 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 33/50 | F1: 94.2029 | Prec: 98.4848 | Rec: 90.2778 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 34/50 | F1: 94.2029 | Prec: 98.4848 | Rec: 90.2778 | Params: {'ensemble_size': 20, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 35/50 | F1: 94.9640 | Prec: 98.5075 | Rec: 91.6667 | Params: {'ensemble_size': 10, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 36/50 | F1: 89.1892 | Prec: 86.8421 | Rec: 91.6667 | Params: {'ensemble_size': 80, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 37/50 | F1: 93.6170 | Prec: 95.6522 | Rec: 91.6667 | Params: {'ensemble_size': 20, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 38/50 | F1: 92.8571 | Prec: 95.5882 | Rec: 90.2778 | Params: {'ensemble_size': 40, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 39/50 | F1: 93.6170 | Prec: 95.6522 | Rec: 91.6667 | Params: {'ensemble_size': 20, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 40/50 | F1: 91.3043 | Prec: 95.4545 | Rec: 87.5000 | Params: {'ensemble_size': 100, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 41/50 | F1: 91.6667 | Prec: 91.6667 | Rec: 91.6667 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 4.0}
+Trial 42/50 | F1: 94.2029 | Prec: 98.4848 | Rec: 90.2778 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 43/50 | F1: 93.4307 | Prec: 98.4615 | Rec: 88.8889 | Params: {'ensemble_size': 10, 'max_features': 1.0, 'lambda_param': 2.0}
+Trial 44/50 | F1: 94.2029 | Prec: 98.4848 | Rec: 90.2778 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 45/50 | F1: 91.6667 | Prec: 91.6667 | Rec: 91.6667 | Params: {'ensemble_size': 20, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 46/50 | F1: 90.7801 | Prec: 92.7536 | Rec: 88.8889 | Params: {'ensemble_size': 10, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 47/50 | F1: 92.8571 | Prec: 95.5882 | Rec: 90.2778 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 48/50 | F1: 92.8571 | Prec: 95.5882 | Rec: 90.2778 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 3.0}
+Trial 49/50 | F1: 91.6667 | Prec: 91.6667 | Rec: 91.6667 | Params: {'ensemble_size': 20, 'max_features': 0.6, 'lambda_param': 6.0}
+Trial 50/50 | F1: 95.6522 | Prec: 100.0000 | Rec: 91.6667 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 2.0}
+
+[ARF] OTIMIZAÇÃO FINALIZADA
+Melhor Trial: 21
+Melhor Resultado -> F1: 95.6522 | Prec: 100.0000 | Rec: 91.6667
+Melhores Parâmetros: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 2.0}
+
+[ARF] Validando melhores parâmetros com 5 rodada(s) prequencial(is)...
+
+==================================================================================================================================================================================================
+                                                                            RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)                                                                             
+==================================================================================================================================================================================================
+Modelo/Algoritmo       | F1 (%)            | Prec (%)          | Rec (%)           | MCC               | FP          | FN          | Tempo (s)       | ensemble_size | max_features | lambda_param
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Melhor ARF             | 94.4291 ± 0.8931 | 97.3822 ± 1.8930 | 91.6667 ± 0.0000 |  0.9445 ± 0.0092 |    2 ± 2    |    6 ± 0    | 6.3706 ± 0.2128 | 10            | 0.8000       | 2.0000      
+==================================================================================================================================================================================================
+
+📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):
+Modelo/Algoritmo	F1 (%)	Prec (%)	Rec (%)	MCC	FP	FN	Tempo (s)	ensemble_size	max_features	lambda_param
+Melhor ARF	94,4291 ± 0,8931	97,3822 ± 1,8930	91,6667 ± 0,0000	0,9445 ± 0,0092	2 ± 2	6 ± 0	6,3706 ± 0,2128	10	0,8000	2,0000
+
+
+
+Iniciando otimização para: data/15k/Consistência/Consistência_200.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 96.6337 | Prec: 96.4427 | Rec: 96.8254 | Params: {'ensemble_size': 30, 'max_features': 0.9, 'lambda_param': 6.0}
+Trial 2/50 | F1: 96.9093 | Prec: 97.3948 | Rec: 96.4286 | Params: {'ensemble_size': 10, 'max_features': 0.5, 'lambda_param': 5.0}
+Trial 3/50 | F1: 96.8907 | Prec: 97.9716 | Rec: 95.8333 | Params: {'ensemble_size': 50, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 4/50 | F1: 96.9636 | Prec: 98.9669 | Rec: 95.0397 | Params: {'ensemble_size': 40, 'max_features': 0.1, 'lambda_param': 6.0}
+Trial 5/50 | F1: 96.7871 | Prec: 97.9675 | Rec: 95.6349 | Params: {'ensemble_size': 20, 'max_features': 0.1, 'lambda_param': 5.0}
+Trial 6/50 | F1: 96.2076 | Prec: 96.7871 | Rec: 95.6349 | Params: {'ensemble_size': 10, 'max_features': 0.4, 'lambda_param': 5.0}
+Trial 7/50 | F1: 96.7294 | Prec: 96.6337 | Rec: 96.8254 | Params: {'ensemble_size': 60, 'max_features': 0.5, 'lambda_param': 5.0}
+Trial 8/50 | F1: 96.7033 | Prec: 97.3843 | Rec: 96.0317 | Params: {'ensemble_size': 100, 'max_features': 0.30000000000000004, 'lambda_param': 4.0}
+Trial 9/50 | F1: 96.8844 | Prec: 98.1670 | Rec: 95.6349 | Params: {'ensemble_size': 100, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 10/50 | F1: 96.3403 | Prec: 96.0552 | Rec: 96.6270 | Params: {'ensemble_size': 10, 'max_features': 0.7000000000000001, 'lambda_param': 6.0}
+Trial 11/50 | F1: 97.6838 | Prec: 99.1820 | Rec: 96.2302 | Params: {'ensemble_size': 70, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 12/50 | F1: 97.6838 | Prec: 99.1820 | Rec: 96.2302 | Params: {'ensemble_size': 70, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 13/50 | F1: 96.4753 | Prec: 97.9550 | Rec: 95.0397 | Params: {'ensemble_size': 70, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 14/50 | F1: 96.8907 | Prec: 97.9716 | Rec: 95.8333 | Params: {'ensemble_size': 80, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 15/50 | F1: 97.6791 | Prec: 99.3840 | Rec: 96.0317 | Params: {'ensemble_size': 80, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 16/50 | F1: 97.5855 | Prec: 98.9796 | Rec: 96.2302 | Params: {'ensemble_size': 80, 'max_features': 0.30000000000000004, 'lambda_param': 2.0}
+Trial 17/50 | F1: 96.3257 | Prec: 96.4215 | Rec: 96.2302 | Params: {'ensemble_size': 60, 'max_features': 0.2, 'lambda_param': 4.0}
+Trial 18/50 | F1: 96.4427 | Prec: 96.0630 | Rec: 96.8254 | Params: {'ensemble_size': 90, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 19/50 | F1: 96.3489 | Prec: 98.5477 | Rec: 94.2460 | Params: {'ensemble_size': 50, 'max_features': 0.2, 'lambda_param': 1.0}
+Trial 20/50 | F1: 96.7099 | Prec: 97.1944 | Rec: 96.2302 | Params: {'ensemble_size': 70, 'max_features': 0.4, 'lambda_param': 4.0}
+Trial 21/50 | F1: 97.2700 | Prec: 99.1753 | Rec: 95.4365 | Params: {'ensemble_size': 70, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 22/50 | F1: 97.6791 | Prec: 99.3840 | Rec: 96.0317 | Params: {'ensemble_size': 80, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 23/50 | F1: 96.4682 | Prec: 98.1520 | Rec: 94.8413 | Params: {'ensemble_size': 90, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 24/50 | F1: 97.3737 | Prec: 99.1770 | Rec: 95.6349 | Params: {'ensemble_size': 60, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 25/50 | F1: 97.1717 | Prec: 98.9712 | Rec: 95.4365 | Params: {'ensemble_size': 90, 'max_features': 0.30000000000000004, 'lambda_param': 1.0}
+Trial 26/50 | F1: 96.4753 | Prec: 97.9550 | Rec: 95.0397 | Params: {'ensemble_size': 70, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 27/50 | F1: 96.6135 | Prec: 97.0000 | Rec: 96.2302 | Params: {'ensemble_size': 80, 'max_features': 0.4, 'lambda_param': 4.0}
+Trial 28/50 | F1: 97.5709 | Prec: 99.5868 | Rec: 95.6349 | Params: {'ensemble_size': 40, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 29/50 | F1: 96.4682 | Prec: 98.1520 | Rec: 94.8413 | Params: {'ensemble_size': 90, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 30/50 | F1: 97.2810 | Prec: 98.7730 | Rec: 95.8333 | Params: {'ensemble_size': 40, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 31/50 | F1: 96.7936 | Prec: 97.7733 | Rec: 95.8333 | Params: {'ensemble_size': 50, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 32/50 | F1: 97.6791 | Prec: 99.3840 | Rec: 96.0317 | Params: {'ensemble_size': 80, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 33/50 | F1: 97.6838 | Prec: 99.1820 | Rec: 96.2302 | Params: {'ensemble_size': 70, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 34/50 | F1: 96.4753 | Prec: 97.9550 | Rec: 95.0397 | Params: {'ensemble_size': 70, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 35/50 | F1: 96.7807 | Prec: 98.1633 | Rec: 95.4365 | Params: {'ensemble_size': 60, 'max_features': 0.1, 'lambda_param': 4.0}
+Trial 36/50 | F1: 96.2889 | Prec: 97.3631 | Rec: 95.2381 | Params: {'ensemble_size': 70, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 37/50 | F1: 96.7807 | Prec: 98.1633 | Rec: 95.4365 | Params: {'ensemble_size': 60, 'max_features': 0.1, 'lambda_param': 4.0}
+Trial 38/50 | F1: 97.3081 | Prec: 97.7956 | Rec: 96.8254 | Params: {'ensemble_size': 50, 'max_features': 0.5, 'lambda_param': 3.0}
+Trial 39/50 | F1: 97.1944 | Prec: 98.1781 | Rec: 96.2302 | Params: {'ensemble_size': 30, 'max_features': 0.4, 'lambda_param': 2.0}
+Trial 40/50 | F1: 96.7294 | Prec: 96.6337 | Rec: 96.8254 | Params: {'ensemble_size': 80, 'max_features': 0.6, 'lambda_param': 5.0}
+Trial 41/50 | F1: 96.4682 | Prec: 98.1520 | Rec: 94.8413 | Params: {'ensemble_size': 100, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 42/50 | F1: 97.6791 | Prec: 99.3840 | Rec: 96.0317 | Params: {'ensemble_size': 80, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 43/50 | F1: 97.2700 | Prec: 99.1753 | Rec: 95.4365 | Params: {'ensemble_size': 70, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 44/50 | F1: 97.4671 | Prec: 99.5859 | Rec: 95.4365 | Params: {'ensemble_size': 90, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 45/50 | F1: 96.0326 | Prec: 98.5386 | Rec: 93.6508 | Params: {'ensemble_size': 80, 'max_features': 0.2, 'lambda_param': 1.0}
+Trial 46/50 | F1: 96.5863 | Prec: 97.7642 | Rec: 95.4365 | Params: {'ensemble_size': 60, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 47/50 | F1: 97.0796 | Prec: 98.5685 | Rec: 95.6349 | Params: {'ensemble_size': 70, 'max_features': 0.1, 'lambda_param': 4.0}
+Trial 48/50 | F1: 96.2588 | Prec: 98.1443 | Rec: 94.4444 | Params: {'ensemble_size': 80, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 49/50 | F1: 97.4671 | Prec: 99.5859 | Rec: 95.4365 | Params: {'ensemble_size': 90, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 50/50 | F1: 94.5165 | Prec: 94.9900 | Rec: 94.0476 | Params: {'ensemble_size': 70, 'max_features': 0.30000000000000004, 'lambda_param': 6.0}
+
+[ARF] OTIMIZAÇÃO FINALIZADA
+Melhor Trial: 11
+Melhor Resultado -> F1: 97.6838 | Prec: 99.1820 | Rec: 96.2302
+Melhores Parâmetros: {'ensemble_size': 70, 'max_features': 0.1, 'lambda_param': 3.0}
+
+[ARF] Validando melhores parâmetros com 5 rodada(s) prequencial(is)...
+
+==================================================================================================================================================================================================
+                                                                            RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)                                                                             
+==================================================================================================================================================================================================
+Modelo/Algoritmo       | F1 (%)            | Prec (%)          | Rec (%)           | MCC               | FP          | FN          | Tempo (s)       | ensemble_size | max_features | lambda_param
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Melhor ARF             | 97.5353 ± 0.1039 | 99.3426 ± 0.2371 | 95.7937 ± 0.2632 |  0.9747 ± 0.0011 |    4 ± 2    |   22 ± 2    | 7.5201 ± 0.2455 | 70            | 0.1000       | 3.0000      
+==================================================================================================================================================================================================
+
+📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):
+Modelo/Algoritmo	F1 (%)	Prec (%)	Rec (%)	MCC	FP	FN	Tempo (s)	ensemble_size	max_features	lambda_param
+Melhor ARF	97,5353 ± 0,1039	99,3426 ± 0,2371	95,7937 ± 0,2632	0,9747 ± 0,0011	4 ± 2	22 ± 2	7,5201 ± 0,2455	70	0,1000	3,0000
+
+
+
+Iniciando otimização para: data/15k/Consistência/Consistência_1000.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 98.3343 | Prec: 98.3936 | Rec: 98.2752 | Params: {'ensemble_size': 90, 'max_features': 0.7000000000000001, 'lambda_param': 4.0}
+Trial 2/50 | F1: 98.4312 | Prec: 98.7092 | Rec: 98.1548 | Params: {'ensemble_size': 70, 'max_features': 0.2, 'lambda_param': 6.0}
+Trial 3/50 | F1: 98.4306 | Prec: 98.7485 | Rec: 98.1147 | Params: {'ensemble_size': 90, 'max_features': 0.4, 'lambda_param': 2.0}
+Trial 4/50 | F1: 98.4204 | Prec: 99.3865 | Rec: 97.4729 | Params: {'ensemble_size': 90, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 5/50 | F1: 98.5303 | Prec: 98.9086 | Rec: 98.1548 | Params: {'ensemble_size': 10, 'max_features': 0.4, 'lambda_param': 3.0}
+Trial 6/50 | F1: 98.6565 | Prec: 98.6367 | Rec: 98.6763 | Params: {'ensemble_size': 70, 'max_features': 0.5, 'lambda_param': 4.0}
+Trial 7/50 | F1: 98.3942 | Prec: 98.4733 | Rec: 98.3153 | Params: {'ensemble_size': 100, 'max_features': 0.6, 'lambda_param': 4.0}
+Trial 8/50 | F1: 98.4114 | Prec: 98.6694 | Rec: 98.1548 | Params: {'ensemble_size': 100, 'max_features': 0.30000000000000004, 'lambda_param': 2.0}
+Trial 9/50 | F1: 98.4973 | Prec: 98.3987 | Rec: 98.5961 | Params: {'ensemble_size': 100, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 10/50 | F1: 98.5921 | Prec: 98.8705 | Rec: 98.3153 | Params: {'ensemble_size': 60, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 11/50 | F1: 98.3037 | Prec: 98.9833 | Rec: 97.6334 | Params: {'ensemble_size': 30, 'max_features': 0.1, 'lambda_param': 6.0}
+Trial 12/50 | F1: 98.5200 | Prec: 98.2449 | Rec: 98.7966 | Params: {'ensemble_size': 60, 'max_features': 1.0, 'lambda_param': 5.0}
+Trial 13/50 | F1: 98.3468 | Prec: 98.8650 | Rec: 97.8339 | Params: {'ensemble_size': 40, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 14/50 | F1: 98.4146 | Prec: 98.4739 | Rec: 98.3554 | Params: {'ensemble_size': 70, 'max_features': 0.5, 'lambda_param': 2.0}
+Trial 15/50 | F1: 98.5774 | Prec: 98.4788 | Rec: 98.6763 | Params: {'ensemble_size': 50, 'max_features': 0.8, 'lambda_param': 5.0}
+Trial 16/50 | F1: 98.3580 | Prec: 98.2007 | Rec: 98.5158 | Params: {'ensemble_size': 70, 'max_features': 0.5, 'lambda_param': 3.0}
+Trial 17/50 | F1: 98.5565 | Prec: 98.5170 | Rec: 98.5961 | Params: {'ensemble_size': 50, 'max_features': 0.9, 'lambda_param': 4.0}
+Trial 18/50 | F1: 98.5729 | Prec: 98.7913 | Rec: 98.3554 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 5.0}
+Trial 19/50 | F1: 98.5554 | Prec: 98.5949 | Rec: 98.5158 | Params: {'ensemble_size': 80, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 20/50 | F1: 98.0789 | Prec: 98.8989 | Rec: 97.2724 | Params: {'ensemble_size': 60, 'max_features': 0.4, 'lambda_param': 1.0}
+Trial 21/50 | F1: 98.3410 | Prec: 98.0080 | Rec: 98.6763 | Params: {'ensemble_size': 40, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 22/50 | F1: 98.5577 | Prec: 98.4394 | Rec: 98.6763 | Params: {'ensemble_size': 50, 'max_features': 0.9, 'lambda_param': 5.0}
+Trial 23/50 | F1: 98.5791 | Prec: 98.3626 | Rec: 98.7966 | Params: {'ensemble_size': 60, 'max_features': 0.9, 'lambda_param': 5.0}
+Trial 24/50 | F1: 98.5780 | Prec: 98.4400 | Rec: 98.7164 | Params: {'ensemble_size': 80, 'max_features': 0.9, 'lambda_param': 4.0}
+Trial 25/50 | F1: 98.3193 | Prec: 98.0838 | Rec: 98.5560 | Params: {'ensemble_size': 60, 'max_features': 1.0, 'lambda_param': 6.0}
+Trial 26/50 | F1: 98.5542 | Prec: 98.6731 | Rec: 98.4356 | Params: {'ensemble_size': 80, 'max_features': 0.6, 'lambda_param': 5.0}
+Trial 27/50 | F1: 98.6373 | Prec: 98.5583 | Rec: 98.7164 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 28/50 | F1: 98.6373 | Prec: 98.5583 | Rec: 98.7164 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 29/50 | F1: 98.4152 | Prec: 98.4350 | Rec: 98.3955 | Params: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 4.0}
+Trial 30/50 | F1: 98.2772 | Prec: 98.1593 | Rec: 98.3955 | Params: {'ensemble_size': 80, 'max_features': 0.5, 'lambda_param': 4.0}
+Trial 31/50 | F1: 98.4585 | Prec: 98.2814 | Rec: 98.6362 | Params: {'ensemble_size': 90, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 32/50 | F1: 98.6565 | Prec: 98.6367 | Rec: 98.6763 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 33/50 | F1: 98.3994 | Prec: 98.1637 | Rec: 98.6362 | Params: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 34/50 | F1: 98.3343 | Prec: 98.3936 | Rec: 98.2752 | Params: {'ensemble_size': 70, 'max_features': 0.6, 'lambda_param': 3.0}
+Trial 35/50 | F1: 98.4591 | Prec: 98.2428 | Rec: 98.6763 | Params: {'ensemble_size': 80, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 36/50 | F1: 98.4114 | Prec: 98.6694 | Rec: 98.1548 | Params: {'ensemble_size': 90, 'max_features': 0.4, 'lambda_param': 4.0}
+Trial 37/50 | F1: 98.3397 | Prec: 98.0846 | Rec: 98.5961 | Params: {'ensemble_size': 80, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 38/50 | F1: 98.1949 | Prec: 98.1949 | Rec: 98.1949 | Params: {'ensemble_size': 10, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 39/50 | F1: 98.4152 | Prec: 98.4350 | Rec: 98.3955 | Params: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 4.0}
+Trial 40/50 | F1: 98.3488 | Prec: 98.7465 | Rec: 97.9543 | Params: {'ensemble_size': 90, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 41/50 | F1: 98.6373 | Prec: 98.5583 | Rec: 98.7164 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 42/50 | F1: 98.6373 | Prec: 98.5583 | Rec: 98.7164 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 43/50 | F1: 98.4578 | Prec: 98.3200 | Rec: 98.5961 | Params: {'ensemble_size': 60, 'max_features': 0.8, 'lambda_param': 5.0}
+Trial 44/50 | F1: 98.5780 | Prec: 98.4400 | Rec: 98.7164 | Params: {'ensemble_size': 80, 'max_features': 0.9, 'lambda_param': 4.0}
+Trial 45/50 | F1: 98.4751 | Prec: 98.5147 | Rec: 98.4356 | Params: {'ensemble_size': 60, 'max_features': 0.6, 'lambda_param': 4.0}
+Trial 46/50 | F1: 98.3994 | Prec: 98.1637 | Rec: 98.6362 | Params: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 47/50 | F1: 98.5188 | Prec: 98.3220 | Rec: 98.7164 | Params: {'ensemble_size': 50, 'max_features': 1.0, 'lambda_param': 5.0}
+Trial 48/50 | F1: 98.6565 | Prec: 98.6367 | Rec: 98.6763 | Params: {'ensemble_size': 70, 'max_features': 0.5, 'lambda_param': 4.0}
+Trial 49/50 | F1: 98.5700 | Prec: 98.9887 | Rec: 98.1548 | Params: {'ensemble_size': 90, 'max_features': 0.4, 'lambda_param': 3.0}
+Trial 50/50 | F1: 98.6367 | Prec: 98.5972 | Rec: 98.6763 | Params: {'ensemble_size': 60, 'max_features': 0.5, 'lambda_param': 4.0}
+
+[ARF] OTIMIZAÇÃO FINALIZADA
+Melhor Trial: 6
+Melhor Resultado -> F1: 98.6565 | Prec: 98.6367 | Rec: 98.6763
+Melhores Parâmetros: {'ensemble_size': 70, 'max_features': 0.5, 'lambda_param': 4.0}
+
+[ARF] Validando melhores parâmetros com 5 rodada(s) prequencial(is)...
+
+==================================================================================================================================================================================================
+                                                                            RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)                                                                             
+==================================================================================================================================================================================================
+Modelo/Algoritmo       | F1 (%)            | Prec (%)          | Rec (%)           | MCC               | FP          | FN          | Tempo (s)       | ensemble_size | max_features | lambda_param
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Melhor ARF             | 98.4531 ± 0.1544 | 98.3666 ± 0.2204 | 98.5399 ± 0.0969 |  0.9820 ± 0.0018 |   41 ± 6    |   37 ± 3    | 43.8175 ± 1.0817 | 70            | 0.5000       | 4.0000      
+==================================================================================================================================================================================================
+
+📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):
+Modelo/Algoritmo	F1 (%)	Prec (%)	Rec (%)	MCC	FP	FN	Tempo (s)	ensemble_size	max_features	lambda_param
+Melhor ARF	98,4531 ± 0,1544	98,3666 ± 0,2204	98,5399 ± 0,0969	0,9820 ± 0,0018	41 ± 6	37 ± 3	43,8175 ± 1,0817	70	0,5000	4,0000
+
+
+
+Iniciando otimização para: data/15k/Generalização/Generalização_25.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 88.8889 | Prec: 90.1408 | Rec: 87.6712 | Params: {'ensemble_size': 10, 'max_features': 0.7000000000000001, 'lambda_param': 5.0}
+Trial 2/50 | F1: 90.1408 | Prec: 92.7536 | Rec: 87.6712 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 6.0}
+Trial 3/50 | F1: 87.5000 | Prec: 88.7324 | Rec: 86.3014 | Params: {'ensemble_size': 80, 'max_features': 0.4, 'lambda_param': 3.0}
+Trial 4/50 | F1: 90.1408 | Prec: 92.7536 | Rec: 87.6712 | Params: {'ensemble_size': 10, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 5/50 | F1: 88.8889 | Prec: 96.7742 | Rec: 82.1918 | Params: {'ensemble_size': 60, 'max_features': 0.1, 'lambda_param': 1.0}
+Trial 6/50 | F1: 90.1408 | Prec: 92.7536 | Rec: 87.6712 | Params: {'ensemble_size': 60, 'max_features': 0.4, 'lambda_param': 5.0}
+Trial 7/50 | F1: 89.6552 | Prec: 90.2778 | Rec: 89.0411 | Params: {'ensemble_size': 40, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 8/50 | F1: 92.9577 | Prec: 95.6522 | Rec: 90.4110 | Params: {'ensemble_size': 60, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 9/50 | F1: 91.4286 | Prec: 95.5224 | Rec: 87.6712 | Params: {'ensemble_size': 30, 'max_features': 0.1, 'lambda_param': 4.0}
+Trial 10/50 | F1: 89.0411 | Prec: 89.0411 | Rec: 89.0411 | Params: {'ensemble_size': 70, 'max_features': 1.0, 'lambda_param': 4.0}
+Trial 11/50 | F1: 90.0000 | Prec: 94.0299 | Rec: 86.3014 | Params: {'ensemble_size': 100, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 12/50 | F1: 81.5789 | Prec: 78.4810 | Rec: 84.9315 | Params: {'ensemble_size': 40, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 13/50 | F1: 90.9091 | Prec: 92.8571 | Rec: 89.0411 | Params: {'ensemble_size': 40, 'max_features': 0.7000000000000001, 'lambda_param': 4.0}
+Trial 14/50 | F1: 92.0863 | Prec: 96.9697 | Rec: 87.6712 | Params: {'ensemble_size': 30, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 15/50 | F1: 92.0863 | Prec: 96.9697 | Rec: 87.6712 | Params: {'ensemble_size': 30, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 16/50 | F1: 93.6170 | Prec: 97.0588 | Rec: 90.4110 | Params: {'ensemble_size': 90, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 17/50 | F1: 84.8485 | Prec: 94.9153 | Rec: 76.7123 | Params: {'ensemble_size': 100, 'max_features': 0.5, 'lambda_param': 1.0}
+Trial 18/50 | F1: 87.8378 | Prec: 86.6667 | Rec: 89.0411 | Params: {'ensemble_size': 80, 'max_features': 0.6, 'lambda_param': 3.0}
+Trial 19/50 | F1: 93.6170 | Prec: 97.0588 | Rec: 90.4110 | Params: {'ensemble_size': 90, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 20/50 | F1: 88.2353 | Prec: 95.2381 | Rec: 82.1918 | Params: {'ensemble_size': 90, 'max_features': 0.5, 'lambda_param': 1.0}
+Trial 21/50 | F1: 89.5105 | Prec: 91.4286 | Rec: 87.6712 | Params: {'ensemble_size': 90, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 22/50 | F1: 91.6667 | Prec: 92.9577 | Rec: 90.4110 | Params: {'ensemble_size': 70, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 23/50 | F1: 92.0863 | Prec: 96.9697 | Rec: 87.6712 | Params: {'ensemble_size': 90, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 24/50 | F1: 88.2353 | Prec: 95.2381 | Rec: 82.1918 | Params: {'ensemble_size': 80, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 25/50 | F1: 90.4110 | Prec: 90.4110 | Rec: 90.4110 | Params: {'ensemble_size': 70, 'max_features': 0.9, 'lambda_param': 3.0}
+Trial 26/50 | F1: 91.7808 | Prec: 91.7808 | Rec: 91.7808 | Params: {'ensemble_size': 50, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 27/50 | F1: 91.3043 | Prec: 96.9231 | Rec: 86.3014 | Params: {'ensemble_size': 100, 'max_features': 0.5, 'lambda_param': 2.0}
+Trial 28/50 | F1: 87.2483 | Prec: 85.5263 | Rec: 89.0411 | Params: {'ensemble_size': 80, 'max_features': 0.9, 'lambda_param': 3.0}
+Trial 29/50 | F1: 87.5912 | Prec: 93.7500 | Rec: 82.1918 | Params: {'ensemble_size': 90, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 30/50 | F1: 89.5105 | Prec: 91.4286 | Rec: 87.6712 | Params: {'ensemble_size': 50, 'max_features': 0.7000000000000001, 'lambda_param': 5.0}
+Trial 31/50 | F1: 91.5493 | Prec: 94.2029 | Rec: 89.0411 | Params: {'ensemble_size': 70, 'max_features': 0.4, 'lambda_param': 6.0}
+Trial 32/50 | F1: 92.3077 | Prec: 94.2857 | Rec: 90.4110 | Params: {'ensemble_size': 20, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 33/50 | F1: 92.3077 | Prec: 94.2857 | Rec: 90.4110 | Params: {'ensemble_size': 20, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 34/50 | F1: 90.4110 | Prec: 90.4110 | Rec: 90.4110 | Params: {'ensemble_size': 20, 'max_features': 0.9, 'lambda_param': 3.0}
+Trial 35/50 | F1: 92.9577 | Prec: 95.6522 | Rec: 90.4110 | Params: {'ensemble_size': 60, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 36/50 | F1: 91.5493 | Prec: 94.2029 | Rec: 89.0411 | Params: {'ensemble_size': 60, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 37/50 | F1: 92.1986 | Prec: 95.5882 | Rec: 89.0411 | Params: {'ensemble_size': 50, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 38/50 | F1: 89.5105 | Prec: 91.4286 | Rec: 87.6712 | Params: {'ensemble_size': 80, 'max_features': 0.5, 'lambda_param': 3.0}
+Trial 39/50 | F1: 91.0345 | Prec: 91.6667 | Rec: 90.4110 | Params: {'ensemble_size': 60, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 40/50 | F1: 92.9577 | Prec: 95.6522 | Rec: 90.4110 | Params: {'ensemble_size': 70, 'max_features': 0.30000000000000004, 'lambda_param': 4.0}
+Trial 41/50 | F1: 87.5912 | Prec: 93.7500 | Rec: 82.1918 | Params: {'ensemble_size': 90, 'max_features': 0.4, 'lambda_param': 1.0}
+Trial 42/50 | F1: 84.8921 | Prec: 89.3939 | Rec: 80.8219 | Params: {'ensemble_size': 60, 'max_features': 0.2, 'lambda_param': 4.0}
+Trial 43/50 | F1: 92.9577 | Prec: 95.6522 | Rec: 90.4110 | Params: {'ensemble_size': 70, 'max_features': 0.30000000000000004, 'lambda_param': 4.0}
+Trial 44/50 | F1: 90.2778 | Prec: 91.5493 | Rec: 89.0411 | Params: {'ensemble_size': 60, 'max_features': 0.2, 'lambda_param': 5.0}
+Trial 45/50 | F1: 86.8966 | Prec: 87.5000 | Rec: 86.3014 | Params: {'ensemble_size': 70, 'max_features': 0.6, 'lambda_param': 4.0}
+Trial 46/50 | F1: 87.0748 | Prec: 86.4865 | Rec: 87.6712 | Params: {'ensemble_size': 80, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 47/50 | F1: 91.4286 | Prec: 95.5224 | Rec: 87.6712 | Params: {'ensemble_size': 50, 'max_features': 0.4, 'lambda_param': 2.0}
+Trial 48/50 | F1: 89.5105 | Prec: 91.4286 | Rec: 87.6712 | Params: {'ensemble_size': 100, 'max_features': 0.5, 'lambda_param': 5.0}
+Trial 49/50 | F1: 89.5105 | Prec: 91.4286 | Rec: 87.6712 | Params: {'ensemble_size': 40, 'max_features': 1.0, 'lambda_param': 6.0}
+Trial 50/50 | F1: 87.5912 | Prec: 93.7500 | Rec: 82.1918 | Params: {'ensemble_size': 70, 'max_features': 0.2, 'lambda_param': 2.0}
+
+[ARF] OTIMIZAÇÃO FINALIZADA
+Melhor Trial: 16
+Melhor Resultado -> F1: 93.6170 | Prec: 97.0588 | Rec: 90.4110
+Melhores Parâmetros: {'ensemble_size': 90, 'max_features': 0.6, 'lambda_param': 2.0}
+
+[ARF] Validando melhores parâmetros com 5 rodada(s) prequencial(is)...
+
+==================================================================================================================================================================================================
+                                                                            RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)                                                                             
+==================================================================================================================================================================================================
+Modelo/Algoritmo       | F1 (%)            | Prec (%)          | Rec (%)           | MCC               | FP          | FN          | Tempo (s)       | ensemble_size | max_features | lambda_param
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Melhor ARF             | 92.0100 ± 0.9180 | 94.2725 ± 1.5166 | 89.8630 ± 0.6711 |  0.9200 ± 0.0094 |    4 ± 2    |    8 ± 1    | 38.7495 ± 0.7294 | 90            | 0.6000       | 2.0000      
+==================================================================================================================================================================================================
+
+📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):
+Modelo/Algoritmo	F1 (%)	Prec (%)	Rec (%)	MCC	FP	FN	Tempo (s)	ensemble_size	max_features	lambda_param
+Melhor ARF	92,0100 ± 0,9180	94,2725 ± 1,5166	89,8630 ± 0,6711	0,9200 ± 0,0094	4 ± 2	8 ± 1	38,7495 ± 0,7294	90	0,6000	2,0000
+
+
+
+Iniciando otimização para: data/15k/Generalização/Generalização_200.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 96.9163 | Prec: 97.6909 | Rec: 96.1538 | Params: {'ensemble_size': 60, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 2/50 | F1: 97.9664 | Prec: 99.1055 | Rec: 96.8531 | Params: {'ensemble_size': 90, 'max_features': 0.2, 'lambda_param': 1.0}
+Trial 3/50 | F1: 97.7072 | Prec: 98.5765 | Rec: 96.8531 | Params: {'ensemble_size': 60, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 4/50 | F1: 96.1471 | Prec: 96.3158 | Rec: 95.9790 | Params: {'ensemble_size': 40, 'max_features': 0.6, 'lambda_param': 3.0}
+Trial 5/50 | F1: 96.6725 | Prec: 96.8421 | Rec: 96.5035 | Params: {'ensemble_size': 40, 'max_features': 0.4, 'lambda_param': 5.0}
+Trial 6/50 | F1: 96.7572 | Prec: 97.0123 | Rec: 96.5035 | Params: {'ensemble_size': 50, 'max_features': 0.4, 'lambda_param': 5.0}
+Trial 7/50 | F1: 96.1268 | Prec: 96.8085 | Rec: 95.4545 | Params: {'ensemble_size': 40, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 8/50 | F1: 96.8310 | Prec: 97.5177 | Rec: 96.1538 | Params: {'ensemble_size': 30, 'max_features': 0.5, 'lambda_param': 5.0}
+Trial 9/50 | F1: 97.3638 | Prec: 97.8799 | Rec: 96.8531 | Params: {'ensemble_size': 30, 'max_features': 0.5, 'lambda_param': 4.0}
+Trial 10/50 | F1: 98.4127 | Prec: 99.2883 | Rec: 97.5524 | Params: {'ensemble_size': 10, 'max_features': 0.4, 'lambda_param': 1.0}
+Trial 11/50 | F1: 98.2425 | Prec: 98.7633 | Rec: 97.7273 | Params: {'ensemble_size': 10, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 12/50 | F1: 98.2425 | Prec: 98.7633 | Rec: 97.7273 | Params: {'ensemble_size': 10, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 13/50 | F1: 98.0496 | Prec: 99.4604 | Rec: 96.6783 | Params: {'ensemble_size': 10, 'max_features': 0.2, 'lambda_param': 2.0}
+Trial 14/50 | F1: 98.2425 | Prec: 98.7633 | Rec: 97.7273 | Params: {'ensemble_size': 10, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 15/50 | F1: 97.8723 | Prec: 99.2806 | Rec: 96.5035 | Params: {'ensemble_size': 80, 'max_features': 0.30000000000000004, 'lambda_param': 1.0}
+Trial 16/50 | F1: 97.6378 | Prec: 97.7233 | Rec: 97.5524 | Params: {'ensemble_size': 20, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 17/50 | F1: 96.4129 | Prec: 96.4974 | Rec: 96.3287 | Params: {'ensemble_size': 20, 'max_features': 0.30000000000000004, 'lambda_param': 6.0}
+Trial 18/50 | F1: 98.2301 | Prec: 99.4624 | Rec: 97.0280 | Params: {'ensemble_size': 70, 'max_features': 0.30000000000000004, 'lambda_param': 1.0}
+Trial 19/50 | F1: 98.3319 | Prec: 98.7654 | Rec: 97.9021 | Params: {'ensemble_size': 20, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 20/50 | F1: 97.8166 | Prec: 97.7312 | Rec: 97.9021 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 4.0}
+Trial 21/50 | F1: 97.5177 | Prec: 98.9209 | Rec: 96.1538 | Params: {'ensemble_size': 100, 'max_features': 0.4, 'lambda_param': 1.0}
+Trial 22/50 | F1: 98.3319 | Prec: 98.7654 | Rec: 97.9021 | Params: {'ensemble_size': 20, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 23/50 | F1: 98.1465 | Prec: 99.1087 | Rec: 97.2028 | Params: {'ensemble_size': 20, 'max_features': 0.2, 'lambda_param': 2.0}
+Trial 24/50 | F1: 98.9455 | Prec: 99.4700 | Rec: 98.4266 | Params: {'ensemble_size': 20, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 25/50 | F1: 97.8089 | Prec: 98.0668 | Rec: 97.5524 | Params: {'ensemble_size': 30, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 26/50 | F1: 97.8128 | Prec: 97.8984 | Rec: 97.7273 | Params: {'ensemble_size': 50, 'max_features': 0.30000000000000004, 'lambda_param': 4.0}
+Trial 27/50 | F1: 97.8984 | Prec: 98.0702 | Rec: 97.7273 | Params: {'ensemble_size': 20, 'max_features': 1.0, 'lambda_param': 3.0}
+Trial 28/50 | F1: 97.5221 | Prec: 98.7455 | Rec: 96.3287 | Params: {'ensemble_size': 10, 'max_features': 0.2, 'lambda_param': 1.0}
+Trial 29/50 | F1: 98.5866 | Prec: 99.6429 | Rec: 97.5524 | Params: {'ensemble_size': 40, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 30/50 | F1: 97.6460 | Prec: 97.3913 | Rec: 97.9021 | Params: {'ensemble_size': 60, 'max_features': 0.9, 'lambda_param': 4.0}
+Trial 31/50 | F1: 97.1027 | Prec: 97.5309 | Rec: 96.6783 | Params: {'ensemble_size': 40, 'max_features': 0.4, 'lambda_param': 3.0}
+Trial 32/50 | F1: 98.5022 | Prec: 99.2895 | Rec: 97.7273 | Params: {'ensemble_size': 30, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 33/50 | F1: 97.8089 | Prec: 98.0668 | Rec: 97.5524 | Params: {'ensemble_size': 30, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 34/50 | F1: 98.2394 | Prec: 98.9362 | Rec: 97.5524 | Params: {'ensemble_size': 50, 'max_features': 0.1, 'lambda_param': 4.0}
+Trial 35/50 | F1: 97.8051 | Prec: 98.2363 | Rec: 97.3776 | Params: {'ensemble_size': 40, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 36/50 | F1: 97.9878 | Prec: 98.0736 | Rec: 97.9021 | Params: {'ensemble_size': 30, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 37/50 | F1: 97.6501 | Prec: 97.2270 | Rec: 98.0769 | Params: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 4.0}
+Trial 38/50 | F1: 97.8836 | Prec: 98.7544 | Rec: 97.0280 | Params: {'ensemble_size': 40, 'max_features': 0.1, 'lambda_param': 6.0}
+Trial 39/50 | F1: 97.1979 | Prec: 97.3684 | Rec: 97.0280 | Params: {'ensemble_size': 20, 'max_features': 0.5, 'lambda_param': 5.0}
+Trial 40/50 | F1: 97.8984 | Prec: 98.0702 | Rec: 97.7273 | Params: {'ensemble_size': 50, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 41/50 | F1: 97.2878 | Prec: 97.3730 | Rec: 97.2028 | Params: {'ensemble_size': 30, 'max_features': 0.4, 'lambda_param': 5.0}
+Trial 42/50 | F1: 98.3319 | Prec: 98.7654 | Rec: 97.9021 | Params: {'ensemble_size': 20, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 43/50 | F1: 98.7654 | Prec: 99.6441 | Rec: 97.9021 | Params: {'ensemble_size': 10, 'max_features': 0.1, 'lambda_param': 1.0}
+Trial 44/50 | F1: 97.5221 | Prec: 98.7455 | Rec: 96.3287 | Params: {'ensemble_size': 10, 'max_features': 0.2, 'lambda_param': 1.0}
+Trial 45/50 | F1: 98.7654 | Prec: 99.6441 | Rec: 97.9021 | Params: {'ensemble_size': 10, 'max_features': 0.1, 'lambda_param': 1.0}
+Trial 46/50 | F1: 98.7654 | Prec: 99.6441 | Rec: 97.9021 | Params: {'ensemble_size': 10, 'max_features': 0.1, 'lambda_param': 1.0}
+Trial 47/50 | F1: 97.5221 | Prec: 98.7455 | Rec: 96.3287 | Params: {'ensemble_size': 10, 'max_features': 0.2, 'lambda_param': 1.0}
+Trial 48/50 | F1: 98.7654 | Prec: 99.6441 | Rec: 97.9021 | Params: {'ensemble_size': 10, 'max_features': 0.1, 'lambda_param': 1.0}
+Trial 49/50 | F1: 98.7654 | Prec: 99.6441 | Rec: 97.9021 | Params: {'ensemble_size': 10, 'max_features': 0.1, 'lambda_param': 1.0}
+Trial 50/50 | F1: 97.5221 | Prec: 98.7455 | Rec: 96.3287 | Params: {'ensemble_size': 10, 'max_features': 0.2, 'lambda_param': 1.0}
+
+[ARF] OTIMIZAÇÃO FINALIZADA
+Melhor Trial: 24
+Melhor Resultado -> F1: 98.9455 | Prec: 99.4700 | Rec: 98.4266
+Melhores Parâmetros: {'ensemble_size': 20, 'max_features': 0.1, 'lambda_param': 3.0}
+
+[ARF] Validando melhores parâmetros com 5 rodada(s) prequencial(is)...
+
+==================================================================================================================================================================================================
+                                                                            RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)                                                                             
+==================================================================================================================================================================================================
+Modelo/Algoritmo       | F1 (%)            | Prec (%)          | Rec (%)           | MCC               | FP          | FN          | Tempo (s)       | ensemble_size | max_features | lambda_param
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Melhor ARF             | 98.7134 ± 0.2602 | 99.5027 ± 0.2075 | 97.9371 ± 0.3733 |  0.9867 ± 0.0027 |    3 ± 2    |   12 ± 3    | 5.4717 ± 0.1735 | 20            | 0.1000       | 3.0000      
+==================================================================================================================================================================================================
+
+📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):
+Modelo/Algoritmo	F1 (%)	Prec (%)	Rec (%)	MCC	FP	FN	Tempo (s)	ensemble_size	max_features	lambda_param
+Melhor ARF	98,7134 ± 0,2602	99,5027 ± 0,2075	97,9371 ± 0,3733	0,9867 ± 0,0027	3 ± 2	12 ± 3	5,4717 ± 0,1735	20	0,1000	3,0000
+
+
+
+Iniciando otimização para: data/15k/Generalização/Generalização_1000.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 98.3997 | Prec: 98.6693 | Rec: 98.1316 | Params: {'ensemble_size': 100, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 2/50 | F1: 98.5208 | Prec: 98.5208 | Rec: 98.5208 | Params: {'ensemble_size': 50, 'max_features': 0.30000000000000004, 'lambda_param': 6.0}
+Trial 3/50 | F1: 97.8054 | Prec: 97.5969 | Rec: 98.0148 | Params: {'ensemble_size': 70, 'max_features': 0.1, 'lambda_param': 1.0}
+Trial 4/50 | F1: 98.6184 | Prec: 98.5992 | Rec: 98.6376 | Params: {'ensemble_size': 100, 'max_features': 0.5, 'lambda_param': 5.0}
+Trial 5/50 | F1: 98.1768 | Prec: 98.8942 | Rec: 97.4698 | Params: {'ensemble_size': 30, 'max_features': 0.30000000000000004, 'lambda_param': 1.0}
+Trial 6/50 | F1: 98.6932 | Prec: 98.9054 | Rec: 98.4819 | Params: {'ensemble_size': 100, 'max_features': 0.2, 'lambda_param': 5.0}
+Trial 7/50 | F1: 98.4195 | Prec: 98.6698 | Rec: 98.1705 | Params: {'ensemble_size': 10, 'max_features': 0.2, 'lambda_param': 2.0}
+Trial 8/50 | F1: 98.5248 | Prec: 98.2578 | Rec: 98.7933 | Params: {'ensemble_size': 20, 'max_features': 0.8, 'lambda_param': 6.0}
+Trial 9/50 | F1: 98.1287 | Prec: 98.2819 | Rec: 97.9759 | Params: {'ensemble_size': 90, 'max_features': 0.4, 'lambda_param': 5.0}
+Trial 10/50 | F1: 98.2580 | Prec: 98.8189 | Rec: 97.7034 | Params: {'ensemble_size': 10, 'max_features': 0.30000000000000004, 'lambda_param': 1.0}
+Trial 11/50 | F1: 98.5411 | Prec: 98.4837 | Rec: 98.5987 | Params: {'ensemble_size': 70, 'max_features': 1.0, 'lambda_param': 4.0}
+Trial 12/50 | F1: 98.3268 | Prec: 98.2886 | Rec: 98.3651 | Params: {'ensemble_size': 100, 'max_features': 0.6, 'lambda_param': 4.0}
+Trial 13/50 | F1: 98.6365 | Prec: 98.7135 | Rec: 98.5598 | Params: {'ensemble_size': 80, 'max_features': 0.5, 'lambda_param': 5.0}
+Trial 14/50 | F1: 98.3632 | Prec: 98.4783 | Rec: 98.2483 | Params: {'ensemble_size': 80, 'max_features': 0.6, 'lambda_param': 5.0}
+Trial 15/50 | F1: 97.9876 | Prec: 97.4221 | Rec: 98.5598 | Params: {'ensemble_size': 60, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 16/50 | F1: 98.6365 | Prec: 98.7135 | Rec: 98.5598 | Params: {'ensemble_size': 80, 'max_features': 0.5, 'lambda_param': 5.0}
+Trial 17/50 | F1: 98.4257 | Prec: 98.2919 | Rec: 98.5598 | Params: {'ensemble_size': 50, 'max_features': 0.7000000000000001, 'lambda_param': 4.0}
+Trial 18/50 | F1: 98.2641 | Prec: 98.4754 | Rec: 98.0537 | Params: {'ensemble_size': 90, 'max_features': 0.4, 'lambda_param': 6.0}
+Trial 19/50 | F1: 98.8492 | Prec: 99.0618 | Rec: 98.6376 | Params: {'ensemble_size': 80, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 20/50 | F1: 98.6568 | Prec: 98.6760 | Rec: 98.6376 | Params: {'ensemble_size': 40, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 21/50 | F1: 98.7698 | Prec: 99.0987 | Rec: 98.4430 | Params: {'ensemble_size': 90, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 22/50 | F1: 98.7698 | Prec: 99.0987 | Rec: 98.4430 | Params: {'ensemble_size': 90, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 23/50 | F1: 98.1719 | Prec: 98.0956 | Rec: 98.2483 | Params: {'ensemble_size': 90, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 24/50 | F1: 98.7124 | Prec: 98.9441 | Rec: 98.4819 | Params: {'ensemble_size': 70, 'max_features': 0.2, 'lambda_param': 2.0}
+Trial 25/50 | F1: 98.3203 | Prec: 98.6672 | Rec: 97.9759 | Params: {'ensemble_size': 90, 'max_features': 0.4, 'lambda_param': 3.0}
+Trial 26/50 | F1: 98.1633 | Prec: 98.5485 | Rec: 97.7812 | Params: {'ensemble_size': 80, 'max_features': 0.30000000000000004, 'lambda_param': 2.0}
+Trial 27/50 | F1: 97.9876 | Prec: 97.4221 | Rec: 98.5598 | Params: {'ensemble_size': 60, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 28/50 | F1: 98.5773 | Prec: 98.7119 | Rec: 98.4430 | Params: {'ensemble_size': 70, 'max_features': 0.2, 'lambda_param': 4.0}
+Trial 29/50 | F1: 98.3216 | Prec: 98.5910 | Rec: 98.0537 | Params: {'ensemble_size': 90, 'max_features': 0.4, 'lambda_param': 2.0}
+Trial 30/50 | F1: 98.5558 | Prec: 98.8258 | Rec: 98.2873 | Params: {'ensemble_size': 100, 'max_features': 1.0, 'lambda_param': 2.0}
+Trial 31/50 | F1: 98.1036 | Prec: 98.5467 | Rec: 97.6645 | Params: {'ensemble_size': 80, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 32/50 | F1: 98.7124 | Prec: 98.9441 | Rec: 98.4819 | Params: {'ensemble_size': 70, 'max_features': 0.2, 'lambda_param': 2.0}
+Trial 33/50 | F1: 98.6932 | Prec: 98.9054 | Rec: 98.4819 | Params: {'ensemble_size': 60, 'max_features': 0.2, 'lambda_param': 2.0}
+Trial 34/50 | F1: 98.2129 | Prec: 98.0225 | Rec: 98.4040 | Params: {'ensemble_size': 70, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 35/50 | F1: 98.1044 | Prec: 98.5086 | Rec: 97.7034 | Params: {'ensemble_size': 90, 'max_features': 0.30000000000000004, 'lambda_param': 2.0}
+Trial 36/50 | F1: 97.7304 | Prec: 97.4091 | Rec: 98.0537 | Params: {'ensemble_size': 80, 'max_features': 0.1, 'lambda_param': 1.0}
+Trial 37/50 | F1: 98.5773 | Prec: 98.7119 | Rec: 98.4430 | Params: {'ensemble_size': 70, 'max_features': 0.2, 'lambda_param': 4.0}
+Trial 38/50 | F1: 98.0285 | Prec: 98.3164 | Rec: 97.7423 | Params: {'ensemble_size': 100, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 39/50 | F1: 98.1932 | Prec: 99.0884 | Rec: 97.3141 | Params: {'ensemble_size': 40, 'max_features': 0.4, 'lambda_param': 1.0}
+Trial 40/50 | F1: 98.7337 | Prec: 98.8300 | Rec: 98.6376 | Params: {'ensemble_size': 50, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 41/50 | F1: 98.6563 | Prec: 98.7140 | Rec: 98.5987 | Params: {'ensemble_size': 50, 'max_features': 0.9, 'lambda_param': 4.0}
+Trial 42/50 | F1: 98.7337 | Prec: 98.8300 | Rec: 98.6376 | Params: {'ensemble_size': 50, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 43/50 | F1: 98.0233 | Prec: 97.6071 | Rec: 98.4430 | Params: {'ensemble_size': 40, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 44/50 | F1: 98.7140 | Prec: 98.8295 | Rec: 98.5987 | Params: {'ensemble_size': 30, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 45/50 | F1: 98.1832 | Prec: 98.5490 | Rec: 97.8202 | Params: {'ensemble_size': 50, 'max_features': 0.30000000000000004, 'lambda_param': 4.0}
+Trial 46/50 | F1: 98.0293 | Prec: 98.2786 | Rec: 97.7812 | Params: {'ensemble_size': 30, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 47/50 | F1: 98.6558 | Prec: 98.7520 | Rec: 98.5598 | Params: {'ensemble_size': 60, 'max_features': 0.1, 'lambda_param': 4.0}
+Trial 48/50 | F1: 98.7312 | Prec: 99.0211 | Rec: 98.4430 | Params: {'ensemble_size': 100, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 49/50 | F1: 98.0675 | Prec: 98.3555 | Rec: 97.7812 | Params: {'ensemble_size': 40, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 50/50 | F1: 98.8470 | Prec: 99.2543 | Rec: 98.4430 | Params: {'ensemble_size': 50, 'max_features': 0.2, 'lambda_param': 2.0}
+
+[ARF] OTIMIZAÇÃO FINALIZADA
+Melhor Trial: 19
+Melhor Resultado -> F1: 98.8492 | Prec: 99.0618 | Rec: 98.6376
+Melhores Parâmetros: {'ensemble_size': 80, 'max_features': 0.2, 'lambda_param': 3.0}
+
+[ARF] Validando melhores parâmetros com 5 rodada(s) prequencial(is)...
+
+==================================================================================================================================================================================================
+                                                                            RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)                                                                             
+==================================================================================================================================================================================================
+Modelo/Algoritmo       | F1 (%)            | Prec (%)          | Rec (%)           | MCC               | FP          | FN          | Tempo (s)       | ensemble_size | max_features | lambda_param
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Melhor ARF             | 98.7165 ± 0.0735 | 98.9365 ± 0.0755 | 98.4975 ± 0.0908 |  0.9850 ± 0.0009 |   28 ± 2    |   39 ± 3    | 35.0818 ± 1.1075 | 80            | 0.2000       | 3.0000      
+==================================================================================================================================================================================================
+
+📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):
+Modelo/Algoritmo	F1 (%)	Prec (%)	Rec (%)	MCC	FP	FN	Tempo (s)	ensemble_size	max_features	lambda_param
+Melhor ARF	98,7165 ± 0,0735	98,9365 ± 0,0755	98,4975 ± 0,0908	0,9850 ± 0,0009	28 ± 2	39 ± 3	35,0818 ± 1,1075	80	0,2000	3,0000
+
+
+
+Iniciando otimização para: data/15k/Adaptação/Adaptação_25.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 88.7218 | Prec: 95.1613 | Rec: 83.0986 | Params: {'ensemble_size': 30, 'max_features': 0.30000000000000004, 'lambda_param': 2.0}
+Trial 2/50 | F1: 83.6879 | Prec: 84.2857 | Rec: 83.0986 | Params: {'ensemble_size': 20, 'max_features': 0.6, 'lambda_param': 5.0}
+Trial 3/50 | F1: 85.3147 | Prec: 84.7222 | Rec: 85.9155 | Params: {'ensemble_size': 30, 'max_features': 0.30000000000000004, 'lambda_param': 5.0}
+Trial 4/50 | F1: 86.5248 | Prec: 87.1429 | Rec: 85.9155 | Params: {'ensemble_size': 80, 'max_features': 0.8, 'lambda_param': 6.0}
+Trial 5/50 | F1: 81.4815 | Prec: 85.9375 | Rec: 77.4648 | Params: {'ensemble_size': 60, 'max_features': 0.1, 'lambda_param': 6.0}
+Trial 6/50 | F1: 83.4532 | Prec: 85.2941 | Rec: 81.6901 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 3.0}
+Trial 7/50 | F1: 87.8788 | Prec: 95.0820 | Rec: 81.6901 | Params: {'ensemble_size': 10, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 8/50 | F1: 86.3636 | Prec: 93.4426 | Rec: 80.2817 | Params: {'ensemble_size': 70, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 9/50 | F1: 87.2180 | Prec: 93.5484 | Rec: 81.6901 | Params: {'ensemble_size': 100, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 10/50 | F1: 85.2941 | Prec: 89.2308 | Rec: 81.6901 | Params: {'ensemble_size': 40, 'max_features': 0.4, 'lambda_param': 4.0}
+Trial 11/50 | F1: 84.4444 | Prec: 89.0625 | Rec: 80.2817 | Params: {'ensemble_size': 50, 'max_features': 0.1, 'lambda_param': 1.0}
+Trial 12/50 | F1: 84.8485 | Prec: 91.8033 | Rec: 78.8732 | Params: {'ensemble_size': 10, 'max_features': 0.4, 'lambda_param': 3.0}
+Trial 13/50 | F1: 90.7692 | Prec: 100.0000 | Rec: 83.0986 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 14/50 | F1: 87.8788 | Prec: 95.0820 | Rec: 81.6901 | Params: {'ensemble_size': 30, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 15/50 | F1: 89.3939 | Prec: 96.7213 | Rec: 83.0986 | Params: {'ensemble_size': 10, 'max_features': 0.4, 'lambda_param': 2.0}
+Trial 16/50 | F1: 87.6923 | Prec: 96.6102 | Rec: 80.2817 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 17/50 | F1: 86.3636 | Prec: 93.4426 | Rec: 80.2817 | Params: {'ensemble_size': 50, 'max_features': 0.4, 'lambda_param': 2.0}
+Trial 18/50 | F1: 86.5672 | Prec: 92.0635 | Rec: 81.6901 | Params: {'ensemble_size': 20, 'max_features': 1.0, 'lambda_param': 4.0}
+Trial 19/50 | F1: 89.3939 | Prec: 96.7213 | Rec: 83.0986 | Params: {'ensemble_size': 100, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 20/50 | F1: 87.3016 | Prec: 100.0000 | Rec: 77.4648 | Params: {'ensemble_size': 20, 'max_features': 0.5, 'lambda_param': 1.0}
+Trial 21/50 | F1: 82.3529 | Prec: 86.1538 | Rec: 78.8732 | Params: {'ensemble_size': 40, 'max_features': 0.2, 'lambda_param': 3.0}
+Trial 22/50 | F1: 89.3939 | Prec: 96.7213 | Rec: 83.0986 | Params: {'ensemble_size': 100, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 23/50 | F1: 89.5522 | Prec: 95.2381 | Rec: 84.5070 | Params: {'ensemble_size': 80, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 24/50 | F1: 83.6879 | Prec: 84.2857 | Rec: 83.0986 | Params: {'ensemble_size': 80, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 25/50 | F1: 81.6000 | Prec: 94.4444 | Rec: 71.8310 | Params: {'ensemble_size': 90, 'max_features': 0.5, 'lambda_param': 1.0}
+Trial 26/50 | F1: 91.8519 | Prec: 96.8750 | Rec: 87.3239 | Params: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 27/50 | F1: 86.3309 | Prec: 88.2353 | Rec: 84.5070 | Params: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 4.0}
+Trial 28/50 | F1: 88.0597 | Prec: 93.6508 | Rec: 83.0986 | Params: {'ensemble_size': 70, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 29/50 | F1: 83.6879 | Prec: 84.2857 | Rec: 83.0986 | Params: {'ensemble_size': 80, 'max_features': 0.9, 'lambda_param': 3.0}
+Trial 30/50 | F1: 90.2256 | Prec: 96.7742 | Rec: 84.5070 | Params: {'ensemble_size': 60, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 31/50 | F1: 87.2180 | Prec: 93.5484 | Rec: 81.6901 | Params: {'ensemble_size': 60, 'max_features': 0.9, 'lambda_param': 1.0}
+Trial 32/50 | F1: 90.2256 | Prec: 96.7742 | Rec: 84.5070 | Params: {'ensemble_size': 60, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 33/50 | F1: 86.7647 | Prec: 90.7692 | Rec: 83.0986 | Params: {'ensemble_size': 60, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 34/50 | F1: 88.4058 | Prec: 91.0448 | Rec: 85.9155 | Params: {'ensemble_size': 50, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 35/50 | F1: 85.5072 | Prec: 88.0597 | Rec: 83.0986 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 36/50 | F1: 85.5172 | Prec: 83.7838 | Rec: 87.3239 | Params: {'ensemble_size': 40, 'max_features': 0.5, 'lambda_param': 5.0}
+Trial 37/50 | F1: 86.3636 | Prec: 93.4426 | Rec: 80.2817 | Params: {'ensemble_size': 60, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 38/50 | F1: 88.4058 | Prec: 91.0448 | Rec: 85.9155 | Params: {'ensemble_size': 50, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 39/50 | F1: 85.5072 | Prec: 88.0597 | Rec: 83.0986 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 40/50 | F1: 84.2857 | Prec: 85.5072 | Rec: 83.0986 | Params: {'ensemble_size': 90, 'max_features': 0.6, 'lambda_param': 4.0}
+Trial 41/50 | F1: 86.1538 | Prec: 94.9153 | Rec: 78.8732 | Params: {'ensemble_size': 60, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 42/50 | F1: 89.5522 | Prec: 95.2381 | Rec: 84.5070 | Params: {'ensemble_size': 80, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 43/50 | F1: 89.3939 | Prec: 96.7213 | Rec: 83.0986 | Params: {'ensemble_size': 90, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 44/50 | F1: 85.9259 | Prec: 90.6250 | Rec: 81.6901 | Params: {'ensemble_size': 70, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 45/50 | F1: 82.5175 | Prec: 81.9444 | Rec: 83.0986 | Params: {'ensemble_size': 80, 'max_features': 0.7000000000000001, 'lambda_param': 6.0}
+Trial 46/50 | F1: 84.2857 | Prec: 85.5072 | Rec: 83.0986 | Params: {'ensemble_size': 60, 'max_features': 0.9, 'lambda_param': 3.0}
+Trial 47/50 | F1: 88.8889 | Prec: 93.7500 | Rec: 84.5070 | Params: {'ensemble_size': 50, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 48/50 | F1: 85.7143 | Prec: 91.9355 | Rec: 80.2817 | Params: {'ensemble_size': 70, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 49/50 | F1: 85.1064 | Prec: 85.7143 | Rec: 84.5070 | Params: {'ensemble_size': 80, 'max_features': 1.0, 'lambda_param': 3.0}
+Trial 50/50 | F1: 91.3043 | Prec: 94.0299 | Rec: 88.7324 | Params: {'ensemble_size': 40, 'max_features': 0.5, 'lambda_param': 2.0}
+
+[ARF] OTIMIZAÇÃO FINALIZADA
+Melhor Trial: 26
+Melhor Resultado -> F1: 91.8519 | Prec: 96.8750 | Rec: 87.3239
+Melhores Parâmetros: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+
+[ARF] Validando melhores parâmetros com 5 rodada(s) prequencial(is)...
+
+==================================================================================================================================================================================================
+                                                                            RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)                                                                             
+==================================================================================================================================================================================================
+Modelo/Algoritmo       | F1 (%)            | Prec (%)          | Rec (%)           | MCC               | FP          | FN          | Tempo (s)       | ensemble_size | max_features | lambda_param
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Melhor ARF             | 90.0047 ± 1.2964 | 95.5640 ± 0.6609 | 85.0704 ± 1.9105 |  0.9012 ± 0.0126 |    3 ± 1    |   11 ± 2    | 23.0372 ± 0.2550 | 70            | 0.7000       | 2.0000      
+==================================================================================================================================================================================================
+
+📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):
+Modelo/Algoritmo	F1 (%)	Prec (%)	Rec (%)	MCC	FP	FN	Tempo (s)	ensemble_size	max_features	lambda_param
+Melhor ARF	90,0047 ± 1,2964	95,5640 ± 0,6609	85,0704 ± 1,9105	0,9012 ± 0,0126	3 ± 1	11 ± 2	23,0372 ± 0,2550	70	0,7000	2,0000
+
+
+
+Iniciando otimização para: data/15k/Adaptação/Adaptação_200.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 96.0836 | Prec: 95.3368 | Rec: 96.8421 | Params: {'ensemble_size': 70, 'max_features': 0.9, 'lambda_param': 6.0}
+Trial 2/50 | F1: 96.5096 | Prec: 96.0069 | Rec: 97.0175 | Params: {'ensemble_size': 50, 'max_features': 0.2, 'lambda_param': 6.0}
+Trial 3/50 | F1: 95.6140 | Prec: 95.6140 | Rec: 95.6140 | Params: {'ensemble_size': 10, 'max_features': 0.1, 'lambda_param': 5.0}
+Trial 4/50 | F1: 96.9054 | Prec: 97.6827 | Rec: 96.1404 | Params: {'ensemble_size': 10, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 5/50 | F1: 97.3404 | Prec: 98.3871 | Rec: 96.3158 | Params: {'ensemble_size': 30, 'max_features': 0.2, 'lambda_param': 2.0}
+Trial 6/50 | F1: 96.8999 | Prec: 97.8533 | Rec: 95.9649 | Params: {'ensemble_size': 70, 'max_features': 0.9, 'lambda_param': 1.0}
+Trial 7/50 | F1: 97.6085 | Prec: 98.5689 | Rec: 96.6667 | Params: {'ensemble_size': 20, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 8/50 | F1: 96.4974 | Prec: 96.3287 | Rec: 96.6667 | Params: {'ensemble_size': 30, 'max_features': 0.2, 'lambda_param': 5.0}
+Trial 9/50 | F1: 97.4494 | Prec: 97.7072 | Rec: 97.1930 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 10/50 | F1: 96.5819 | Prec: 96.4974 | Rec: 96.6667 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 6.0}
+Trial 11/50 | F1: 96.9858 | Prec: 98.0287 | Rec: 95.9649 | Params: {'ensemble_size': 100, 'max_features': 0.4, 'lambda_param': 3.0}
+Trial 12/50 | F1: 97.7935 | Prec: 98.4014 | Rec: 97.1930 | Params: {'ensemble_size': 40, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 13/50 | F1: 97.5309 | Prec: 98.0496 | Rec: 97.0175 | Params: {'ensemble_size': 50, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 14/50 | F1: 96.6192 | Prec: 98.0144 | Rec: 95.2632 | Params: {'ensemble_size': 40, 'max_features': 0.5, 'lambda_param': 3.0}
+Trial 15/50 | F1: 97.7935 | Prec: 98.4014 | Rec: 97.1930 | Params: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 16/50 | F1: 97.0719 | Prec: 98.2047 | Rec: 95.9649 | Params: {'ensemble_size': 70, 'max_features': 0.4, 'lambda_param': 2.0}
+Trial 17/50 | F1: 97.1880 | Prec: 97.3592 | Rec: 97.0175 | Params: {'ensemble_size': 90, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 18/50 | F1: 97.2542 | Prec: 98.2111 | Rec: 96.3158 | Params: {'ensemble_size': 80, 'max_features': 0.5, 'lambda_param': 3.0}
+Trial 19/50 | F1: 97.3451 | Prec: 98.2143 | Rec: 96.4912 | Params: {'ensemble_size': 60, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 20/50 | F1: 96.9858 | Prec: 98.0287 | Rec: 95.9649 | Params: {'ensemble_size': 60, 'max_features': 0.4, 'lambda_param': 2.0}
+Trial 21/50 | F1: 97.1880 | Prec: 97.3592 | Rec: 97.0175 | Params: {'ensemble_size': 90, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 22/50 | F1: 97.6085 | Prec: 98.5689 | Rec: 96.6667 | Params: {'ensemble_size': 20, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 23/50 | F1: 97.2542 | Prec: 98.2111 | Rec: 96.3158 | Params: {'ensemble_size': 40, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 24/50 | F1: 97.2444 | Prec: 98.5586 | Rec: 95.9649 | Params: {'ensemble_size': 50, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 25/50 | F1: 97.1880 | Prec: 97.3592 | Rec: 97.0175 | Params: {'ensemble_size': 20, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 26/50 | F1: 97.3357 | Prec: 98.5612 | Rec: 96.1404 | Params: {'ensemble_size': 40, 'max_features': 0.5, 'lambda_param': 1.0}
+Trial 27/50 | F1: 97.0018 | Prec: 97.5177 | Rec: 96.4912 | Params: {'ensemble_size': 20, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 28/50 | F1: 97.0228 | Prec: 96.8531 | Rec: 97.1930 | Params: {'ensemble_size': 60, 'max_features': 0.6, 'lambda_param': 3.0}
+Trial 29/50 | F1: 97.0667 | Prec: 98.3784 | Rec: 95.7895 | Params: {'ensemble_size': 80, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 30/50 | F1: 97.4449 | Prec: 97.8761 | Rec: 97.0175 | Params: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 31/50 | F1: 96.8142 | Prec: 97.6786 | Rec: 95.9649 | Params: {'ensemble_size': 40, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 32/50 | F1: 97.6085 | Prec: 98.5689 | Rec: 96.6667 | Params: {'ensemble_size': 20, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 33/50 | F1: 96.8999 | Prec: 97.8533 | Rec: 95.9649 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 34/50 | F1: 97.6909 | Prec: 98.9209 | Rec: 96.4912 | Params: {'ensemble_size': 20, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 35/50 | F1: 96.9589 | Prec: 98.9051 | Rec: 95.0877 | Params: {'ensemble_size': 10, 'max_features': 0.5, 'lambda_param': 2.0}
+Trial 36/50 | F1: 91.6107 | Prec: 87.7814 | Rec: 95.7895 | Params: {'ensemble_size': 20, 'max_features': 0.30000000000000004, 'lambda_param': 1.0}
+Trial 37/50 | F1: 97.4494 | Prec: 97.7072 | Rec: 97.1930 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 38/50 | F1: 97.2444 | Prec: 98.5586 | Rec: 95.9649 | Params: {'ensemble_size': 50, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 39/50 | F1: 96.9325 | Prec: 96.8476 | Rec: 97.0175 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 5.0}
+Trial 40/50 | F1: 94.8651 | Prec: 94.1278 | Rec: 95.6140 | Params: {'ensemble_size': 30, 'max_features': 0.30000000000000004, 'lambda_param': 1.0}
+Trial 41/50 | F1: 96.8310 | Prec: 97.1731 | Rec: 96.4912 | Params: {'ensemble_size': 80, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 42/50 | F1: 97.6085 | Prec: 98.5689 | Rec: 96.6667 | Params: {'ensemble_size': 20, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 43/50 | F1: 97.6909 | Prec: 98.9209 | Rec: 96.4912 | Params: {'ensemble_size': 20, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 44/50 | F1: 96.9589 | Prec: 98.9051 | Rec: 95.0877 | Params: {'ensemble_size': 10, 'max_features': 0.5, 'lambda_param': 2.0}
+Trial 45/50 | F1: 97.6127 | Prec: 98.3957 | Rec: 96.8421 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 46/50 | F1: 97.6127 | Prec: 98.3957 | Rec: 96.8421 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 47/50 | F1: 96.8944 | Prec: 98.0251 | Rec: 95.7895 | Params: {'ensemble_size': 40, 'max_features': 0.4, 'lambda_param': 2.0}
+Trial 48/50 | F1: 96.7800 | Prec: 98.7226 | Rec: 94.9123 | Params: {'ensemble_size': 30, 'max_features': 0.5, 'lambda_param': 1.0}
+Trial 49/50 | F1: 97.7935 | Prec: 98.4014 | Rec: 97.1930 | Params: {'ensemble_size': 40, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 50/50 | F1: 96.9163 | Prec: 97.3451 | Rec: 96.4912 | Params: {'ensemble_size': 50, 'max_features': 0.5, 'lambda_param': 4.0}
+
+[ARF] OTIMIZAÇÃO FINALIZADA
+Melhor Trial: 12
+Melhor Resultado -> F1: 97.7935 | Prec: 98.4014 | Rec: 97.1930
+Melhores Parâmetros: {'ensemble_size': 40, 'max_features': 0.6, 'lambda_param': 2.0}
+
+[ARF] Validando melhores parâmetros com 5 rodada(s) prequencial(is)...
+
+==================================================================================================================================================================================================
+                                                                            RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)                                                                             
+==================================================================================================================================================================================================
+Modelo/Algoritmo       | F1 (%)            | Prec (%)          | Rec (%)           | MCC               | FP          | FN          | Tempo (s)       | ensemble_size | max_features | lambda_param
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Melhor ARF             | 97.5327 ± 0.1563 | 97.9820 ± 0.2365 | 97.0877 ± 0.1404 |  0.9744 ± 0.0016 |   12 ± 2    |   17 ± 1    | 10.4432 ± 0.4465 | 40            | 0.6000       | 2.0000      
+==================================================================================================================================================================================================
+
+📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):
+Modelo/Algoritmo	F1 (%)	Prec (%)	Rec (%)	MCC	FP	FN	Tempo (s)	ensemble_size	max_features	lambda_param
+Melhor ARF	97,5327 ± 0,1563	97,9820 ± 0,2365	97,0877 ± 0,1404	0,9744 ± 0,0016	12 ± 2	17 ± 1	10,4432 ± 0,4465	40	0,6000	2,0000
+
+
+
+Iniciando otimização para: data/15k/Adaptação/Adaptação_1000.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 98.4543 | Prec: 98.8994 | Rec: 98.0132 | Params: {'ensemble_size': 20, 'max_features': 0.4, 'lambda_param': 2.0}
+Trial 2/50 | F1: 98.4220 | Prec: 98.4412 | Rec: 98.4028 | Params: {'ensemble_size': 80, 'max_features': 0.4, 'lambda_param': 6.0}
+Trial 3/50 | F1: 98.2668 | Prec: 98.2477 | Rec: 98.2859 | Params: {'ensemble_size': 80, 'max_features': 0.9, 'lambda_param': 6.0}
+Trial 4/50 | F1: 98.5285 | Prec: 99.2490 | Rec: 97.8185 | Params: {'ensemble_size': 90, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 5/50 | F1: 98.4387 | Prec: 98.6312 | Rec: 98.2470 | Params: {'ensemble_size': 10, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 6/50 | F1: 98.3236 | Prec: 98.4003 | Rec: 98.2470 | Params: {'ensemble_size': 30, 'max_features': 0.8, 'lambda_param': 5.0}
+Trial 7/50 | F1: 98.2237 | Prec: 98.4351 | Rec: 98.0132 | Params: {'ensemble_size': 30, 'max_features': 0.4, 'lambda_param': 3.0}
+Trial 8/50 | F1: 98.1804 | Prec: 98.6242 | Rec: 97.7406 | Params: {'ensemble_size': 60, 'max_features': 0.4, 'lambda_param': 2.0}
+Trial 9/50 | F1: 98.3805 | Prec: 98.5536 | Rec: 98.2080 | Params: {'ensemble_size': 20, 'max_features': 1.0, 'lambda_param': 3.0}
+Trial 10/50 | F1: 98.4573 | Prec: 98.7079 | Rec: 98.2080 | Params: {'ensemble_size': 70, 'max_features': 0.2, 'lambda_param': 4.0}
+Trial 11/50 | F1: 98.5456 | Prec: 99.4447 | Rec: 97.6626 | Params: {'ensemble_size': 100, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 12/50 | F1: 98.5456 | Prec: 99.4447 | Rec: 97.6626 | Params: {'ensemble_size': 100, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 13/50 | F1: 98.5456 | Prec: 99.4447 | Rec: 97.6626 | Params: {'ensemble_size': 100, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 14/50 | F1: 98.1279 | Prec: 98.2429 | Rec: 98.0132 | Params: {'ensemble_size': 100, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 15/50 | F1: 98.7436 | Prec: 99.5251 | Rec: 97.9743 | Params: {'ensemble_size': 50, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 16/50 | F1: 98.0956 | Prec: 97.8674 | Rec: 98.3249 | Params: {'ensemble_size': 50, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 17/50 | F1: 98.3057 | Prec: 98.2866 | Rec: 98.3249 | Params: {'ensemble_size': 50, 'max_features': 0.6, 'lambda_param': 4.0}
+Trial 18/50 | F1: 98.0560 | Prec: 97.8657 | Rec: 98.2470 | Params: {'ensemble_size': 40, 'max_features': 0.5, 'lambda_param': 3.0}
+Trial 19/50 | F1: 98.7247 | Prec: 99.4466 | Rec: 98.0132 | Params: {'ensemble_size': 60, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 20/50 | F1: 98.3157 | Prec: 98.8578 | Rec: 97.7795 | Params: {'ensemble_size': 60, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 21/50 | F1: 98.4195 | Prec: 98.5927 | Rec: 98.2470 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 5.0}
+Trial 22/50 | F1: 98.7848 | Prec: 99.4083 | Rec: 98.1691 | Params: {'ensemble_size': 40, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 23/50 | F1: 98.7848 | Prec: 99.4083 | Rec: 98.1691 | Params: {'ensemble_size': 40, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 24/50 | F1: 98.4934 | Prec: 98.9387 | Rec: 98.0522 | Params: {'ensemble_size': 40, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 25/50 | F1: 98.5116 | Prec: 99.0547 | Rec: 97.9743 | Params: {'ensemble_size': 40, 'max_features': 0.5, 'lambda_param': 1.0}
+Trial 26/50 | F1: 98.5667 | Prec: 99.3666 | Rec: 97.7795 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 27/50 | F1: 98.0977 | Prec: 98.7757 | Rec: 97.4289 | Params: {'ensemble_size': 50, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 28/50 | F1: 98.1868 | Prec: 98.2826 | Rec: 98.0912 | Params: {'ensemble_size': 40, 'max_features': 0.9, 'lambda_param': 3.0}
+Trial 29/50 | F1: 97.9688 | Prec: 98.2374 | Rec: 97.7016 | Params: {'ensemble_size': 20, 'max_features': 0.30000000000000004, 'lambda_param': 1.0}
+Trial 30/50 | F1: 97.8028 | Prec: 97.6320 | Rec: 97.9743 | Params: {'ensemble_size': 30, 'max_features': 0.5, 'lambda_param': 2.0}
+Trial 31/50 | F1: 98.1811 | Prec: 98.5860 | Rec: 97.7795 | Params: {'ensemble_size': 10, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 32/50 | F1: 98.7247 | Prec: 99.4466 | Rec: 98.0132 | Params: {'ensemble_size': 60, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 33/50 | F1: 98.9033 | Prec: 99.4486 | Rec: 98.3638 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 34/50 | F1: 98.6258 | Prec: 99.4064 | Rec: 97.8574 | Params: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 35/50 | F1: 98.5855 | Prec: 99.4451 | Rec: 97.7406 | Params: {'ensemble_size': 80, 'max_features': 0.9, 'lambda_param': 1.0}
+Trial 36/50 | F1: 98.1265 | Prec: 98.3183 | Rec: 97.9353 | Params: {'ensemble_size': 50, 'max_features': 1.0, 'lambda_param': 2.0}
+Trial 37/50 | F1: 98.9033 | Prec: 99.4486 | Rec: 98.3638 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 1.0}
+Trial 38/50 | F1: 98.2886 | Prec: 98.1359 | Rec: 98.4418 | Params: {'ensemble_size': 80, 'max_features': 1.0, 'lambda_param': 5.0}
+Trial 39/50 | F1: 98.4597 | Prec: 98.5558 | Rec: 98.3638 | Params: {'ensemble_size': 90, 'max_features': 0.8, 'lambda_param': 6.0}
+Trial 40/50 | F1: 98.5086 | Prec: 99.2487 | Rec: 97.7795 | Params: {'ensemble_size': 90, 'max_features': 0.9, 'lambda_param': 1.0}
+Trial 41/50 | F1: 98.3395 | Prec: 98.6285 | Rec: 98.0522 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 42/50 | F1: 98.5262 | Prec: 99.4052 | Rec: 97.6626 | Params: {'ensemble_size': 60, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 43/50 | F1: 98.5069 | Prec: 99.3658 | Rec: 97.6626 | Params: {'ensemble_size': 40, 'max_features': 0.9, 'lambda_param': 1.0}
+Trial 44/50 | F1: 98.7436 | Prec: 99.5251 | Rec: 97.9743 | Params: {'ensemble_size': 50, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 45/50 | F1: 97.9751 | Prec: 97.9369 | Rec: 98.0132 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 46/50 | F1: 98.1014 | Prec: 98.5838 | Rec: 97.6237 | Params: {'ensemble_size': 80, 'max_features': 0.30000000000000004, 'lambda_param': 1.0}
+Trial 47/50 | F1: 98.0837 | Prec: 98.4688 | Rec: 97.7016 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 48/50 | F1: 98.6258 | Prec: 99.4064 | Rec: 97.8574 | Params: {'ensemble_size': 50, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 49/50 | F1: 98.5467 | Prec: 99.3663 | Rec: 97.7406 | Params: {'ensemble_size': 60, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 50/50 | F1: 98.0140 | Prec: 97.9759 | Rec: 98.0522 | Params: {'ensemble_size': 20, 'max_features': 0.8, 'lambda_param': 4.0}
+
+[ARF] OTIMIZAÇÃO FINALIZADA
+Melhor Trial: 33
+Melhor Resultado -> F1: 98.9033 | Prec: 99.4486 | Rec: 98.3638
+Melhores Parâmetros: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 1.0}
+
+[ARF] Validando melhores parâmetros com 5 rodada(s) prequencial(is)...
+
+==================================================================================================================================================================================================
+                                                                            RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)                                                                             
+==================================================================================================================================================================================================
+Modelo/Algoritmo       | F1 (%)            | Prec (%)          | Rec (%)           | MCC               | FP          | FN          | Tempo (s)       | ensemble_size | max_features | lambda_param
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Melhor ARF             | 98.7450 ± 0.1025 | 99.4078 ± 0.0435 | 98.0912 ± 0.1794 |  0.9854 ± 0.0012 |   15 ± 2    |   49 ± 5    | 25.2827 ± 0.3906 | 70            | 0.8000       | 1.0000      
+==================================================================================================================================================================================================
+
+📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):
+Modelo/Algoritmo	F1 (%)	Prec (%)	Rec (%)	MCC	FP	FN	Tempo (s)	ensemble_size	max_features	lambda_param
+Melhor ARF	98,7450 ± 0,1025	99,4078 ± 0,0435	98,0912 ± 0,1794	0,9854 ± 0,0012	15 ± 2	49 ± 5	25,2827 ± 0,3906	70	0,8000	1,0000
+
+
+
+Iniciando otimização para: data/15k/Recorrência/Recorrência_25.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 77.5862 | Prec: 97.8261 | Rec: 64.2857 | Params: {'ensemble_size': 50, 'max_features': 0.30000000000000004, 'lambda_param': 2.0}
+Trial 2/50 | F1: 71.1111 | Prec: 73.8462 | Rec: 68.5714 | Params: {'ensemble_size': 80, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 3/50 | F1: 82.6446 | Prec: 98.0392 | Rec: 71.4286 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 3.0}
+Trial 4/50 | F1: 88.8889 | Prec: 100.0000 | Rec: 80.0000 | Params: {'ensemble_size': 10, 'max_features': 1.0, 'lambda_param': 5.0}
+Trial 5/50 | F1: 70.3704 | Prec: 100.0000 | Rec: 54.2857 | Params: {'ensemble_size': 10, 'max_features': 0.4, 'lambda_param': 1.0}
+Trial 6/50 | F1: 81.6000 | Prec: 92.7273 | Rec: 72.8571 | Params: {'ensemble_size': 100, 'max_features': 0.30000000000000004, 'lambda_param': 6.0}
+Trial 7/50 | F1: 74.3802 | Prec: 88.2353 | Rec: 64.2857 | Params: {'ensemble_size': 50, 'max_features': 0.1, 'lambda_param': 5.0}
+Trial 8/50 | F1: 86.6142 | Prec: 96.4912 | Rec: 78.5714 | Params: {'ensemble_size': 30, 'max_features': 0.9, 'lambda_param': 5.0}
+Trial 9/50 | F1: 84.5528 | Prec: 98.1132 | Rec: 74.2857 | Params: {'ensemble_size': 20, 'max_features': 1.0, 'lambda_param': 2.0}
+Trial 10/50 | F1: 80.6723 | Prec: 97.9592 | Rec: 68.5714 | Params: {'ensemble_size': 20, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 11/50 | F1: 82.4427 | Prec: 88.5246 | Rec: 77.1429 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 5.0}
+Trial 12/50 | F1: 88.3721 | Prec: 96.6102 | Rec: 81.4286 | Params: {'ensemble_size': 40, 'max_features': 1.0, 'lambda_param': 5.0}
+Trial 13/50 | F1: 87.6923 | Prec: 95.0000 | Rec: 81.4286 | Params: {'ensemble_size': 40, 'max_features': 1.0, 'lambda_param': 6.0}
+Trial 14/50 | F1: 78.9916 | Prec: 95.9184 | Rec: 67.1429 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 15/50 | F1: 88.0000 | Prec: 100.0000 | Rec: 78.5714 | Params: {'ensemble_size': 70, 'max_features': 1.0, 'lambda_param': 4.0}
+Trial 16/50 | F1: 84.3750 | Prec: 93.1034 | Rec: 77.1429 | Params: {'ensemble_size': 40, 'max_features': 0.8, 'lambda_param': 5.0}
+Trial 17/50 | F1: 81.8898 | Prec: 91.2281 | Rec: 74.2857 | Params: {'ensemble_size': 60, 'max_features': 0.6, 'lambda_param': 6.0}
+Trial 18/50 | F1: 85.2459 | Prec: 100.0000 | Rec: 74.2857 | Params: {'ensemble_size': 30, 'max_features': 0.9, 'lambda_param': 4.0}
+Trial 19/50 | F1: 84.8000 | Prec: 96.3636 | Rec: 75.7143 | Params: {'ensemble_size': 100, 'max_features': 0.5, 'lambda_param': 5.0}
+Trial 20/50 | F1: 83.8710 | Prec: 96.2963 | Rec: 74.2857 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 6.0}
+Trial 21/50 | F1: 79.3388 | Prec: 94.1176 | Rec: 68.5714 | Params: {'ensemble_size': 40, 'max_features': 0.7000000000000001, 'lambda_param': 4.0}
+Trial 22/50 | F1: 88.0000 | Prec: 100.0000 | Rec: 78.5714 | Params: {'ensemble_size': 80, 'max_features': 1.0, 'lambda_param': 4.0}
+Trial 23/50 | F1: 82.6446 | Prec: 98.0392 | Rec: 71.4286 | Params: {'ensemble_size': 70, 'max_features': 1.0, 'lambda_param': 3.0}
+Trial 24/50 | F1: 85.0394 | Prec: 94.7368 | Rec: 77.1429 | Params: {'ensemble_size': 60, 'max_features': 0.9, 'lambda_param': 5.0}
+Trial 25/50 | F1: 88.0000 | Prec: 100.0000 | Rec: 78.5714 | Params: {'ensemble_size': 80, 'max_features': 1.0, 'lambda_param': 4.0}
+Trial 26/50 | F1: 84.5528 | Prec: 98.1132 | Rec: 74.2857 | Params: {'ensemble_size': 90, 'max_features': 0.7000000000000001, 'lambda_param': 5.0}
+Trial 27/50 | F1: 85.7143 | Prec: 96.4286 | Rec: 77.1429 | Params: {'ensemble_size': 70, 'max_features': 0.9, 'lambda_param': 4.0}
+Trial 28/50 | F1: 82.5397 | Prec: 92.8571 | Rec: 74.2857 | Params: {'ensemble_size': 20, 'max_features': 0.8, 'lambda_param': 6.0}
+Trial 29/50 | F1: 84.2975 | Prec: 100.0000 | Rec: 72.8571 | Params: {'ensemble_size': 50, 'max_features': 1.0, 'lambda_param': 3.0}
+Trial 30/50 | F1: 72.5664 | Prec: 95.3488 | Rec: 58.5714 | Params: {'ensemble_size': 60, 'max_features': 0.30000000000000004, 'lambda_param': 1.0}
+Trial 31/50 | F1: 86.6142 | Prec: 96.4912 | Rec: 78.5714 | Params: {'ensemble_size': 50, 'max_features': 0.9, 'lambda_param': 5.0}
+Trial 32/50 | F1: 88.0000 | Prec: 100.0000 | Rec: 78.5714 | Params: {'ensemble_size': 80, 'max_features': 1.0, 'lambda_param': 4.0}
+Trial 33/50 | F1: 88.0000 | Prec: 100.0000 | Rec: 78.5714 | Params: {'ensemble_size': 90, 'max_features': 1.0, 'lambda_param': 4.0}
+Trial 34/50 | F1: 81.6667 | Prec: 98.0000 | Rec: 70.0000 | Params: {'ensemble_size': 90, 'max_features': 0.9, 'lambda_param': 3.0}
+Trial 35/50 | F1: 84.3750 | Prec: 93.1034 | Rec: 77.1429 | Params: {'ensemble_size': 70, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 36/50 | F1: 87.6923 | Prec: 95.0000 | Rec: 81.4286 | Params: {'ensemble_size': 80, 'max_features': 1.0, 'lambda_param': 5.0}
+Trial 37/50 | F1: 81.3559 | Prec: 100.0000 | Rec: 68.5714 | Params: {'ensemble_size': 60, 'max_features': 0.9, 'lambda_param': 3.0}
+Trial 38/50 | F1: 75.0000 | Prec: 77.2727 | Rec: 72.8571 | Params: {'ensemble_size': 80, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 39/50 | F1: 84.1270 | Prec: 94.6429 | Rec: 75.7143 | Params: {'ensemble_size': 50, 'max_features': 0.5, 'lambda_param': 4.0}
+Trial 40/50 | F1: 86.8217 | Prec: 94.9153 | Rec: 80.0000 | Params: {'ensemble_size': 30, 'max_features': 1.0, 'lambda_param': 5.0}
+Trial 41/50 | F1: 80.9524 | Prec: 91.0714 | Rec: 72.8571 | Params: {'ensemble_size': 70, 'max_features': 0.7000000000000001, 'lambda_param': 6.0}
+Trial 42/50 | F1: 88.0000 | Prec: 100.0000 | Rec: 78.5714 | Params: {'ensemble_size': 80, 'max_features': 1.0, 'lambda_param': 4.0}
+Trial 43/50 | F1: 85.7143 | Prec: 96.4286 | Rec: 77.1429 | Params: {'ensemble_size': 90, 'max_features': 0.9, 'lambda_param': 4.0}
+Trial 44/50 | F1: 78.4000 | Prec: 89.0909 | Rec: 70.0000 | Params: {'ensemble_size': 80, 'max_features': 0.2, 'lambda_param': 5.0}
+Trial 45/50 | F1: 82.6446 | Prec: 98.0392 | Rec: 71.4286 | Params: {'ensemble_size': 10, 'max_features': 1.0, 'lambda_param': 3.0}
+Trial 46/50 | F1: 85.0394 | Prec: 94.7368 | Rec: 77.1429 | Params: {'ensemble_size': 100, 'max_features': 0.8, 'lambda_param': 5.0}
+Trial 47/50 | F1: 88.1890 | Prec: 98.2456 | Rec: 80.0000 | Params: {'ensemble_size': 20, 'max_features': 1.0, 'lambda_param': 4.0}
+Trial 48/50 | F1: 87.3016 | Prec: 98.2143 | Rec: 78.5714 | Params: {'ensemble_size': 20, 'max_features': 0.9, 'lambda_param': 5.0}
+Trial 49/50 | F1: 86.4000 | Prec: 98.1818 | Rec: 77.1429 | Params: {'ensemble_size': 20, 'max_features': 1.0, 'lambda_param': 3.0}
+Trial 50/50 | F1: 78.9916 | Prec: 95.9184 | Rec: 67.1429 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 4.0}
+
+[ARF] OTIMIZAÇÃO FINALIZADA
+Melhor Trial: 4
+Melhor Resultado -> F1: 88.8889 | Prec: 100.0000 | Rec: 80.0000
+Melhores Parâmetros: {'ensemble_size': 10, 'max_features': 1.0, 'lambda_param': 5.0}
+
+[ARF] Validando melhores parâmetros com 5 rodada(s) prequencial(is)...
+
+==================================================================================================================================================================================================
+                                                                            RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)                                                                             
+==================================================================================================================================================================================================
+Modelo/Algoritmo       | F1 (%)            | Prec (%)          | Rec (%)           | MCC               | FP          | FN          | Tempo (s)       | ensemble_size | max_features | lambda_param
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Melhor ARF             | 87.6540 ± 1.6606 | 98.2206 ± 1.5972 | 79.1429 ± 1.7143 |  0.8812 ± 0.0165 |    1 ± 1    |   15 ± 2    | 4.0268 ± 0.2017 | 10            | 1.0000       | 5.0000      
+==================================================================================================================================================================================================
+
+📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):
+Modelo/Algoritmo	F1 (%)	Prec (%)	Rec (%)	MCC	FP	FN	Tempo (s)	ensemble_size	max_features	lambda_param
+Melhor ARF	87,6540 ± 1,6606	98,2206 ± 1,5972	79,1429 ± 1,7143	0,8812 ± 0,0165	1 ± 1	15 ± 2	4,0268 ± 0,2017	10	1,0000	5,0000
+
+
+
+Iniciando otimização para: data/15k/Recorrência/Recorrência_200.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 95.9578 | Prec: 96.9805 | Rec: 94.9565 | Params: {'ensemble_size': 20, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 2/50 | F1: 96.5456 | Prec: 98.3755 | Rec: 94.7826 | Params: {'ensemble_size': 100, 'max_features': 0.30000000000000004, 'lambda_param': 3.0}
+Trial 3/50 | F1: 95.5908 | Prec: 96.9589 | Rec: 94.2609 | Params: {'ensemble_size': 100, 'max_features': 0.2, 'lambda_param': 5.0}
+Trial 4/50 | F1: 96.7458 | Prec: 97.8648 | Rec: 95.6522 | Params: {'ensemble_size': 90, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 5/50 | F1: 95.6444 | Prec: 97.8182 | Rec: 93.5652 | Params: {'ensemble_size': 50, 'max_features': 0.4, 'lambda_param': 1.0}
+Trial 6/50 | F1: 96.1471 | Prec: 96.8254 | Rec: 95.4783 | Params: {'ensemble_size': 60, 'max_features': 0.30000000000000004, 'lambda_param': 4.0}
+Trial 7/50 | F1: 94.3958 | Prec: 95.0617 | Rec: 93.7391 | Params: {'ensemble_size': 100, 'max_features': 0.2, 'lambda_param': 6.0}
+Trial 8/50 | F1: 96.2832 | Prec: 98.0180 | Rec: 94.6087 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 5.0}
+Trial 9/50 | F1: 96.3158 | Prec: 97.1681 | Rec: 95.4783 | Params: {'ensemble_size': 60, 'max_features': 1.0, 'lambda_param': 5.0}
+Trial 10/50 | F1: 96.4664 | Prec: 98.0251 | Rec: 94.9565 | Params: {'ensemble_size': 50, 'max_features': 0.4, 'lambda_param': 4.0}
+Trial 11/50 | F1: 96.4413 | Prec: 98.7250 | Rec: 94.2609 | Params: {'ensemble_size': 80, 'max_features': 0.7000000000000001, 'lambda_param': 1.0}
+Trial 12/50 | F1: 96.3685 | Prec: 98.1949 | Rec: 94.6087 | Params: {'ensemble_size': 80, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 13/50 | F1: 96.9054 | Prec: 98.5612 | Rec: 95.3043 | Params: {'ensemble_size': 80, 'max_features': 0.5, 'lambda_param': 2.0}
+Trial 14/50 | F1: 96.6312 | Prec: 98.5533 | Rec: 94.7826 | Params: {'ensemble_size': 80, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 15/50 | F1: 96.4664 | Prec: 98.0251 | Rec: 94.9565 | Params: {'ensemble_size': 80, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 16/50 | F1: 96.9217 | Prec: 98.0427 | Rec: 95.8261 | Params: {'ensemble_size': 70, 'max_features': 0.5, 'lambda_param': 2.0}
+Trial 17/50 | F1: 96.0924 | Prec: 98.1851 | Rec: 94.0870 | Params: {'ensemble_size': 40, 'max_features': 0.5, 'lambda_param': 1.0}
+Trial 18/50 | F1: 96.2898 | Prec: 97.8456 | Rec: 94.7826 | Params: {'ensemble_size': 70, 'max_features': 0.5, 'lambda_param': 3.0}
+Trial 19/50 | F1: 97.0123 | Prec: 98.0462 | Rec: 96.0000 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 2.0}
+Trial 20/50 | F1: 96.3749 | Prec: 98.0216 | Rec: 94.7826 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 1.0}
+Trial 21/50 | F1: 96.9912 | Prec: 98.7387 | Rec: 95.3043 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 22/50 | F1: 96.9912 | Prec: 98.7387 | Rec: 95.3043 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 23/50 | F1: 96.9912 | Prec: 98.7387 | Rec: 95.3043 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 24/50 | F1: 96.3028 | Prec: 97.5045 | Rec: 95.1304 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 25/50 | F1: 96.5759 | Prec: 97.5177 | Rec: 95.6522 | Params: {'ensemble_size': 30, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 26/50 | F1: 96.3620 | Prec: 98.3696 | Rec: 94.4348 | Params: {'ensemble_size': 40, 'max_features': 0.6, 'lambda_param': 4.0}
+Trial 27/50 | F1: 96.7343 | Prec: 98.2079 | Rec: 95.3043 | Params: {'ensemble_size': 20, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 28/50 | F1: 96.7515 | Prec: 97.6950 | Rec: 95.8261 | Params: {'ensemble_size': 40, 'max_features': 0.9, 'lambda_param': 2.0}
+Trial 29/50 | F1: 96.3877 | Prec: 97.6786 | Rec: 95.1304 | Params: {'ensemble_size': 20, 'max_features': 0.6, 'lambda_param': 3.0}
+Trial 30/50 | F1: 96.7343 | Prec: 98.2079 | Rec: 95.3043 | Params: {'ensemble_size': 20, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 31/50 | F1: 96.5639 | Prec: 97.8571 | Rec: 95.3043 | Params: {'ensemble_size': 30, 'max_features': 1.0, 'lambda_param': 3.0}
+Trial 32/50 | F1: 96.9912 | Prec: 98.7387 | Rec: 95.3043 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 33/50 | F1: 96.2963 | Prec: 97.6744 | Rec: 94.9565 | Params: {'ensemble_size': 40, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 34/50 | F1: 96.3877 | Prec: 97.6786 | Rec: 95.1304 | Params: {'ensemble_size': 20, 'max_features': 0.6, 'lambda_param': 3.0}
+Trial 35/50 | F1: 96.5578 | Prec: 98.0287 | Rec: 95.1304 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 2.0}
+Trial 36/50 | F1: 96.4664 | Prec: 98.0251 | Rec: 94.9565 | Params: {'ensemble_size': 50, 'max_features': 0.4, 'lambda_param': 4.0}
+Trial 37/50 | F1: 96.5578 | Prec: 98.0287 | Rec: 95.1304 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 38/50 | F1: 96.9271 | Prec: 97.8723 | Rec: 96.0000 | Params: {'ensemble_size': 40, 'max_features': 0.1, 'lambda_param': 3.0}
+Trial 39/50 | F1: 96.6725 | Prec: 97.3545 | Rec: 96.0000 | Params: {'ensemble_size': 30, 'max_features': 0.9, 'lambda_param': 4.0}
+Trial 40/50 | F1: 96.1131 | Prec: 97.6661 | Rec: 94.6087 | Params: {'ensemble_size': 50, 'max_features': 0.4, 'lambda_param': 6.0}
+Trial 41/50 | F1: 95.9075 | Prec: 98.1785 | Rec: 93.7391 | Params: {'ensemble_size': 10, 'max_features': 0.6, 'lambda_param': 5.0}
+Trial 42/50 | F1: 96.7343 | Prec: 98.2079 | Rec: 95.3043 | Params: {'ensemble_size': 20, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 43/50 | F1: 96.9912 | Prec: 98.7387 | Rec: 95.3043 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 44/50 | F1: 96.9217 | Prec: 98.0427 | Rec: 95.8261 | Params: {'ensemble_size': 40, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 45/50 | F1: 96.9912 | Prec: 98.7387 | Rec: 95.3043 | Params: {'ensemble_size': 30, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 46/50 | F1: 95.7371 | Prec: 97.8221 | Rec: 93.7391 | Params: {'ensemble_size': 20, 'max_features': 0.6, 'lambda_param': 4.0}
+Trial 47/50 | F1: 96.1336 | Prec: 97.1581 | Rec: 95.1304 | Params: {'ensemble_size': 50, 'max_features': 0.8, 'lambda_param': 3.0}
+Trial 48/50 | F1: 96.3028 | Prec: 97.5045 | Rec: 95.1304 | Params: {'ensemble_size': 60, 'max_features': 0.9, 'lambda_param': 1.0}
+Trial 49/50 | F1: 96.6549 | Prec: 97.8610 | Rec: 95.4783 | Params: {'ensemble_size': 30, 'max_features': 0.5, 'lambda_param': 2.0}
+Trial 50/50 | F1: 96.4664 | Prec: 98.0251 | Rec: 94.9565 | Params: {'ensemble_size': 40, 'max_features': 0.7000000000000001, 'lambda_param': 5.0}
+
+[ARF] OTIMIZAÇÃO FINALIZADA
+Melhor Trial: 19
+Melhor Resultado -> F1: 97.0123 | Prec: 98.0462 | Rec: 96.0000
+Melhores Parâmetros: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 2.0}
+
+[ARF] Validando melhores parâmetros com 5 rodada(s) prequencial(is)...
+
+==================================================================================================================================================================================================
+                                                                            RELATÓRIO DE MÉTRICAS | BINARY (CLASSE 1)                                                                             
+==================================================================================================================================================================================================
+Modelo/Algoritmo       | F1 (%)            | Prec (%)          | Rec (%)           | MCC               | FP          | FN          | Tempo (s)       | ensemble_size | max_features | lambda_param
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Melhor ARF             | 96.7864 ± 0.1781 | 98.2798 ± 0.2078 | 95.3391 ± 0.3873 |  0.9668 ± 0.0018 |   10 ± 2    |   27 ± 3    | 13.3385 ± 0.4952 | 30            | 0.6000       | 2.0000      
+==================================================================================================================================================================================================
+
+📋 CÓPIA PARA PLANILHA (Selecione as linhas abaixo e cole no Google Sheets/Excel):
+Modelo/Algoritmo	F1 (%)	Prec (%)	Rec (%)	MCC	FP	FN	Tempo (s)	ensemble_size	max_features	lambda_param
+Melhor ARF	96,7864 ± 0,1781	98,2798 ± 0,2078	95,3391 ± 0,3873	0,9668 ± 0,0018	10 ± 2	27 ± 3	13,3385 ± 0,4952	30	0,6000	2,0000
+
+
+
+Iniciando otimização para: data/15k/Recorrência/Recorrência_1000.csv
+50 trials.
+
+[ARF] Iniciando otimização focada no F1-Score (Binário) com 50 trials...
+Trial 1/50 | F1: 98.5706 | Prec: 98.8910 | Rec: 98.2523 | Params: {'ensemble_size': 10, 'max_features': 1.0, 'lambda_param': 1.0}
+Trial 2/50 | F1: 98.2683 | Prec: 98.4369 | Rec: 98.1003 | Params: {'ensemble_size': 50, 'max_features': 0.30000000000000004, 'lambda_param': 5.0}
+Trial 3/50 | F1: 98.6840 | Prec: 99.0808 | Rec: 98.2903 | Params: {'ensemble_size': 50, 'max_features': 0.7000000000000001, 'lambda_param': 5.0}
+Trial 4/50 | F1: 98.5303 | Prec: 99.0027 | Rec: 98.0623 | Params: {'ensemble_size': 50, 'max_features': 0.8, 'lambda_param': 4.0}
+Trial 5/50 | F1: 98.6484 | Prec: 98.8554 | Rec: 98.4422 | Params: {'ensemble_size': 10, 'max_features': 0.8, 'lambda_param': 6.0}
+Trial 6/50 | F1: 98.3337 | Prec: 99.1503 | Rec: 97.5304 | Params: {'ensemble_size': 50, 'max_features': 0.4, 'lambda_param': 1.0}
+Trial 7/50 | F1: 98.5862 | Prec: 99.1545 | Rec: 98.0243 | Params: {'ensemble_size': 50, 'max_features': 0.5, 'lambda_param': 4.0}
+Trial 8/50 | F1: 98.3432 | Prec: 98.5872 | Rec: 98.1003 | Params: {'ensemble_size': 10, 'max_features': 0.1, 'lambda_param': 2.0}
+Trial 9/50 | F1: 98.3776 | Prec: 98.8493 | Rec: 97.9103 | Params: {'ensemble_size': 50, 'max_features': 0.1, 'lambda_param': 5.0}
+Trial 10/50 | F1: 98.5546 | Prec: 98.6672 | Rec: 98.4422 | Params: {'ensemble_size': 10, 'max_features': 0.9, 'lambda_param': 6.0}
+Trial 11/50 | F1: 98.6463 | Prec: 99.0050 | Rec: 98.2903 | Params: {'ensemble_size': 100, 'max_features': 0.7000000000000001, 'lambda_param': 3.0}
+Trial 12/50 | F1: 98.4779 | Prec: 98.6280 | Rec: 98.3283 | Params: {'ensemble_size': 80, 'max_features': 0.7000000000000001, 'lambda_param': 6.0}
+Trial 13/50 | F1: 98.7211 | Prec: 99.1945 | Rec: 98.2523 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 5.0}
+Trial 14/50 | F1: 98.7211 | Prec: 99.1945 | Rec: 98.2523 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 5.0}
+Trial 15/50 | F1: 98.5485 | Prec: 99.0783 | Rec: 98.0243 | Params: {'ensemble_size': 30, 'max_features': 0.5, 'lambda_param': 3.0}
+Trial 16/50 | F1: 98.2523 | Prec: 98.2523 | Rec: 98.2523 | Params: {'ensemble_size': 30, 'max_features': 0.30000000000000004, 'lambda_param': 5.0}
+Trial 17/50 | F1: 98.6463 | Prec: 99.0050 | Rec: 98.2903 | Params: {'ensemble_size': 30, 'max_features': 0.6, 'lambda_param': 4.0}
+Trial 18/50 | F1: 98.8550 | Prec: 99.3098 | Rec: 98.4043 | Params: {'ensemble_size': 70, 'max_features': 0.6, 'lambda_param': 5.0}
+Trial 19/50 | F1: 98.5325 | Prec: 98.8528 | Rec: 98.2143 | Params: {'ensemble_size': 70, 'max_features': 0.4, 'lambda_param': 4.0}
+Trial 20/50 | F1: 98.7245 | Prec: 98.9317 | Rec: 98.5182 | Params: {'ensemble_size': 70, 'max_features': 0.4, 'lambda_param': 6.0}
+Trial 21/50 | F1: 98.3806 | Prec: 98.6626 | Rec: 98.1003 | Params: {'ensemble_size': 70, 'max_features': 0.2, 'lambda_param': 6.0}
+Trial 22/50 | F1: 98.6672 | Prec: 98.8931 | Rec: 98.4422 | Params: {'ensemble_size': 80, 'max_features': 0.4, 'lambda_param': 6.0}
+Trial 23/50 | F1: 98.7970 | Prec: 99.3090 | Rec: 98.2903 | Params: {'ensemble_size': 70, 'max_features': 0.5, 'lambda_param': 5.0}
+Trial 24/50 | F1: 98.7038 | Prec: 99.0436 | Rec: 98.3663 | Params: {'ensemble_size': 70, 'max_features': 0.5, 'lambda_param': 6.0}
+Trial 25/50 | F1: 98.3283 | Prec: 98.3283 | Rec: 98.3283 | Params: {'ensemble_size': 90, 'max_features': 0.30000000000000004, 'lambda_param': 5.0}
+Trial 26/50 | F1: 98.3788 | Prec: 98.7744 | Rec: 97.9863 | Params: {'ensemble_size': 60, 'max_features': 0.4, 'lambda_param': 3.0}
+Trial 27/50 | F1: 98.5480 | Prec: 99.1161 | Rec: 97.9863 | Params: {'ensemble_size': 80, 'max_features': 0.5, 'lambda_param': 4.0}
+Trial 28/50 | F1: 98.2857 | Prec: 98.5485 | Rec: 98.0243 | Params: {'ensemble_size': 60, 'max_features': 0.2, 'lambda_param': 6.0}
+Trial 29/50 | F1: 98.7414 | Prec: 99.1194 | Rec: 98.3663 | Params: {'ensemble_size': 90, 'max_features': 0.6, 'lambda_param': 5.0}
+Trial 30/50 | F1: 98.6484 | Prec: 98.8554 | Rec: 98.4422 | Params: {'ensemble_size': 100, 'max_features': 1.0, 'lambda_param': 4.0}
+Trial 31/50 | F1: 98.8181 | Prec: 99.1584 | Rec: 98.4802 | Params: {'ensemble_size': 90, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 32/50 | F1: 98.6249 | Prec: 99.1551 | Rec: 98.1003 | Params: {'ensemble_size': 90, 'max_features': 0.9, 'lambda_param': 1.0}
+Trial 33/50 | F1: 98.8181 | Prec: 99.1584 | Rec: 98.4802 | Params: {'ensemble_size': 90, 'max_features': 0.8, 'lambda_param': 2.0}
+Trial 34/50 | F1: 98.8181 | Prec: 99.1584 | Rec: 98.4802 | Params: {'ensemble_size': 90, 'max_features': 0.8, 'lambda_param': 2.0}
+[33m[W 2026-04-14 23:16:23,685][0m Trial 34 failed with parameters: {'ensemble_size': 100, 'max_features': 0.8, 'lambda_param': 2.0} because of the following error: KeyboardInterrupt().[0m
+Traceback (most recent call last):
+  File "c:\Users\tomas\AppData\Local\Programs\Python\Python310\lib\site-packages\optuna\study\_optimize.py", line 206, in _run_trial
+    value_or_values = func(trial)
+  File "c:\Users\tomas\OneDrive\Documentos\Uel\Iniciação Científica\Repositório Artigo\anomaly-and-classification-data-stream\src\Classification\Optimizer.py", line 144, in objective_wrapper
+    f1, prec, rec = self._objective_arf(trial)
+  File "c:\Users\tomas\OneDrive\Documentos\Uel\Iniciação Científica\Repositório Artigo\anomaly-and-classification-data-stream\src\Classification\Optimizer.py", line 198, in _objective_arf
+    return self._evaluate_model(models['AdaptiveRandomForest'])
+  File "c:\Users\tomas\OneDrive\Documentos\Uel\Iniciação Científica\Repositório Artigo\anomaly-and-classification-data-stream\src\Classification\Optimizer.py", line 41, in _evaluate_model
+    model.train(instance)
+  File "C:\Users\tomas\AppData\Roaming\Python\Python310\site-packages\capymoa\base\_classifier.py", line 242, in train
+    self.moa_learner.trainOnInstance(instance.java_instance)
+KeyboardInterrupt
+[33m[W 2026-04-14 23:16:23,834][0m Trial 34 failed with value None.[0m
