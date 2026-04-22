@@ -7,6 +7,14 @@ import warnings
 warnings.filterwarnings("ignore", message="A single label was found in 'y_true' and 'y_pred'.*")
 
 class Metrics:
+    def __init__(self):
+        self.all_possible_params = [
+            'window_size', 'number_of_trees', 'max_depth', 'size_limit',
+            'height', 'weights', 'hidden_layer', 'learning_rate',
+            'num_trees', 'max_leaf_samples', 'subsample',
+            'threshold', 'dynamic_threshold', 'z', 'u', 'std'
+        ]
+
     def get_metric_classifier(self, metrics_dict, metric_name):
         norm_metrics = {str(k).lower(): v for k, v in metrics_dict.items()}
         metric_name = str(metric_name).lower()
@@ -53,7 +61,7 @@ class Metrics:
             
         return attack_regions
 
-    def display_cumulative_metrics(self, predictions_history, warmup_instances=0, target_class=None, n_runs=1, params_dict=None, experiment_name="General", scenario_name="Default_Full", discretization=None, window_evaluation=None, exec_id="N/A"):
+    def display_cumulative_metrics(self, predictions_history, warmup_instances=0, target_class=None, n_runs=1, params_dict=None, experiment_name="General", scenario_name="Default_Full", discretization=None, window_evaluation=None, exec_id="N/A", discretization_strategy="fixed"):
         titulo_relatorio = f"METRICS REPORT | {scenario_name.upper()}"
         
         discretization_str = f"{discretization:.4f}" if isinstance(discretization, (float, int)) else str(discretization) if discretization is not None else "-"
@@ -89,7 +97,7 @@ class Metrics:
         print(f"\n{'='*line_len}\n{titulo_relatorio:^{line_len}}\n{'='*line_len}\n{header_base}\n{'-'*line_len}")
 
         for name, data in predictions_history.items():
-            algo_dir = os.path.join("output", name)
+            algo_dir = os.path.join("output", name, discretization_strategy)
             os.makedirs(algo_dir, exist_ok=True)
             csv_file_path = os.path.join(algo_dir, f"{name}_{scenario_name}.csv")
             
@@ -120,14 +128,15 @@ class Metrics:
                 
                 print(f"{name:<22} | {f1:<10.4f} | {pr:<10.4f} | {re:<10.4f} | {mcc:<10.4f} | {int(np.ceil(fp)):<10} | {int(np.ceil(fn)):<10} | {tm:<12.4f} | {discretization_str:<10} | {window_eval_str:<10}{param_val_print_str}")
 
-            if clean_params:
-                for k, v in clean_params.items():
-                    if not file_exists: headers.append(f"param_{k}")
-                    metrics_row.append(f"{v:.4f}" if isinstance(v, float) else str(v))
+            for p in self.all_possible_params:
+                if not file_exists: 
+                    headers.append(f"param_{p}")
+                val = clean_params.get(p, "-") if clean_params else "-"
+                metrics_row.append(f"{val:.4f}" if isinstance(val, float) else str(val))
 
             with open(csv_file_path, mode='a', newline='', encoding='utf-8') as f:
                 writer = csv.writer(f, delimiter=';')
                 if not file_exists: writer.writerow(headers)
                 writer.writerow([str(x).replace('.', ',') for x in metrics_row])
 
-        print(f"{'-'*line_len}\nFile: output/{name}/{name}_{scenario_name}.csv\n")
+        print(f"{'-'*line_len}\nFile: {csv_file_path}\n")

@@ -5,13 +5,20 @@ from matplotlib.ticker import MaxNLocator
 import os
 import pandas as pd
 
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+from matplotlib.ticker import MaxNLocator
+import os
+import pandas as pd
+
 class Plots:
     def __init__(self, target_names):
         self.target_names = target_names if target_names is not None else ['Normal', 'Ataque']
         self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2']
         self.bg_colors = ['#F7C5CD', '#C5D9F7', '#C5F7C5', '#F7E6C5', '#E3C5F7', '#F7D9C5', '#C5F7E6']
 
-    def plot_score(self, results, attack_regions, title="Análise de Scores", discretization=0.5, scenario_name="General"):
+    def plot_score(self, results, attack_regions, title="Análise de Scores", discretization=0.5, scenario_name="General", discretization_strategy="fixed"):
         fig, ax = plt.subplots(figsize=(15, 6)) 
         
         has_std = False
@@ -70,12 +77,12 @@ class Plots:
         ax.grid(True, alpha=0.3, linestyle=':', zorder=0)
         fig.subplots_adjust(bottom=0.2)
         
-        output_dir = os.path.join("output", algo_name, "Plots", f"{algo_name}_{scenario_name}")
+        output_dir = os.path.join("output", algo_name, discretization_strategy, "Plots", f"{algo_name}_{scenario_name}")
         os.makedirs(output_dir, exist_ok=True)
         plt.savefig(os.path.join(output_dir, f"{algo_name}_{title}_Scores.png"), bbox_inches='tight')
         plt.close(fig)
 
-    def plot_metrics(self, results, attack_regions=None, title="Métricas", window_size=1000, target_class=None, scenario_name="General"):
+    def plot_metrics(self, results, attack_regions=None, title="Métricas", window_size=1000, target_class=None, scenario_name="General", discretization_strategy="fixed"):
         fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(15, 12), sharex=True)
         
         has_std = False
@@ -143,12 +150,12 @@ class Plots:
         
         fig.subplots_adjust(bottom=0.15, hspace=0.3) 
         
-        output_dir = os.path.join("output", algo_name, "Plots", f"{algo_name}_{scenario_name}")
+        output_dir = os.path.join("output", algo_name, discretization_strategy, "Plots", f"{algo_name}_{scenario_name}")
         os.makedirs(output_dir, exist_ok=True)
         plt.savefig(os.path.join(output_dir, f"{algo_name}_{title}_Metricas.png"), bbox_inches='tight')
         plt.close(fig)
 
-    def plot_fp_fn(self, results, attack_regions=None, title="Contagem de FP e FN", window_size=1000, scenario_name="General"):
+    def plot_fp_fn(self, results, attack_regions=None, title="Contagem de FP e FN", window_size=1000, scenario_name="General", discretization_strategy="fixed"):
         fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(15, 9), sharex=True)
         
         has_std = False
@@ -214,7 +221,7 @@ class Plots:
         
         fig.subplots_adjust(bottom=0.15, hspace=0.3) 
         
-        output_dir = os.path.join("output", algo_name, "Plots", f"{algo_name}_{scenario_name}")
+        output_dir = os.path.join("output", algo_name, discretization_strategy, "Plots", f"{algo_name}_{scenario_name}")
         os.makedirs(output_dir, exist_ok=True)
         plt.savefig(os.path.join(output_dir, f"{algo_name}_{title}_FP_FN.png"), bbox_inches='tight')
         plt.close(fig)
@@ -297,25 +304,26 @@ class Plots:
         for col in numeric_cols:
             df_final[col] = pd.to_numeric(df_final[col].astype(str).str.replace(',', '.'), errors='coerce')
 
-        # Mapeamento para negrito (vencedores por cenário)
+        # Mapeamento para negrito (vencedores por Cenário E Nível de Envenenamento)
         best_indices_map = {}
         for scenario in df_final['Cenário'].unique():
-            idx_mask = df_final['Cenário'] == scenario
-            group_df = df_final[idx_mask]
-            if not group_df.empty:
-                for col in ['F1', 'Prec.', 'Rec.']:
-                    max_val = group_df[col].max()
-                    if pd.notnull(max_val):
-                        best_indices_map.setdefault(col, []).extend(group_df[group_df[col] == max_val].index.tolist())
-                for col in ['FP', 'FN']:
-                    min_val = group_df[col].min()
-                    if pd.notnull(min_val):
-                        best_indices_map.setdefault(col, []).extend(group_df[group_df[col] == min_val].index.tolist())
+            scenario_df = df_final[df_final['Cenário'] == scenario]
+            for env in scenario_df['Env (%)'].unique():
+                group_df = scenario_df[scenario_df['Env (%)'] == env]
+                if not group_df.empty:
+                    for col in ['F1', 'Prec.', 'Rec.']:
+                        max_val = group_df[col].max()
+                        if pd.notnull(max_val):
+                            best_indices_map.setdefault(col, []).extend(group_df[group_df[col] == max_val].index.tolist())
+                    for col in ['FP', 'FN']:
+                        min_val = group_df[col].min()
+                        if pd.notnull(min_val):
+                            best_indices_map.setdefault(col, []).extend(group_df[group_df[col] == min_val].index.tolist())
 
         df_final_orig = df_final.copy()
         df_final.drop(columns=['Bloco_Num', 'Cenario_Cat'], inplace=True)
 
-        # Preparação do DataFrame para LaTeX (com negritos e vírgulas)
+        # Preparação do DataFrame para LaTeX
         df_latex = df_final.copy()
         for col in ['F1', 'Prec.', 'Rec.']:
             df_latex[col] = df_latex.apply(lambda row: f"\\textbf{{{row[col]:.2f}}}" if row.name in best_indices_map.get(col, []) else f"{row[col]:.2f}", axis=1).str.replace('.', ',')
@@ -332,9 +340,8 @@ class Plots:
         for i in range(len(display_values) - 1, 0, -1):
             if display_values[i, 0] == display_values[i-1, 0]:
                 display_values[i, 0] = ""
-                df_latex.iloc[i, 0] = ""
 
-        # Geração da Tabela PNG (Jupyter)
+        # Geração da Tabela 
         col_widths = [0.18, 0.10, 0.08, 0.08, 0.12, 0.12, 0.12, 0.10, 0.10]
         fig, ax = plt.subplots(figsize=(10, 0.4 * len(df_final) + 0.5))
         plt.subplots_adjust(top=0.98, bottom=0.02, left=0.05, right=0.95)
@@ -355,23 +362,27 @@ class Plots:
         plt.title(f"Resultados - {algo_name}", fontsize=14, fontweight='bold', pad=0)
         plt.show()
 
-        # Geração de Saída LaTeX (Overleaf)
+        # Geração de Saída LaTeX
         print("\n" + "="*65 + "\nCÓDIGO LATEX PARA OVERLEAF:\n" + "="*65)
-        latex_header = "\\begin{table}[ht]\n\\centering\n\\begin{tabular}{|l|c|c|c|c|c|c|c|c|}\n\\hline\n"
-        
-        # Cabeçalhos em Negrito e escape do %
+        print("\\begin{table}[ht]\n\\centering\n\\begin{tabular}{|l|c|c|c|c|c|c|c|c|}\n\\hline")
         headers_tex = ["Cenário", "Env (\\%)", "Otim.", "Feats", "F1", "Prec.", "Rec.", "FP", "FN"]
-        latex_header += " & ".join([f"\\textbf{{{h}}}" for h in headers_tex]) + " \\\\ \\hline\n"
+        print(" & ".join([f"\\textbf{{{h}}}" for h in headers_tex]) + " \\\\ \\hline")
         
-        latex_body = ""
-        last_c = None
+        scenario_counts = df_final_orig['Cenário'].value_counts(sort=False).to_dict()
+        last_s = None
+        
         for i in range(len(df_latex)):
-            # Inserção de \hline antes de cada novo cenário
-            curr_c = df_final_orig.iloc[i]['Cenário']
-            if last_c is not None and curr_c != last_c:
-                latex_body += "\\hline\n"
-            last_c = curr_c
-            latex_body += " & ".join(df_latex.iloc[i].values.astype(str)) + " \\\\\n"
+            curr_s = df_final_orig.iloc[i]['Cenário']
+            row_cells = list(df_latex.iloc[i].values)
+            
+            if curr_s != last_s:
+                if last_s is not None: print("\\hline")
+                count = scenario_counts[curr_s]
+                row_cells[0] = f"\\multirow{{{count}}}{{*}}{{{curr_s}}}"
+                last_s = curr_s
+            else:
+                row_cells[0] = ""
+            
+            print(" & ".join(row_cells) + " \\\\")
         
-        latex_footer = "\\hline\n\\end{tabular}\n\\caption{Resultados do algoritmo " + algo_name + "}\n\\end{table}"
-        print(latex_header + latex_body + latex_footer + "\n" + "="*65 + "\n")
+        print(f"\\hline\n\\end{{tabular}}\n\\caption{{Resultados do algoritmo {algo_name}}}\n\\end{{table}}\n" + "="*65 + "\n")
