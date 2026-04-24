@@ -1,22 +1,85 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-from matplotlib.ticker import MaxNLocator
 import os
-import pandas as pd
+import re
 
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-from matplotlib.ticker import MaxNLocator
-import os
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
+from matplotlib.ticker import MaxNLocator
 
 class Plots:
     def __init__(self, target_names):
         self.target_names = target_names if target_names is not None else ['Normal', 'Ataque']
         self.colors = ['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2']
-        self.bg_colors = ['#F7C5CD', '#C5D9F7', '#C5F7C5', '#F7E6C5', '#E3C5F7', '#F7D9C5', '#C5F7E6']
+        self.bg_colors = ['#ff4d4d', '#4d88ff', '#2ecc71', '#ffb84d', '#b366ff', '#ff66b3', '#33cccc']
+
+    def _clean_attack_label(self, attack_idx):
+        if attack_idx < len(self.target_names):
+            label = str(self.target_names[attack_idx])
+        else:
+            label = f'Classe {attack_idx}'
+
+        label = re.sub(r'(?i)^drdos[_\-\s]*', '', label)
+        label = re.sub(r'(?i)^ddos[_\-\s]*', '', label)
+        label = label.replace('_', ' ').strip()
+        return label if label else f'Classe {attack_idx}'
+
+
+    def _expand_y_limits(self, ax, kind='generic'):
+        ymin, ymax = ax.get_ylim()
+        if ymin == ymax:
+            delta = abs(ymax) * 0.1 if ymax != 0 else 1.0
+            ax.set_ylim(ymin - delta, ymax + delta)
+            return
+
+        span = ymax - ymin
+        pad_bottom = 0.03 * span
+        pad_top = 0.15 * span
+
+        if kind == 'percent':
+            new_top = ymax + max(5.0, 0.12 * max(abs(ymax), 100.0), pad_top)
+            new_bottom = ymin - max(1.0, pad_bottom)
+
+            if ymax >= 95:
+                new_top = max(new_top, 115.0)
+            ax.set_ylim(new_bottom, new_top)
+        else:
+            new_bottom = ymin - pad_bottom
+            new_top = ymax + max(pad_top, 0.08 * max(abs(ymax), 1.0))
+            ax.set_ylim(new_bottom, new_top)
+
+    def _add_attack_regions(self, ax, attack_regions, alpha=0.55, show_legend=True, show_arrows=True):
+        if not attack_regions:
+            return
+
+        added_attack_labels = set()
+        for start, end, attack_idx in attack_regions:
+            label = self._clean_attack_label(attack_idx)
+            color = self.bg_colors[attack_idx % len(self.bg_colors)]
+            label_to_show = label if show_legend and label not in added_attack_labels else ''
+
+            ax.axvspan(start, end, facecolor=color, alpha=alpha, zorder=1, label=label_to_show)
+            mid = (start + end) / 2
+            ax.axvline(mid, color=color, alpha=0.95, linewidth=1.6, zorder=2)
+
+            if show_arrows:
+                ax.text(
+                    mid,
+                    0.89,
+                    label,
+                    transform=ax.get_xaxis_transform(),
+                    ha='center',
+                    va='bottom',
+                    fontsize=11,
+                    fontweight='bold',
+                    color=color,
+                    bbox=dict(facecolor='white', edgecolor='none', alpha=0.65, pad=0.2),
+                    clip_on=True,
+                    zorder=10,
+                )
+
+            if label_to_show:
+                added_attack_labels.add(label)
 
     def plot_score(self, results, attack_regions, title="Análise de Scores", discretization=0.5, scenario_name="General", discretization_strategy="fixed"):
         fig, ax = plt.subplots(figsize=(15, 6)) 
@@ -51,13 +114,8 @@ class Plots:
         if str(discretization) != 'params':
             ax.axhline(y=discretization, color='red', linestyle='--', linewidth=2, alpha=0.8, label=f'Threshold ({discretization})', zorder=4)
 
-        added_attack_labels = set()
-        for start, end, attack_idx in attack_regions:
-            attack_name = self.target_names[attack_idx] if attack_idx < len(self.target_names) else f'Ataque {attack_idx}'
-            bg_color = self.bg_colors[attack_idx % len(self.bg_colors)]
-            label_to_show = f'{attack_name}' if attack_name not in added_attack_labels else ""
-            ax.axvspan(start, end, facecolor=bg_color, alpha=0.3, zorder=1, label=label_to_show)
-            if label_to_show: added_attack_labels.add(attack_name)
+        self._expand_y_limits(ax, kind='generic')
+        self._add_attack_regions(ax, attack_regions, alpha=0.58, show_legend=True, show_arrows=True)
 
         ax.set_title(f"{title} (Média Móvel - Janela {window_size})", fontsize=14, fontweight='bold')
         ax.set_ylabel("Score de Anomalia", fontsize=14)
@@ -75,7 +133,7 @@ class Plots:
             patch.set_alpha(0.8)
 
         ax.grid(True, alpha=0.3, linestyle=':', zorder=0)
-        fig.subplots_adjust(bottom=0.2)
+        fig.subplots_adjust(bottom=0.2, top=0.94)
         
         output_dir = os.path.join("output", algo_name, discretization_strategy, "Plots", f"{algo_name}_{scenario_name}")
         os.makedirs(output_dir, exist_ok=True)
@@ -115,15 +173,8 @@ class Plots:
                 ax3.plot(x_axis, clean(data['recall']), label=f'{name}', color=color, linewidth=2.5, zorder=3, marker='o', markersize=5)
 
         for ax in [ax1, ax2, ax3]:
-            added_attack_labels = set()
-            if attack_regions:
-                for start, end, attack_idx in attack_regions:
-                    attack_name = self.target_names[attack_idx] if attack_idx < len(self.target_names) else f'Ataque {attack_idx}'
-                    bg_color = self.bg_colors[attack_idx % len(self.bg_colors)]
-                    
-                    label_to_show = f'{attack_name}' if attack_name not in added_attack_labels else ""
-                    ax.axvspan(start, end, facecolor=bg_color, alpha=0.4, zorder=1, label=label_to_show)
-                    if label_to_show: added_attack_labels.add(attack_name)
+            self._expand_y_limits(ax, kind='percent')
+            self._add_attack_regions(ax, attack_regions, alpha=0.55, show_legend=True, show_arrows=True)
                     
             ax.grid(True, alpha=0.3, linestyle=':', zorder=0)
             ax.tick_params(axis='both', which='major', labelsize=12)
@@ -148,7 +199,7 @@ class Plots:
             patch.set_linewidth(1.0)
             patch.set_alpha(0.8)
         
-        fig.subplots_adjust(bottom=0.15, hspace=0.3) 
+        fig.subplots_adjust(bottom=0.15, top=0.94, hspace=0.35) 
         
         output_dir = os.path.join("output", algo_name, discretization_strategy, "Plots", f"{algo_name}_{scenario_name}")
         os.makedirs(output_dir, exist_ok=True)
@@ -188,15 +239,8 @@ class Plots:
                 ax2.plot(x_axis, fn_data, label=f'{name}', color=color, linewidth=2.5, zorder=3, marker='o', markersize=5)
 
         for ax in [ax1, ax2]:
-            added_attack_labels = set()
-            if attack_regions:
-                for start, end, attack_idx in attack_regions:
-                    attack_name = self.target_names[attack_idx] if attack_idx < len(self.target_names) else f'Ataque {attack_idx}'
-                    bg_color = self.bg_colors[attack_idx % len(self.bg_colors)]
-                    
-                    label_to_show = f'{attack_name}' if attack_name not in added_attack_labels else ""
-                    ax.axvspan(start, end, facecolor=bg_color, alpha=0.4, zorder=1, label=label_to_show)
-                    if label_to_show: added_attack_labels.add(attack_name)
+            self._expand_y_limits(ax, kind='generic')
+            self._add_attack_regions(ax, attack_regions, alpha=0.55, show_legend=True, show_arrows=True)
                     
             ax.grid(True, alpha=0.3, linestyle=':', zorder=0)
             ax.tick_params(axis='both', which='major', labelsize=12)
@@ -219,7 +263,7 @@ class Plots:
             patch.set_linewidth(1.0)
             patch.set_alpha(0.8)
         
-        fig.subplots_adjust(bottom=0.15, hspace=0.3) 
+        fig.subplots_adjust(bottom=0.15, top=0.94, hspace=0.35) 
         
         output_dir = os.path.join("output", algo_name, discretization_strategy, "Plots", f"{algo_name}_{scenario_name}")
         os.makedirs(output_dir, exist_ok=True)

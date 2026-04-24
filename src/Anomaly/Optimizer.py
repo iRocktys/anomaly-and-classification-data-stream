@@ -300,7 +300,8 @@ class AnomalyOptunaOptimizer:
             discretization=display_threshold,
             window_evaluation=window_evaluation,
             exec_id=exec_id,
-            discretization_strategy=strategy_name
+            discretization_strategy=strategy_name,
+            task_type="anomaly"
         )
 
         attack_regions = self.metrics.extract_attack_regions(predictions_history[actual_algo_name]['true_labels_multi'], normal_class_idx=self.normal_class_idx)

@@ -140,7 +140,9 @@ class ClassificationExperimentRunner:
             scenario_name=final_scenario_name,
             discretization="N/A",
             window_evaluation=window_evaluation,
-            exec_id=exec_id
+            exec_id=exec_id,
+            discretization_strategy="classifier",
+            task_type="classification"
         )
         
         self.plots.plot_metrics(
@@ -148,7 +150,8 @@ class ClassificationExperimentRunner:
             attack_regions=attack_regions, 
             title=title, 
             window_size=window_evaluation,
-            scenario_name=final_scenario_name
+            scenario_name=final_scenario_name,
+            discretization_strategy="classifier"
         )
         
         self.plots.plot_fp_fn(
@@ -156,5 +159,6 @@ class ClassificationExperimentRunner:
             attack_regions=attack_regions, 
             title=title, 
             window_size=window_evaluation,
-            scenario_name=final_scenario_name
+            scenario_name=final_scenario_name,
+            discretization_strategy="classifier"
         )

@@ -197,7 +197,9 @@ class ClassificationOptunaOptimizer:
             scenario_name=scenario_name,
             discretization="N/A",
             window_evaluation=window_evaluation,
-            exec_id=exec_id
+            exec_id=exec_id,
+            discretization_strategy="classifier",
+            task_type="classification"
         )
 
         attack_regions = self.metrics.extract_attack_regions(predictions_history[actual_algo_name]['true_labels_multi'], normal_class_idx=self.normal_class_idx)
@@ -207,7 +209,8 @@ class ClassificationOptunaOptimizer:
             attack_regions=attack_regions, 
             title=experiment_name, 
             window_size=window_evaluation,
-            scenario_name=scenario_name
+            scenario_name=scenario_name,
+            discretization_strategy="classifier"
         )
         
         self.plots.plot_fp_fn(
@@ -215,7 +218,8 @@ class ClassificationOptunaOptimizer:
             attack_regions=attack_regions, 
             title=experiment_name, 
             window_size=window_evaluation,
-            scenario_name=scenario_name
+            scenario_name=scenario_name,
+            discretization_strategy="classifier"
         )
 
     def optimize(self, model_name, warmup_instances=0, experiment_name="General", num_features=None, exec_id="N/A", window_evaluation=None):

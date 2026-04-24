@@ -207,7 +207,8 @@ class AnomalyExperimentRunner:
             discretization=final_discretization,
             window_evaluation=window_evaluation,
             exec_id=exec_id,
-            discretization_strategy=strategy_name
+            discretization_strategy=strategy_name,
+            task_type="anomaly"
         )
         
         self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_evaluation, scenario_name=final_scenario_name, discretization_strategy=strategy_name)
