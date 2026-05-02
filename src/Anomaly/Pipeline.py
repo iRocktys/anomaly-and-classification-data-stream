@@ -1,4 +1,5 @@
 import time
+import os
 import numpy as np
 from src.Results.Metrics import Metrics
 from src.Results.Plots import Plots
@@ -15,16 +16,74 @@ class AnomalyExperimentRunner:
         self.metrics = Metrics()
         self.plots = Plots(target_names)
 
-    def prequential_test(self, stream, learner, discretization, is_ae, window_evaluation, warmup_instances, z_value=None):
+    def _parse_decision_strategy(self, decision_strategy):
+        strategy = str(decision_strategy or "raw").strip().lower()
+
+        if strategy == "raw":
+            return {"name": "raw", "type": "raw", "window": None, "k": None, "n": None}
+        if strategy.startswith("moving_average_w"):
+            window = int(strategy.split("_w")[-1])
+            return {"name": strategy, "type": "moving_average", "window": window, "k": None, "n": None}
+        if strategy.startswith("persistence_") and "_of_" in strategy:
+            left, right = strategy.replace("persistence_", "").split("_of_")
+            k, n = int(left), int(right)
+            if k <= 0 or n <= 0 or k > n:
+                raise ValueError("A persistência precisa obedecer 0 < k <= n.")
+            return {"name": strategy, "type": "persistence", "window": None, "k": k, "n": n}
+        raise ValueError(
+            "decision_strategy deve ser uma destas: raw, moving_average_w3, "
+            "moving_average_w5, persistence_2_of_3, persistence_3_of_5."
+        )
+
+    def _combined_strategy_name(self, threshold_strategy, decision_config):
+        return os.path.join(str(threshold_strategy), decision_config["name"])
+
+    def _causal_moving_average(self, values, window):
+        if not values:
+            return 0.0
+        recent = values[-max(1, int(window)):]
+        return float(np.mean(recent))
+
+    def _build_causal_moving_average_series(self, values, window):
+        values = list(values)
+        if not values:
+            return []
+        return [float(np.mean(values[max(0, i - window + 1):i + 1])) for i in range(len(values))]
+
+    def _compute_z_threshold(self, warmup_scores, z_value, decision_config):
+        if decision_config["type"] == "moving_average":
+            reference_scores = self._build_causal_moving_average_series(warmup_scores, decision_config["window"])
+        else:
+            reference_scores = list(warmup_scores)
+        if not reference_scores:
+            return 0.5, None, None
+        mu = float(np.mean(reference_scores))
+        std = float(np.std(reference_scores))
+        return mu + (float(z_value) * std), mu, std
+
+    def _apply_decision_rule(self, score, threshold, score_history, peak_history, decision_config):
+        if decision_config["type"] == "moving_average":
+            decision_score = self._causal_moving_average(score_history, decision_config["window"])
+            return 1 if decision_score > threshold else 0
+        if decision_config["type"] == "persistence":
+            is_peak = 1 if score > threshold else 0
+            peak_history.append(is_peak)
+            recent = peak_history[-decision_config["n"]:]
+            return 1 if sum(recent) >= decision_config["k"] else 0
+        return 1 if score > threshold else 0
+
+    def prequential_test(self, stream, learner, discretization, is_ae, window_evaluation, warmup_instances, z_value=None, decision_strategy="raw"):
+        decision_config = self._parse_decision_strategy(decision_strategy)
         stream.restart()
         y_true_list, y_pred_list, true_labels_multi, scores = [], [], [], []
         instances_list, f1_list, prec_list, rec_list = [], [], [], []
         fp_list, fn_list = [], []
         warmup_scores = []
+        score_history = []
+        peak_history = []
         
         run_threshold = discretization if isinstance(discretization, (float, int)) else 0.5
         count = 0
-        
         calc_mu, calc_std = None, None
         
         while stream.has_more_instances():
@@ -34,6 +93,7 @@ class AnomalyExperimentRunner:
             
             score = learner.score_instance(instance) 
             scores.append(score)
+            score_history.append(score)
             true_labels_multi.append(true_label_multiclass)
             
             if count < warmup_instances:
@@ -45,15 +105,13 @@ class AnomalyExperimentRunner:
                     pass
             else:
                 if count == warmup_instances and z_value is not None and warmup_instances > 0:
-                    calc_mu = float(np.mean(warmup_scores))
-                    calc_std = float(np.std(warmup_scores))
-                    run_threshold = calc_mu + (z_value * calc_std)
+                    run_threshold, calc_mu, calc_std = self._compute_z_threshold(warmup_scores, z_value, decision_config)
 
                 if discretization == 'params':
                     pred = learner.predict(instance)
                     predicted_class = 1 if (pred is not None and pred > 0) else 0
                 else:
-                    predicted_class = 1 if score > run_threshold else 0
+                    predicted_class = self._apply_decision_rule(score, run_threshold, score_history, peak_history, decision_config)
                 
                 try:
                     if not is_ae or predicted_class == 0:
@@ -68,8 +126,10 @@ class AnomalyExperimentRunner:
                 start_idx = max(warmup_instances, len(y_true_list) - window_evaluation)
                 y_t_win = y_true_list[start_idx:]
                 y_p_win = y_pred_list[start_idx:]
-                
-                f1_v, prec_v, rec_v, mcc_v, fp, fn = self.metrics.calc_sklearn_metrics(y_t_win, y_p_win)
+
+                # Métricas janeladas: mostram a variação local de desempenho em cada bloco,
+                # permitindo observar quedas/subidas nas regiões de ataque.
+                f1_v, prec_v, rec_v, _, fp, fn = self.metrics.calc_sklearn_metrics(y_t_win, y_p_win)
                 
                 instances_list.append(count)
                 f1_list.append(f1_v)
@@ -94,26 +154,31 @@ class AnomalyExperimentRunner:
             'z_stats': {'mu': calc_mu, 'std': calc_std, 'threshold': run_threshold}
         }
 
-    def run_anomaly_evaluation(self, stream, algorithms, window_evaluation=1000, title="Avaliação Prequencial", warmup_instances=0, discretization=0.5, ae_keywords=None, algorithm_params=None, is_optimized=True, num_features=None, exec_id="N/A"):
+    def run_anomaly_evaluation(self, stream, algorithms, window_evaluation=1000, title="Avaliação Prequencial", warmup_instances=0, discretization=0.5, ae_keywords=None, algorithm_params=None, is_optimized=True, num_features=None, exec_id="N/A", decision_strategy="raw"):
         if ae_keywords is None:
             ae_keywords = ['AE', 'AUTOENCODER']
 
+        decision_config = self._parse_decision_strategy(decision_strategy)
         predictions_history = {}
         
         param_type = "Optimized" if is_optimized else "Default"
         feat_type = "FullFeatures" if (num_features is None or num_features > 50) else "33Features"
         final_scenario_name = f"{param_type}_{feat_type}"
         
-        z_value = algorithm_params.get('z') if algorithm_params else None
-        
-        if discretization == 'params':
-            strategy_name = 'params'
-        elif discretization == 'dinamic':
-            strategy_name = 'dinamic'
-        elif algorithm_params and 'z' in algorithm_params:
-            strategy_name = 'z_score'
-        else:
+        if not is_optimized:
+            z_value = None
             strategy_name = 'fixed'
+        else:
+            z_value = algorithm_params.get('z') if algorithm_params else None
+            
+            if discretization == 'params':
+                strategy_name = 'params'
+            elif discretization == 'dinamic':
+                strategy_name = 'dinamic'
+            elif algorithm_params and 'z' in algorithm_params:
+                strategy_name = 'z_score'
+            else:
+                strategy_name = 'fixed'
         
         for alg_name, learner_or_factory in algorithms.items():
             is_ae = any(kw.upper() in alg_name.upper() for kw in ae_keywords)
@@ -121,7 +186,7 @@ class AnomalyExperimentRunner:
             exec_times = []
             mu_list, std_list, thresh_list = [], [], []
             
-            print(f"\n[{alg_name}] Executando {self.n_runs} rodada(s) prequencial(is)...")
+            print(f"\n[{alg_name}] Executando {self.n_runs} rodada(s) prequencial(is) | Decisão: {decision_config['name']}...")
             for run in range(self.n_runs):
                 start_time = time.time()
                 current_seed = 42 + run
@@ -133,7 +198,7 @@ class AnomalyExperimentRunner:
                     if run > 0 and hasattr(learner, 'reset'):
                         learner.reset()
                     
-                result = self.prequential_test(stream, learner, discretization, is_ae, window_evaluation, warmup_instances, z_value=z_value)
+                result = self.prequential_test(stream, learner, discretization, is_ae, window_evaluation, warmup_instances, z_value=z_value, decision_strategy=decision_config["name"])
                 exec_times.append(time.time() - start_time)
                 runs_data.append(result)
                 
@@ -190,12 +255,22 @@ class AnomalyExperimentRunner:
         attack_regions = self.metrics.extract_attack_regions(predictions_history[first_algo]['true_labels_multi'], normal_class_idx=self.normal_class_idx)
         
         display_params = dict(algorithm_params) if algorithm_params else {}
+        display_params['decision_strategy'] = decision_config['name']
+        display_params['decision_type'] = decision_config['type']
+        display_params['decision_window'] = decision_config.get('window')
+        display_params['persistence_k'] = decision_config.get('k')
+        display_params['persistence_n'] = decision_config.get('n')
         if z_value is not None and thresh_list:
             display_params['u'] = float(np.mean(mu_list))
             display_params['std'] = float(np.mean(std_list))
             final_discretization = float(np.mean(thresh_list))
         else:
             final_discretization = discretization
+
+        if not is_optimized:
+            output_strategy_name = 'fixed'
+        else:
+            output_strategy_name = self._combined_strategy_name(strategy_name, decision_config)
         
         self.metrics.display_cumulative_metrics(
             predictions_history=predictions_history,
@@ -207,10 +282,15 @@ class AnomalyExperimentRunner:
             discretization=final_discretization,
             window_evaluation=window_evaluation,
             exec_id=exec_id,
-            discretization_strategy=strategy_name,
-            task_type="anomaly"
+            discretization_strategy=output_strategy_name,
+            task_type="anomaly",
+            threshold_strategy=strategy_name,
+            decision_strategy=decision_config["name"],
+            decision_window=decision_config.get("window"),
+            persistence_k=decision_config.get("k"),
+            persistence_n=decision_config.get("n")
         )
         
-        self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_evaluation, scenario_name=final_scenario_name, discretization_strategy=strategy_name)
-        self.plots.plot_fp_fn(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_evaluation, scenario_name=final_scenario_name, discretization_strategy=strategy_name)
-        self.plots.plot_score(results=predictions_history, attack_regions=attack_regions, title=title, discretization=final_discretization if final_discretization != 'params' else 0.5, scenario_name=final_scenario_name, discretization_strategy=strategy_name)
+        self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_evaluation, scenario_name=final_scenario_name, discretization_strategy=output_strategy_name)
+        self.plots.plot_fp_fn(results=predictions_history, attack_regions=attack_regions, title=title, window_size=window_evaluation, scenario_name=final_scenario_name, discretization_strategy=output_strategy_name)
+        self.plots.plot_score(results=predictions_history, attack_regions=attack_regions, title=title, discretization=final_discretization if final_discretization != 'params' else 0.5, scenario_name=final_scenario_name, discretization_strategy=output_strategy_name)

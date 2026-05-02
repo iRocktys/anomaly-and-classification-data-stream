@@ -41,8 +41,10 @@ class ClassificationExperimentRunner:
                 start_idx = max(warmup_instances, len(y_true_list) - window_evaluation)
                 y_t_win = y_true_list[start_idx:]
                 y_p_win = y_pred_list[start_idx:]
-                
-                f1_v, prec_v, rec_v, mcc_v, fp_v, fn_v = self.metrics.calc_sklearn_metrics(y_t_win, y_p_win)
+
+                # Métricas janeladas: mostram a variação local de desempenho em cada bloco,
+                # permitindo observar quedas/subidas nas regiões de ataque.
+                f1_v, prec_v, rec_v, _, fp_v, fn_v = self.metrics.calc_sklearn_metrics(y_t_win, y_p_win)
                 
                 instances_list.append(count)
                 f1_list.append(f1_v)

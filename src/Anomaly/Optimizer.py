@@ -2,6 +2,7 @@ import optuna
 import numpy as np
 import time
 import gc
+import os
 
 from optuna import trial
 from torchgen import model
@@ -12,11 +13,16 @@ from src.Results.Plots import Plots
 optuna.logging.set_verbosity(optuna.logging.WARNING)
 
 class AnomalyOptunaOptimizer:
-    def __init__(self, stream, n_trials=30, discretization_threshold=0.5, target_names=None, n_runs=1):
+    def __init__(self, stream, n_trials=30, discretization_threshold=0.5, target_names=None, n_runs=1, decision_strategy="raw", fp_penalty_weight=0.5):
         self.stream = stream
         self.schema = stream.get_schema()
         self.n_trials = n_trials
         self.discretization_threshold = discretization_threshold
+        self.decision_strategy = decision_strategy
+        self.decision_config = self._parse_decision_strategy(decision_strategy)
+        # Peso da penalização da taxa de falsos positivos no objetivo do Optuna.
+        # Objetivo = F1 - fp_penalty_weight * FPR(%).
+        self.fp_penalty_weight = float(fp_penalty_weight)
         self.best_params = {}
         self.target_names = target_names if target_names is not None else ['Normal', 'Ataque']
         
@@ -30,27 +36,122 @@ class AnomalyOptunaOptimizer:
         self.plots = Plots(self.target_names)
         self.n_runs = n_runs
 
+    def _parse_decision_strategy(self, decision_strategy):
+        strategy = str(decision_strategy or "raw").strip().lower()
+
+        if strategy == "raw":
+            return {"name": "raw", "type": "raw", "window": None, "k": None, "n": None}
+
+        if strategy.startswith("moving_average_w"):
+            try:
+                window = int(strategy.split("_w")[-1])
+            except ValueError:
+                raise ValueError(f"Estratégia de média móvel inválida: {decision_strategy}")
+            if window <= 0:
+                raise ValueError("A janela da média móvel precisa ser positiva.")
+            return {"name": strategy, "type": "moving_average", "window": window, "k": None, "n": None}
+
+        if strategy.startswith("persistence_") and "_of_" in strategy:
+            try:
+                left, right = strategy.replace("persistence_", "").split("_of_")
+                k, n = int(left), int(right)
+            except ValueError:
+                raise ValueError(f"Estratégia de persistência inválida: {decision_strategy}")
+            if k <= 0 or n <= 0 or k > n:
+                raise ValueError("A persistência precisa obedecer 0 < k <= n.")
+            return {"name": strategy, "type": "persistence", "window": None, "k": k, "n": n}
+
+        raise ValueError(
+            "decision_strategy deve ser uma destas: raw, moving_average_w3, "
+            "moving_average_w5, persistence_2_of_3, persistence_3_of_5."
+        )
+
+    def _combined_strategy_name(self, threshold_strategy):
+        return os.path.join(str(threshold_strategy), self.decision_config["name"])
+
+    def _causal_moving_average(self, values, window):
+        if not values:
+            return 0.0
+        window = max(1, int(window))
+        recent = values[-window:]
+        return float(np.mean(recent))
+
+    def _build_causal_moving_average_series(self, values, window):
+        values = list(values)
+        if not values:
+            return []
+        return [float(np.mean(values[max(0, i - window + 1):i + 1])) for i in range(len(values))]
+
+    def _compute_z_threshold(self, warmup_scores, z_value):
+        if self.decision_config["type"] == "moving_average":
+            reference_scores = self._build_causal_moving_average_series(warmup_scores, self.decision_config["window"])
+        else:
+            reference_scores = list(warmup_scores)
+
+        if not reference_scores:
+            return 0.5, None, None
+
+        mu = float(np.mean(reference_scores))
+        std = float(np.std(reference_scores))
+        threshold = mu + (float(z_value) * std)
+        return threshold, mu, std
+
+    def _apply_decision_rule(self, score, threshold, score_history, peak_history):
+        decision_type = self.decision_config["type"]
+
+        if decision_type == "moving_average":
+            decision_score = self._causal_moving_average(score_history, self.decision_config["window"])
+            return 1 if decision_score > threshold else 0
+
+        if decision_type == "persistence":
+            is_peak = 1 if score > threshold else 0
+            peak_history.append(is_peak)
+            recent = peak_history[-self.decision_config["n"]:]
+            return 1 if sum(recent) >= self.decision_config["k"] else 0
+
+        return 1 if score > threshold else 0
+
+    def _fp_penalized_objective(self, f1, fp, y_true_eval):
+        y_true_arr = np.asarray(y_true_eval)
+        normal_count = int(np.sum(y_true_arr == 0))
+        fpr = (float(fp) / normal_count * 100.0) if normal_count > 0 else 0.0
+        objective_score = float(f1) - (self.fp_penalty_weight * fpr)
+        return objective_score, fpr
+
     def optuna_callback(self, study, trial):
-        f1, prec, rec = trial.user_attrs['metrics']
+        metrics = trial.user_attrs.get('metrics', ())
+        if len(metrics) >= 5:
+            f1, prec, rec, objective_score, fpr = metrics[:5]
+        else:
+            f1, prec, rec = metrics[:3]
+            objective_score, fpr = f1, 0.0
         params = trial.params
-        print(f"Trial {trial.number + 1}/{self.n_trials} | F1: {f1:.4f} | Prec: {prec:.4f} | Rec: {rec:.4f} | Params: {params}")
+        print(
+            f"Trial {trial.number + 1}/{self.n_trials} | "
+            f"Obj: {objective_score:.4f} | F1: {f1:.4f} | "
+            f"Prec: {prec:.4f} | Rec: {rec:.4f} | FPR: {fpr:.4f}% | "
+            f"Params: {params}"
+        )
 
     def evaluate_model(self, model, threshold_mode, warmup_instances, z_value=None, is_ae=False):
         self.stream.restart()
         y_true_list = []
         y_pred_list = []
         warmup_scores = []
-        
+        score_history = []
+        peak_history = []
+
         threshold = threshold_mode if isinstance(threshold_mode, (float, int)) else 0.5
         count = 0
-        
+
         while self.stream.has_more_instances():
             instance = self.stream.next_instance()
             true_label_multiclass = instance.y_index
             binary_true_label = 1 if true_label_multiclass > 0 else 0
-            
+
             score = model.score_instance(instance)
-            
+            score_history.append(score)
+
             if count < warmup_instances:
                 warmup_scores.append(score)
                 predicted_class = 0
@@ -60,16 +161,15 @@ class AnomalyOptunaOptimizer:
                     pass
             else:
                 if count == warmup_instances and z_value is not None and warmup_instances > 0:
-                    mu = float(np.mean(warmup_scores))
-                    std = float(np.std(warmup_scores))
-                    threshold = mu + (z_value * std)
-                    
+                    threshold, _, _ = self._compute_z_threshold(warmup_scores, z_value)
+                    threshold = min(threshold, 0.999)
+
                 if threshold_mode == 'params':
                     pred = model.predict(instance)
                     predicted_class = 1 if (pred is not None and pred > 0) else 0
                 else:
-                    predicted_class = 1 if score > threshold else 0
-                
+                    predicted_class = self._apply_decision_rule(score, threshold, score_history, peak_history)
+
                 try:
                     if not is_ae or predicted_class == 0:
                         model.train(instance)
@@ -84,17 +184,18 @@ class AnomalyOptunaOptimizer:
         y_p_eval = y_pred_list[warmup_instances:] if len(y_pred_list) > warmup_instances else y_pred_list
 
         f1, prec, rec, mcc, fp, fn = self.metrics.calc_sklearn_metrics(y_t_eval, y_p_eval)
-        return f1, prec, rec
+        objective_score, fpr = self._fp_penalized_objective(f1, fp, y_t_eval)
+        return objective_score, f1, prec, rec, fpr
 
     def run_trial_with_seeds(self, model_name, params, trial_threshold, warmup_instances, is_ae=False, n_seeds=1, early_stop_threshold=35.0):
-        f1_list, prec_list, rec_list = [], [], []
-        
+        objective_list, f1_list, prec_list, rec_list, fpr_list = [], [], [], [], []
+
         model_kwargs = params.copy()
         z_value = model_kwargs.pop('z', None)
-        
+
         if 'threshold' in model_kwargs and model_name in ['HST', 'OIF']:
             model_kwargs['anomaly_threshold'] = model_kwargs.pop('threshold')
-        
+
         for i, seed in enumerate(range(42, 42 + n_seeds)):
             if model_name == 'HST':
                 models = get_anomaly_models(self.schema, selected_models=['HST'], hst_params=model_kwargs, run_seed=seed)
@@ -110,24 +211,34 @@ class AnomalyOptunaOptimizer:
                 model = models['OnlineIsolationForest']
             else:
                 raise ValueError("Modelo não suportado na otimização com sementes.")
-                
-            f1, prec, rec = self.evaluate_model(model, trial_threshold, warmup_instances, z_value=z_value, is_ae=is_ae)
+
+            objective_score, f1, prec, rec, fpr = self.evaluate_model(
+                model, trial_threshold, warmup_instances, z_value=z_value, is_ae=is_ae
+            )
+            objective_list.append(objective_score)
             f1_list.append(f1)
             prec_list.append(prec)
             rec_list.append(rec)
-            
+            fpr_list.append(fpr)
+
             del model
             del models
             gc.collect()
-            
-            if i == 0 and f1 < early_stop_threshold:
-                return f1, prec, rec
-            
-        f1_mean = float(np.mean(f1_list))
-        f1_std = float(np.std(f1_list))
-        f1_score_otimizado = f1_mean - f1_std
-            
-        return f1_score_otimizado, float(np.mean(prec_list)), float(np.mean(rec_list))
+
+            if i == 0 and objective_score < early_stop_threshold:
+                return objective_score, f1, prec, rec, fpr
+
+        objective_mean = float(np.mean(objective_list))
+        objective_std = float(np.std(objective_list))
+        objective_otimizado = objective_mean - objective_std
+
+        return (
+            objective_otimizado,
+            float(np.mean(f1_list)),
+            float(np.mean(prec_list)),
+            float(np.mean(rec_list)),
+            float(np.mean(fpr_list)),
+        )
 
     def execute_single_run(self, model_name, model_kwargs, current_seed, warmup_instances, threshold_mode, z_value, window_evaluation, is_ae):
         self.stream.restart()
@@ -151,6 +262,8 @@ class AnomalyOptunaOptimizer:
         instances_list, f1_list, prec_list, rec_list = [], [], [], []
         fp_list, fn_list = [], []
         warmup_scores = []
+        score_history = []
+        peak_history = []
         
         run_threshold = threshold_mode if isinstance(threshold_mode, (float, int)) else 0.5
         count = 0
@@ -164,6 +277,7 @@ class AnomalyOptunaOptimizer:
             
             score = model.score_instance(instance)
             scores.append(score)
+            score_history.append(score)
             current_true_multi.append(true_label_multiclass)
             
             if count < warmup_instances:
@@ -175,15 +289,14 @@ class AnomalyOptunaOptimizer:
                     pass
             else:
                 if count == warmup_instances and z_value is not None and warmup_instances > 0:
-                    calc_mu = float(np.mean(warmup_scores))
-                    calc_std = float(np.std(warmup_scores))
-                    run_threshold = min(calc_mu + (z_value * calc_std), 0.999)
+                    run_threshold, calc_mu, calc_std = self._compute_z_threshold(warmup_scores, z_value)
+                    run_threshold = min(run_threshold, 0.999)
                     
                 if threshold_mode == 'params':
                     pred = model.predict(instance)
                     predicted_class = 1 if (pred is not None and pred > 0) else 0
                 else:
-                    predicted_class = 1 if score > run_threshold else 0
+                    predicted_class = self._apply_decision_rule(score, run_threshold, score_history, peak_history)
                 
                 try:
                     if not is_ae or predicted_class == 0:
@@ -198,8 +311,10 @@ class AnomalyOptunaOptimizer:
                 start_idx = max(warmup_instances, len(y_true_list) - window_evaluation)
                 y_t_win = y_true_list[start_idx:]
                 y_p_win = y_pred_list[start_idx:]
-                
-                f1_v, prec_v, rec_v, mcc_v, fp_v, fn_v = self.metrics.calc_sklearn_metrics(y_t_win, y_p_win)
+
+                # Métricas janeladas: mostram a variação local de desempenho em cada bloco,
+                # permitindo observar quedas/subidas nas regiões de ataque.
+                f1_v, prec_v, rec_v, _, fp_v, fn_v = self.metrics.calc_sklearn_metrics(y_t_win, y_p_win)
                 
                 instances_list.append(count)
                 f1_list.append(f1_v)
@@ -280,13 +395,20 @@ class AnomalyOptunaOptimizer:
     def export_metrics_and_plots(self, predictions_history, actual_algo_name, warmup_instances, num_features, experiment_name, exec_id, window_evaluation, best_trial_params, z_value, mu_list, std_list, thresh_list, threshold_mode, strategy_name):
         feat_type = "FullFeatures" if (num_features is None or num_features > 50) else "33Features"
         scenario_name = f"Otimizado_{feat_type}"
+        output_strategy_name = self._combined_strategy_name(strategy_name)
         
         display_params = best_trial_params.copy()
+        display_params['decision_strategy'] = self.decision_config['name']
+        display_params['fp_penalty_weight'] = self.fp_penalty_weight
+        display_params['decision_type'] = self.decision_config['type']
+        display_params['decision_window'] = self.decision_config.get('window')
+        display_params['persistence_k'] = self.decision_config.get('k')
+        display_params['persistence_n'] = self.decision_config.get('n')
         if z_value is not None:
             display_params['z'] = float(z_value)
-            display_params['u'] = float(np.mean(mu_list))
-            display_params['std'] = float(np.mean(std_list))
-            display_threshold = float(np.mean(thresh_list))
+            display_params['u'] = float(np.mean(mu_list)) if mu_list else None
+            display_params['std'] = float(np.mean(std_list)) if std_list else None
+            display_threshold = float(np.mean(thresh_list)) if thresh_list else None
         else:
             display_threshold = display_params.get('threshold', 0.5) if threshold_mode == 'params' else threshold_mode
         
@@ -300,15 +422,20 @@ class AnomalyOptunaOptimizer:
             discretization=display_threshold,
             window_evaluation=window_evaluation,
             exec_id=exec_id,
-            discretization_strategy=strategy_name,
-            task_type="anomaly"
+            discretization_strategy=output_strategy_name,
+            task_type="anomaly",
+            threshold_strategy=strategy_name,
+            decision_strategy=self.decision_config['name'],
+            decision_window=self.decision_config.get('window'),
+            persistence_k=self.decision_config.get('k'),
+            persistence_n=self.decision_config.get('n'),
         )
 
         attack_regions = self.metrics.extract_attack_regions(predictions_history[actual_algo_name]['true_labels_multi'], normal_class_idx=self.normal_class_idx)
         
-        self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=experiment_name, window_size=window_evaluation, scenario_name=scenario_name, discretization_strategy=strategy_name)
-        self.plots.plot_fp_fn(results=predictions_history, attack_regions=attack_regions, title=experiment_name, window_size=window_evaluation, scenario_name=scenario_name, discretization_strategy=strategy_name)
-        self.plots.plot_score(results=predictions_history, attack_regions=attack_regions, title=experiment_name, discretization=display_threshold, scenario_name=scenario_name, discretization_strategy=strategy_name)
+        self.plots.plot_metrics(results=predictions_history, attack_regions=attack_regions, title=experiment_name, window_size=window_evaluation, scenario_name=scenario_name, discretization_strategy=output_strategy_name)
+        self.plots.plot_fp_fn(results=predictions_history, attack_regions=attack_regions, title=experiment_name, window_size=window_evaluation, scenario_name=scenario_name, discretization_strategy=output_strategy_name)
+        self.plots.plot_score(results=predictions_history, attack_regions=attack_regions, title=experiment_name, discretization=display_threshold, scenario_name=scenario_name, discretization_strategy=output_strategy_name)
 
     def validate_best_parameters(self, model_name, best_trial, warmup_instances, experiment_name, num_features, exec_id, window_evaluation):
         is_ae = any(kw.upper() in model_name.upper() for kw in ['AE', 'AUTOENCODER'])
@@ -365,7 +492,7 @@ class AnomalyOptunaOptimizer:
         )
 
     def optimize(self, model_name, warmup_instances=0, experiment_name="General", num_features=None, exec_id="N/A", window_evaluation=None):
-        print(f"\n[{model_name}] Iniciando otimização focada no F1-Score (Binário | Média de Sementes com Early Stopping) com {self.n_trials} trials...")
+        print(f"\n[{model_name}] Iniciando otimização focada em F1 penalizado por FP (Binário | Decisão: {self.decision_config['name']} | Média de Sementes com Early Stopping) com {self.n_trials} trials...")
         
         study = optuna.create_study(direction='maximize')
         is_ae = any(kw.upper() in model_name.upper() for kw in ['AE', 'AUTOENCODER'])
@@ -384,17 +511,17 @@ class AnomalyOptunaOptimizer:
                 trial_threshold = float(self.discretization_threshold)
 
             if model_name == 'HST':
-                f1, prec, rec = self.objective_hst(trial, trial_threshold, warmup_instances)
+                objective_score, f1, prec, rec, fpr = self.objective_hst(trial, trial_threshold, warmup_instances)
             elif model_name == 'AIF':
-                f1, prec, rec = self.objective_aif(trial, trial_threshold, warmup_instances)
+                objective_score, f1, prec, rec, fpr = self.objective_aif(trial, trial_threshold, warmup_instances)
             elif model_name == 'AE':
-                f1, prec, rec = self.objective_ae(trial, trial_threshold, warmup_instances, is_ae)
+                objective_score, f1, prec, rec, fpr = self.objective_ae(trial, trial_threshold, warmup_instances, is_ae)
             elif model_name == 'OIF':
-                f1, prec, rec = self.objective_oif(trial, trial_threshold, warmup_instances)
+                objective_score, f1, prec, rec, fpr = self.objective_oif(trial, trial_threshold, warmup_instances)
             else:
                 raise ValueError("Modelo não suportado.")
-            
-            trial.set_user_attr('metrics', (f1, prec, rec))
+
+            trial.set_user_attr('metrics', (f1, prec, rec, objective_score, fpr))
             gc.collect()
             try:
                 import jpype
@@ -402,16 +529,22 @@ class AnomalyOptunaOptimizer:
                     jpype.java.lang.System.gc()
             except:
                 pass
-            return f1 
+            return objective_score 
 
         study.optimize(objective_wrapper, n_trials=self.n_trials, callbacks=[self.optuna_callback])
         
         print(f"\n[{model_name}] OTIMIZAÇÃO FINALIZADA")
         best_trial = study.best_trial
-        best_f1, best_prec, best_rec = best_trial.user_attrs['metrics']
-        
+        best_metrics = best_trial.user_attrs['metrics']
+        best_f1, best_prec, best_rec = best_metrics[:3]
+        best_objective = best_metrics[3] if len(best_metrics) > 3 else best_f1
+        best_fpr = best_metrics[4] if len(best_metrics) > 4 else 0.0
+
         print(f"Melhor Trial: {best_trial.number + 1}")
-        print(f"Melhor Resultado -> F1: {best_f1:.4f} | Prec: {best_prec:.4f} | Rec: {best_rec:.4f}")
+        print(
+            f"Melhor Resultado -> Obj: {best_objective:.4f} | F1: {best_f1:.4f} | "
+            f"Prec: {best_prec:.4f} | Rec: {best_rec:.4f} | FPR: {best_fpr:.4f}%"
+        )
         print(f"Melhores Parâmetros: {study.best_params}")
         
         self.best_params[model_name] = study.best_params

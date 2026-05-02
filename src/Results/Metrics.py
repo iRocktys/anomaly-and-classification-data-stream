@@ -151,9 +151,9 @@ class Metrics:
         if len(y_true) == 0:
             return 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
 
-        f1 = f1_score(y_true, y_pred, pos_label=1, average="binary", zero_division=1)
-        prec = precision_score(y_true, y_pred, pos_label=1, average="binary", zero_division=1)
-        rec = recall_score(y_true, y_pred, pos_label=1, average="binary", zero_division=1)
+        f1 = f1_score(y_true, y_pred, pos_label=1, average="binary", zero_division=0)
+        prec = precision_score(y_true, y_pred, pos_label=1, average="binary", zero_division=0)
+        rec = recall_score(y_true, y_pred, pos_label=1, average="binary", zero_division=0)
         mcc = matthews_corrcoef(y_true, y_pred)
 
         y_t_arr = np.array(y_true)
@@ -309,6 +309,11 @@ class Metrics:
         warmup_instances: int,
         strategy_name: str,
         task_type: str,
+        threshold_strategy: Optional[str] = None,
+        decision_strategy: Optional[str] = None,
+        decision_window: Any = None,
+        persistence_k: Any = None,
+        persistence_n: Any = None,
     ) -> str:
         category, contamination_block = self._split_experiment_name(experiment_name)
         clean_params = self._clean_params(params_dict)
@@ -327,6 +332,11 @@ class Metrics:
             "Model",
             "Scenario",
             "Strategy",
+            "Threshold_Strategy",
+            "Decision_Strategy",
+            "Decision_Window",
+            "Persistence_K",
+            "Persistence_N",
             "Warmup",
             "Win_Evaluation",
             "Discretization",
@@ -376,6 +386,11 @@ class Metrics:
             self._normalize_model_name(model_name),
             scenario_name,
             strategy_name,
+            threshold_strategy if threshold_strategy is not None else strategy_name,
+            decision_strategy if decision_strategy is not None else "raw" if task_type == "anomaly" else "classifier",
+            decision_window if decision_window is not None else "N/A",
+            persistence_k if persistence_k is not None else "N/A",
+            persistence_n if persistence_n is not None else "N/A",
             warmup_instances,
             window_evaluation if window_evaluation is not None else "N/A",
             discretization if discretization is not None else "N/A",
@@ -413,6 +428,11 @@ class Metrics:
         warmup_instances: int,
         strategy_name: str,
         task_type: str,
+        threshold_strategy: Optional[str] = None,
+        decision_strategy: Optional[str] = None,
+        decision_window: Any = None,
+        persistence_k: Any = None,
+        persistence_n: Any = None,
     ) -> Optional[str]:
         if window_evaluation is None:
             return None
@@ -438,6 +458,11 @@ class Metrics:
             "Model",
             "Scenario",
             "Strategy",
+            "Threshold_Strategy",
+            "Decision_Strategy",
+            "Decision_Window",
+            "Persistence_K",
+            "Persistence_N",
             "Warmup",
             "Window_Size",
             "Window_Index",
@@ -469,6 +494,11 @@ class Metrics:
                 normalized_model_name,
                 scenario_name,
                 strategy_name,
+                threshold_strategy if threshold_strategy is not None else strategy_name,
+                decision_strategy if decision_strategy is not None else "raw" if task_type == "anomaly" else "classifier",
+                decision_window if decision_window is not None else "N/A",
+                persistence_k if persistence_k is not None else "N/A",
+                persistence_n if persistence_n is not None else "N/A",
                 warmup_instances,
                 window_evaluation,
                 idx + 1,
@@ -503,6 +533,11 @@ class Metrics:
         discretization_strategy="fixed",
         task_type=None,
         save_prequential=True,
+        threshold_strategy=None,
+        decision_strategy=None,
+        decision_window=None,
+        persistence_k=None,
+        persistence_n=None,
     ):
         if task_type is None:
             task_type = "classification" if str(discretization).upper() == "N/A" else "anomaly"
@@ -564,6 +599,11 @@ class Metrics:
                 warmup_instances=warmup_instances,
                 strategy_name=discretization_strategy,
                 task_type=task_type,
+                threshold_strategy=threshold_strategy,
+                decision_strategy=decision_strategy,
+                decision_window=decision_window,
+                persistence_k=persistence_k,
+                persistence_n=persistence_n,
             )
             cumulative_paths.append(cumulative_path)
 
@@ -578,6 +618,11 @@ class Metrics:
                     warmup_instances=warmup_instances,
                     strategy_name=discretization_strategy,
                     task_type=task_type,
+                    threshold_strategy=threshold_strategy,
+                    decision_strategy=decision_strategy,
+                    decision_window=decision_window,
+                    persistence_k=persistence_k,
+                    persistence_n=persistence_n,
                 )
                 if prequential_path:
                     prequential_paths.append(prequential_path)
