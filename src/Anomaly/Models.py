@@ -1,9 +1,6 @@
 from capymoa.anomaly import (
     HalfSpaceTrees,
-    OnlineIsolationForest,
     Autoencoder,
-    StreamingIsolationForest,
-    RobustRandomCutForest,
     AdaptiveIsolationForest,
 )
 
@@ -11,14 +8,12 @@ def get_anomaly_models(
     schema, 
     selected_models=None, 
     hst_params=None, 
-    oif_params=None, 
     ae_params=None,  
-    rrcf_params=None, 
     aif_params=None,
     run_seed=None
 ):
     if selected_models is None:
-        selected_models = ['HST', 'OIF', 'AE', 'RRCF', 'AIF']
+        selected_models = ['HST', 'AE', 'AIF']
     
     models = {}
 
@@ -36,22 +31,6 @@ def get_anomaly_models(
         if hst_params: default_hst.update(hst_params)
         models["HalfSpaceTrees"] = HalfSpaceTrees(**default_hst)
 
-    if 'OIF' in selected_models:
-        default_oif = {
-            'schema': schema,
-            'random_seed': 1 if run_seed is None else run_seed,
-            'num_trees': 100,
-            'max_leaf_samples': 16,
-            'growth_criterion': 'adaptive',
-            'subsample': 0.9,
-            'window_size': 2048,
-            'branching_factor': 4,
-            'split': 'axisparallel',
-            'n_jobs': 1
-        }
-        if oif_params: default_oif.update(oif_params)
-        models["OnlineIsolationForest"] = OnlineIsolationForest(**default_oif)
-
     if 'AE' in selected_models:
         default_ae = {
             'schema': schema,
@@ -62,16 +41,6 @@ def get_anomaly_models(
         }
         if ae_params: default_ae.update(ae_params)
         models["Autoencoder"] = Autoencoder(**default_ae)
-
-    if 'RRCF' in selected_models:
-        default_rrcf = {
-            'schema': schema, 
-            'tree_size': 1000,
-            'n_trees': 100,
-            'random_state': 42 if run_seed is None else run_seed
-        }
-        if rrcf_params: default_rrcf.update(rrcf_params)
-        models["RobustRandomCutForest"] = RobustRandomCutForest(**default_rrcf)
 
     if 'AIF' in selected_models:
         default_aif = {

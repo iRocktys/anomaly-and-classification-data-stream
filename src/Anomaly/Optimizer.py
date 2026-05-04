@@ -20,8 +20,6 @@ class AnomalyOptunaOptimizer:
         self.discretization_threshold = discretization_threshold
         self.decision_strategy = decision_strategy
         self.decision_config = self._parse_decision_strategy(decision_strategy)
-        # Peso da penalização da taxa de falsos positivos no objetivo do Optuna.
-        # Objetivo = F1 - fp_penalty_weight * FPR(%).
         self.fp_penalty_weight = float(fp_penalty_weight)
         self.best_params = {}
         self.target_names = target_names if target_names is not None else ['Normal', 'Ataque']
@@ -206,9 +204,6 @@ class AnomalyOptunaOptimizer:
             elif model_name == 'AE':
                 models = get_anomaly_models(self.schema, selected_models=['AE'], ae_params=model_kwargs, run_seed=seed)
                 model = models['Autoencoder']
-            elif model_name == 'OIF':
-                models = get_anomaly_models(self.schema, selected_models=['OIF'], oif_params=model_kwargs, run_seed=seed)
-                model = models['OnlineIsolationForest']
             else:
                 raise ValueError("Modelo não suportado na otimização com sementes.")
 
@@ -252,9 +247,6 @@ class AnomalyOptunaOptimizer:
         elif model_name == 'AE':
             models = get_anomaly_models(self.schema, selected_models=['AE'], ae_params=model_kwargs, run_seed=current_seed)
             model = models['Autoencoder']
-        elif model_name == 'OIF':
-            models = get_anomaly_models(self.schema, selected_models=['OIF'], oif_params=model_kwargs, run_seed=current_seed)
-            model = models['OnlineIsolationForest']
         else:
             raise ValueError("Modelo não suportado.")
 
@@ -516,8 +508,6 @@ class AnomalyOptunaOptimizer:
                 objective_score, f1, prec, rec, fpr = self.objective_aif(trial, trial_threshold, warmup_instances)
             elif model_name == 'AE':
                 objective_score, f1, prec, rec, fpr = self.objective_ae(trial, trial_threshold, warmup_instances, is_ae)
-            elif model_name == 'OIF':
-                objective_score, f1, prec, rec, fpr = self.objective_oif(trial, trial_threshold, warmup_instances)
             else:
                 raise ValueError("Modelo não suportado.")
 
@@ -589,17 +579,3 @@ class AnomalyOptunaOptimizer:
             params['z'] = trial.suggest_float('z', 1.0, 10.0)
             
         return self.run_trial_with_seeds('AE', params, trial_threshold, warmup_instances, is_ae=is_ae, n_seeds=3)
-    
-    def objective_oif(self, trial, trial_threshold, warmup_instances):
-        params = {
-            'window_size': trial.suggest_categorical('window_size', [128, 256, 512, 1024]),
-            'num_trees': trial.suggest_int('num_trees', 30, 60, step=30),
-            'max_leaf_samples': trial.suggest_categorical('max_leaf_samples', [8, 16, 32]),
-            'subsample': trial.suggest_float('subsample', 0.3, 0.6),
-        }
-        if trial_threshold == 'params':
-            params['threshold'] = trial.suggest_float('threshold', 0.1, 0.9)
-        elif trial_threshold == 'z_score':
-            params['z'] = trial.suggest_float('z', 1.0, 10.0)
-            
-        return self.run_trial_with_seeds('OIF', params, trial_threshold, warmup_instances, n_seeds=3)
